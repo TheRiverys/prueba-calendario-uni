@@ -7,6 +7,7 @@ import { Views } from './components/Views';
 import { Modal } from './components/Modal';
 import { ConfigModal } from './components/ConfigModal';
 import { AuthDialog } from './features/auth/components/AuthDialog';
+import { FeedbackPanel } from './components/FeedbackPanel';
 import { useConsoleClear } from './hooks/useConsoleClear';
 import { pickColorForSubject, parseDeliveriesFile, createIcsCalendar } from './utils';
 
@@ -167,6 +168,7 @@ const AppContent: React.FC = () => {
 
       <ConfigModal />
       <AuthDialog />
+      <FeedbackPanel />
     </div>
   );
 };
