@@ -1,8 +1,8 @@
+
 import React, { Suspense, lazy } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import type { StudySchedule } from '../types';
 
-// Lazy load components para code-splitting
 const DeliveryList = lazy(() => import('./DeliveryList.tsx'));
 const CalendarView = lazy(() => import('./CalendarView.tsx'));
 const GanttView = lazy(() => import('./GanttView.tsx'));
@@ -12,37 +12,58 @@ interface ViewsProps {
   schedule: StudySchedule[];
 }
 
+const LoadingFallback: React.FC = () => (
+  <div className="flex justify-center items-center h-64 text-sm text-muted-foreground">
+    Cargando…
+  </div>
+);
+
 export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
   const { openModal, deleteDelivery, toggleCompleted } = useAppContext();
-  const renderView = () => {
+
+  const renderListView = () => (
+    <Suspense fallback={<LoadingFallback />}>
+      <DeliveryList
+        schedule={schedule}
+        onEdit={openModal}
+        onDelete={deleteDelivery}
+        onToggleComplete={toggleCompleted}
+      />
+    </Suspense>
+  );
+
+  const renderCalendarView = () => (
+    <Suspense fallback={<LoadingFallback />}>
+      <CalendarView
+        schedule={schedule}
+        onEdit={openModal}
+        onDelete={deleteDelivery}
+        onToggleComplete={toggleCompleted}
+      />
+    </Suspense>
+  );
+
+  const renderGanttView = () => (
+    <Suspense fallback={<LoadingFallback />}>
+      <GanttView schedule={schedule} />
+    </Suspense>
+  );
+
+  const renderActiveView = () => {
     switch (activeView) {
       case 'list':
-        return (
-          <Suspense fallback={<div className="flex justify-center items-center h-64">Cargando...</div>}>
-            <DeliveryList
-              schedule={schedule}
-              onEdit={openModal}
-              onDelete={deleteDelivery}
-              onToggleComplete={toggleCompleted}
-            />
-          </Suspense>
-        );
+        return renderListView();
       case 'calendar':
         return (
-          <Suspense fallback={<div className="flex justify-center items-center h-64">Cargando...</div>}>
-            <CalendarView
-              schedule={schedule}
-              onEdit={openModal}
-              onDelete={deleteDelivery}
-              onToggleComplete={toggleCompleted}
-            />
-          </Suspense>
+          <div className="bg-card border rounded-lg shadow-sm">
+            {renderCalendarView()}
+          </div>
         );
       case 'gantt':
         return (
-          <Suspense fallback={<div className="flex justify-center items-center h-64">Cargando...</div>}>
-            <GanttView schedule={schedule} />
-          </Suspense>
+          <div className="bg-card border rounded-lg shadow-sm">
+            {renderGanttView()}
+          </div>
         );
       default:
         return null;
@@ -50,10 +71,8 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 pb-8">
-      <div className="bg-card border rounded-lg p-6">
-        {renderView()}
-      </div>
+    <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-14 mt-6 pb-10 mx-auto max-w-[1800px]">
+      {renderActiveView()}
     </div>
   );
 };

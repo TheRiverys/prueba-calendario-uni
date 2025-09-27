@@ -1,6 +1,8 @@
-﻿import React from 'react';
+
+import React from 'react';
 import { List, Calendar, BarChart3, Plus, Upload, Download } from 'lucide-react';
 import { Button } from './ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { AIControls } from './AIControls';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -12,14 +14,18 @@ interface ControlsProps {
   selectedSubject: string;
   subjects: string[];
   onSubjectChange: (subject: string) => void;
-  sortBy: 'algorithm' | 'subject' | 'date';
-  onSortChange: (sort: 'algorithm' | 'subject' | 'date') => void;
   semesterStart: string;
   onSemesterStartChange: (date: string) => void;
   onImportClick: () => void;
   onExportClick: () => void;
   disableExport: boolean;
 }
+
+const viewButtons = [
+  { key: 'list' as const, label: 'Lista', icon: List },
+  { key: 'calendar' as const, label: 'Calendario', icon: Calendar },
+  { key: 'gantt' as const, label: 'Gantt', icon: BarChart3 }
+];
 
 export const Controls: React.FC<ControlsProps> = ({
   activeView,
@@ -28,8 +34,6 @@ export const Controls: React.FC<ControlsProps> = ({
   selectedSubject,
   subjects,
   onSubjectChange,
-  sortBy,
-  onSortChange,
   semesterStart,
   onSemesterStartChange,
   onImportClick,
@@ -37,125 +41,100 @@ export const Controls: React.FC<ControlsProps> = ({
   disableExport
 }) => {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-      <div className="bg-card border rounded-lg p-6 space-y-6">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
-          {/* Selector de vista y botón añadir */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full lg:w-auto">
-            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-              <Button
-                onClick={() => onViewChange('list')}
-                variant={activeView === 'list' ? 'default' : 'outline'}
-                size="sm"
-                className="flex-1 sm:flex-none"
-              >
-                <List className="w-4 h-4 mr-2" />
-                <span className="hidden xs:inline">Lista</span>
-              </Button>
-
-              <Button
-                onClick={() => onViewChange('calendar')}
-                variant={activeView === 'calendar' ? 'default' : 'outline'}
-                size="sm"
-                className="flex-1 sm:flex-none"
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                <span className="hidden xs:inline">Calendario</span>
-              </Button>
-
-              <Button
-                onClick={() => onViewChange('gantt')}
-                variant={activeView === 'gantt' ? 'default' : 'outline'}
-                size="sm"
-                className="flex-1 sm:flex-none"
-              >
-                <BarChart3 className="w-4 h-4 mr-2" />
-                <span className="hidden xs:inline">Gantt</span>
-              </Button>
+    <section className="mt-8 w-full px-4 sm:px-6 lg:px-10 xl:px-14">
+      <Card className="mx-auto w-full max-w-[1800px] border border-border/70 shadow-sm">
+        <CardHeader className="border-b border-border/60 pb-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <CardTitle className="text-lg sm:text-xl">Panel de planificación</CardTitle>
+              <CardDescription>
+                Cambia de vista, ajusta filtros y sincroniza tus entregas con otras herramientas desde un único espacio.
+              </CardDescription>
             </div>
-
-            <Button onClick={onAddClick} className="w-full sm:w-auto">
-              <Plus className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Añadir entrega</span>
-              <span className="sm:hidden">Añadir</span>
+            <Button onClick={onAddClick} className="flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              Añadir entrega
             </Button>
           </div>
+        </CardHeader>
 
-          {/* Inicio del semestre */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full lg:w-auto">
-            <label className="controls-label">Inicio del semestre:</label>
-            <Input
-              type="date"
-              value={semesterStart}
-              onChange={(event) => onSemesterStartChange(event.target.value)}
-              className="w-full sm:w-auto sm:min-w-48"
-            />
-          </div>
-        </div>
-
-        {/* Controles de filtro y ordenación */}
-        <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full lg:w-auto">
-            <label className="controls-label">Materia:</label>
-            <Select value={selectedSubject} onValueChange={onSubjectChange}>
-              <SelectTrigger className="w-full sm:w-auto sm:min-w-48">
-                <SelectValue placeholder="Seleccionar materia" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas las materias</SelectItem>
-                {subjects.map(subject => (
-                  <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+        <CardContent className="space-y-8 pt-6">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Vistas</span>
+              <div className="flex flex-wrap items-center gap-2">
+                {viewButtons.map(({ key, label, icon: Icon }) => (
+                  <Button
+                    key={key}
+                    onClick={() => onViewChange(key)}
+                    variant={activeView === key ? 'default' : 'outline'}
+                    size="sm"
+                    className="min-w-[104px] justify-center"
+                  >
+                    <Icon className="mr-2 h-4 w-4" />
+                    {label}
+                  </Button>
                 ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full lg:w-auto">
-            <label className="controls-label">Ordenar por:</label>
-            <Select value={sortBy} onValueChange={onSortChange}>
-              <SelectTrigger className="w-full sm:w-auto sm:min-w-40">
-                <SelectValue placeholder="Seleccionar orden" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="algorithm">Algoritmo</SelectItem>
-                <SelectItem value="subject">Materia</SelectItem>
-                <SelectItem value="date">Fecha de entrega</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Importación y exportación */}
-        <div className="flex flex-col gap-3 border-t border-border pt-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <p className="text-sm font-medium text-foreground">Importar entregas</p>
-              <p className="text-xs text-muted-foreground">
-                Usa un archivo CSV o Excel con columnas: Asignatura, Título, Fecha (AAAA-MM-DD). La primera fila puede ser un encabezado.
-              </p>
+              </div>
             </div>
-            <Button variant="outline" size="sm" onClick={onImportClick}>
-              <Upload className="w-4 h-4 mr-2" />
-              Importar CSV/Excel
-            </Button>
-          </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <p className="text-sm font-medium text-foreground">Exportar calendario</p>
-              <p className="text-xs text-muted-foreground">
-                Descarga un archivo .ics con las entregas para cargarlo en tu calendario.
-              </p>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="uppercase tracking-wide">Inicio del semestre</span>
+              <Input
+                type="date"
+                value={semesterStart}
+                onChange={event => onSemesterStartChange(event.target.value)}
+                className="w-[180px]"
+              />
             </div>
-            <Button variant="outline" size="sm" onClick={onExportClick} disabled={disableExport}>
-              <Download className="w-4 h-4 mr-2" />
-              Exportar .ics
-            </Button>
           </div>
-        </div>
 
-        <AIControls />
-      </div>
-    </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Materia</span>
+              <Select value={selectedSubject} onValueChange={onSubjectChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar materia" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas las materias</SelectItem>
+                  {subjects.map(subject => (
+                    <SelectItem key={subject} value={subject}>
+                      {subject}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Importar entregas</span>
+              <div className="flex flex-col gap-2 rounded-lg border border-dashed border-border/70 bg-muted/20 p-3 text-xs text-muted-foreground">
+                <p>Sube un CSV o Excel con columnas: materia, título y fecha (AAAA-MM-DD).</p>
+                <Button variant="outline" size="sm" className="self-start" onClick={onImportClick}>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Importar archivo
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Exportar calendario</span>
+              <div className="flex flex-col gap-2 rounded-lg border border-dashed border-border/70 bg-muted/20 p-3 text-xs text-muted-foreground">
+                <p>Descarga un .ics para añadir tus entregas a cualquier calendario compatible.</p>
+                <Button variant="outline" size="sm" className="self-start" onClick={onExportClick} disabled={disableExport}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Exportar .ics
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-border pt-6">
+            <AIControls />
+          </div>
+        </CardContent>
+      </Card>
+    </section>
   );
 };

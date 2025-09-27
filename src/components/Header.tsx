@@ -1,21 +1,12 @@
-﻿import React from 'react';
-import { BookOpen, ClipboardList, Clock, AlertTriangle, CheckCircle, Moon, Sun, Settings, LogIn, LogOut } from 'lucide-react';
+
+import React from 'react';
+import { BookOpen, Moon, Sun, Settings } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { useAppContext } from '../contexts/AppContext';
 
-interface HeaderProps {
-  stats: {
-    total: number;
-    upcoming: number;
-    overdue: number;
-    thisWeek: number;
-  };
-}
-
-export const Header: React.FC<HeaderProps> = ({ stats }) => {
+export const Header: React.FC = () => {
   const {
     theme,
     toggleTheme,
@@ -25,127 +16,87 @@ export const Header: React.FC<HeaderProps> = ({ stats }) => {
     openAuthModal,
     signOut
   } = useAppContext();
+
+  const [signingOut, setSigningOut] = React.useState(false);
+
+  const handleSignOut = React.useCallback(async () => {
+    setSigningOut(true);
+    try {
+      const message = await signOut();
+      if (message) {
+        console.error('No se pudo cerrar la sesión:', message);
+      }
+    } finally {
+      setSigningOut(false);
+    }
+  }, [signOut]);
+
+  const today = React.useMemo(() => {
+    const longFormat = format(new Date(), "EEEE, d 'de' MMMM 'de' yyyy", { locale: es });
+    const shortFormat = format(new Date(), 'd/MM/yyyy', { locale: es });
+    return { longFormat, shortFormat };
+  }, []);
+
   return (
-    <>
-      {/* Header */}
-      <header className="bg-card border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:py-6 space-y-3 sm:space-y-0">
-            <div className="flex items-center space-x-3 min-w-0">
-              <BookOpen className="w-8 h-8 text-primary flex-shrink-0" />
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">
-                Planificador inteligente del estudio
+    <header className="border-b bg-card/70 backdrop-blur">
+      <div className="mx-auto flex max-w-[1800px] flex-col gap-6 px-4 pb-6 pt-6 sm:px-6 lg:px-10 xl:px-14">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <BookOpen className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Panel principal</p>
+              <h1 className="text-3xl font-semibold text-foreground leading-tight">
+                Workspace académico
               </h1>
             </div>
-            <div className="flex items-center space-x-3 sm:space-x-4">
-              <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-right">
-                <div className="hidden sm:block">
-                  {format(new Date(), "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })}
-                </div>
-                <div className="sm:hidden">
-                  {format(new Date(), "d/MM/yyyy", { locale: es })}
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={openConfigModal}
-                title="Configuración de la aplicación"
-              >
-                <Settings className="w-4 h-4" />
-              </Button>
+          </div>
 
-              {authLoading ? (
-                <div className="w-8 h-8 flex items-center justify-center">
-                  <div className="w-4 h-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
-                </div>
-              ) : user ? (
-                <div className="flex items-center space-x-2">
-                  <div className="text-sm text-muted-foreground hidden sm:block">
-                    {user.email}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => signOut()}
-                    title="Cerrar sesión"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </Button>
-                </div>
-              ) : (
+          <div className="flex flex-1 flex-wrap items-center justify-end gap-3">
+            <div className="hidden md:flex flex-col text-right text-xs text-muted-foreground">
+              <span className="uppercase tracking-wide">Hoy</span>
+              <span>{today.longFormat}</span>
+            </div>
+            <div className="md:hidden w-full text-right text-xs text-muted-foreground">
+              {today.shortFormat}
+            </div>
+
+            {user ? (
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline text-xs text-muted-foreground max-w-[200px] truncate">
+                  {user.email}
+                </span>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={openAuthModal}
-                  title="Iniciar sesión o registrarse"
+                  onClick={handleSignOut}
+                  disabled={authLoading || signingOut}
                 >
-                  <LogIn className="w-4 h-4" />
+                  {signingOut ? 'Saliendo…' : 'Cerrar sesión'}
                 </Button>
-              )}
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleTheme}
-                title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
-              >
-                {theme === 'light' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </div>
+            ) : (
+              <Button size="sm" onClick={openAuthModal} disabled={authLoading}>
+                Iniciar sesión
               </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+            )}
 
+            <Button variant="outline" size="icon" onClick={openConfigModal} title="Configuración">
+              <Settings className="w-4 h-4" />
+            </Button>
 
-      {/* Estadísticas */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        <div className="bg-card border rounded-lg p-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-          <Card className="min-h-0">
-            <CardContent className="flex items-center justify-between p-3 sm:p-6">
-              <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm text-muted-foreground truncate">Total Entregas</p>
-                <p className="text-lg sm:text-2xl font-bold text-foreground">{stats.total}</p>
-              </div>
-              <ClipboardList className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground flex-shrink-0 ml-2" />
-            </CardContent>
-          </Card>
-
-          <Card className="min-h-0">
-            <CardContent className="flex items-center justify-between p-3 sm:p-6">
-              <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm text-muted-foreground truncate">Próximas</p>
-                <p className="text-lg sm:text-2xl font-bold text-chart-2">{stats.upcoming}</p>
-              </div>
-              <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-chart-2 flex-shrink-0 ml-2" />
-            </CardContent>
-          </Card>
-
-          <Card className="min-h-0">
-            <CardContent className="flex items-center justify-between p-3 sm:p-6">
-              <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm text-muted-foreground truncate">Esta Semana</p>
-                <p className="text-lg sm:text-2xl font-bold text-chart-3">{stats.thisWeek}</p>
-              </div>
-              <AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8 text-chart-3 flex-shrink-0 ml-2" />
-            </CardContent>
-          </Card>
-
-          <Card className="min-h-0">
-            <CardContent className="flex items-center justify-between p-3 sm:p-6">
-              <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm text-muted-foreground truncate">Vencidas</p>
-                <p className="text-lg sm:text-2xl font-bold text-destructive">{stats.overdue}</p>
-              </div>
-              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-destructive flex-shrink-0 ml-2" />
-            </CardContent>
-          </Card>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={toggleTheme}
+              title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
+            >
+              {theme === 'light' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
           </div>
         </div>
       </div>
-    </>
+    </header>
   );
 };
-
-

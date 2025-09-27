@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { AppProvider, useAppContext } from './contexts/AppContext';
 import { Header } from './components/Header';
+import { StatsOverview } from './components/StatsOverview';
 import { Controls } from './components/Controls';
 import { Views } from './components/Views';
 import { Modal } from './components/Modal';
@@ -24,8 +25,6 @@ const AppContent: React.FC = () => {
     setActiveView,
     selectedSubject,
     setSelectedSubject,
-    sortBy,
-    setSortBy,
     semesterStart,
     setSemesterStart,
     studySchedule,
@@ -128,7 +127,8 @@ const AppContent: React.FC = () => {
 
   return (
     <div className='min-h-screen bg-background'>
-      <Header stats={stats} />
+      <Header />
+      <StatsOverview stats={stats} />
 
       <Controls
         activeView={activeView}
@@ -139,8 +139,6 @@ const AppContent: React.FC = () => {
         onSubjectChange={setSelectedSubject}
         semesterStart={semesterStart}
         onSemesterStartChange={setSemesterStart}
-        sortBy={sortBy}
-        onSortChange={setSortBy}
         onImportClick={handleImportClick}
         onExportClick={handleExport}
         disableExport={fullSchedule.length === 0}
