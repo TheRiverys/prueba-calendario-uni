@@ -332,7 +332,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({ schedule, onEdit, onDelete,
   );
 
   return (
-    <Card className="border border-border/60 shadow-sm">
+    <Card className="w-full border border-border/60 shadow-sm">
       <CardHeader className="flex flex-wrap items-center justify-between gap-4 border-b border-border/60 pb-6">
         <div>
           <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground">

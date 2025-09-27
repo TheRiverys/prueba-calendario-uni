@@ -7,15 +7,9 @@ import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { MessageSquare, X, Send } from 'lucide-react';
 import { BuyMeACoffee } from './BuyMeACoffee';
+import { useSupabaseFeedback } from '../hooks/useSupabaseFeedback';
 
 type FeedbackType = 'sugerencia' | 'error' | 'comentario';
-
-interface FeedbackData {
-  type: FeedbackType;
-  title: string;
-  description: string;
-  email?: string;
-}
 
 export const FeedbackPanel: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,30 +17,20 @@ export const FeedbackPanel: React.FC = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { submitFeedback, isSubmitting } = useSupabaseFeedback();
 
   const handleSubmit = async () => {
     if (!title.trim() || !description.trim()) return;
 
-    setIsSubmitting(true);
+    const result = await submitFeedback({
+      type: feedbackType,
+      title: title.trim(),
+      description: description.trim(),
+      email: email.trim() || undefined,
+    });
 
-    try {
-      const feedbackData: FeedbackData = {
-        type: feedbackType,
-        title: title.trim(),
-        description: description.trim(),
-        email: email.trim() || undefined,
-      };
-
-      // Guardar feedback en localStorage
-      const existingFeedback = JSON.parse(localStorage.getItem('app-feedback') || '[]');
-      existingFeedback.push({
-        ...feedbackData,
-        timestamp: new Date().toISOString(),
-      });
-
-      localStorage.setItem('app-feedback', JSON.stringify(existingFeedback));
-
+    if (result.success) {
       // Resetear formulario
       setTitle('');
       setDescription('');
@@ -55,10 +39,8 @@ export const FeedbackPanel: React.FC = () => {
       setIsOpen(false);
 
       alert('¡Gracias por tu feedback! Lo hemos recibido correctamente.');
-    } catch (error) {
-      alert('Error al enviar el feedback. Inténtalo de nuevo.');
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      alert(`Error al enviar el feedback: ${result.error}`);
     }
   };
 

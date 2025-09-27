@@ -175,20 +175,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     return localSemesterStart;
   }, [isAuthenticated, remoteSemesterStart, localSemesterStart]);
 
-  const setSemesterStart = React.useCallback((value: string) => {
-    if (isAuthenticated) {
-      void (async () => {
-        try {
-          await updateRemoteSemesterStart(value);
-        } catch (error) {
-          console.error('No se pudo actualizar la fecha de inicio en Supabase', error);
-        }
-      })();
-    } else {
-      setLocalSemesterStart(value);
-    }
-  }, [isAuthenticated, updateRemoteSemesterStart, setLocalSemesterStart]);
-
   const baseConfig = React.useMemo(() => {
     if (isAuthenticated) {
       return remoteConfig ?? createDefaultConfig();
@@ -404,6 +390,21 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const clearAiSchedule = React.useCallback(() => {
     setAiOverrides(prev => (prev.size === 0 ? prev : new Map()));
   }, []);
+
+
+  const setSemesterStart = React.useCallback((value: string) => {
+    setLocalSemesterStart(value);
+    if (isAuthenticated) {
+      void (async () => {
+        try {
+          await updateRemoteSemesterStart(value);
+        } catch (error) {
+          console.error('No se pudo actualizar la fecha de inicio en Supabase', error);
+        }
+      })();
+    }
+    clearAiSchedule();
+  }, [isAuthenticated, updateRemoteSemesterStart, setLocalSemesterStart, clearAiSchedule]);
 
   const generateStudySchedule = React.useCallback(async (): Promise<AiScheduleResult> => {
     try {
