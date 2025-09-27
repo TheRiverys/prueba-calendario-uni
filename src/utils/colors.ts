@@ -1,6 +1,9 @@
 ﻿import type { Delivery, StudySchedule } from '../types';
 
-const SUBJECT_COLORS = ['bg-chart-1', 'bg-chart-2', 'bg-chart-3', 'bg-chart-4', 'bg-chart-5', 'bg-chart-6'];
+const SUBJECT_COLORS = [
+  'bg-chart-1', 'bg-chart-2', 'bg-chart-3', 'bg-chart-4', 'bg-chart-5', 'bg-chart-6',
+  'bg-chart-7', 'bg-chart-8', 'bg-chart-9', 'bg-chart-10', 'bg-chart-11', 'bg-chart-12'
+];
 
 const hashSubject = (subject: string): number => {
   const normalized = subject.toLowerCase().trim();

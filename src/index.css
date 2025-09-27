@@ -1,7 +1,4 @@
 @import "tailwindcss";
-
-/* Fuentes personalizadas */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -48,6 +45,13 @@ body {
     --chart-3: oklch(0.398 0.07 227.392);
     --chart-4: oklch(0.828 0.189 84.429);
     --chart-5: oklch(0.769 0.188 70.08);
+    --chart-6: oklch(0.565 0.245 184.704);
+    --chart-7: oklch(0.7 0.15 320);
+    --chart-8: oklch(0.65 0.2 180);
+    --chart-9: oklch(0.55 0.25 45);
+    --chart-10: oklch(0.75 0.18 270);
+    --chart-11: oklch(0.6 0.22 135);
+    --chart-12: oklch(0.7 0.16 200);
 
     /* Sidebar */
     --sidebar: oklch(1 0 0);
@@ -173,6 +177,13 @@ body {
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-chart-7: var(--chart-7);
+  --color-chart-8: var(--chart-8);
+  --color-chart-9: var(--chart-9);
+  --color-chart-10: var(--chart-10);
+  --color-chart-11: var(--chart-11);
+  --color-chart-12: var(--chart-12);
 }
 
 
@@ -212,6 +223,13 @@ body {
     --chart-3: oklch(0.769 0.188 70.08);
     --chart-4: oklch(0.627 0.265 303.9);
     --chart-5: oklch(0.645 0.246 16.439);
+    --chart-6: oklch(0.565 0.245 184.704);
+    --chart-7: oklch(0.7 0.15 320);
+    --chart-8: oklch(0.65 0.2 180);
+    --chart-9: oklch(0.55 0.25 45);
+    --chart-10: oklch(0.75 0.18 270);
+    --chart-11: oklch(0.6 0.22 135);
+    --chart-12: oklch(0.7 0.16 200);
 
     /* Sidebar */
     --sidebar: oklch(0.205 0 0);

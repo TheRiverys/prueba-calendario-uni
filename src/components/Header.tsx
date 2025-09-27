@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { BookOpen, ClipboardList, Clock, AlertTriangle, CheckCircle, Moon, Sun } from 'lucide-react';
+import { BookOpen, ClipboardList, Clock, AlertTriangle, CheckCircle, Moon, Sun, Settings } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Card, CardContent } from './ui/card';
@@ -16,7 +16,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ stats }) => {
-  const { theme, toggleTheme } = useAppContext();
+  const { theme, toggleTheme, openConfigModal } = useAppContext();
   return (
     <>
       {/* Header */}
@@ -38,6 +38,14 @@ export const Header: React.FC<HeaderProps> = ({ stats }) => {
                   {format(new Date(), "d/MM/yyyy", { locale: es })}
                 </div>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openConfigModal}
+                title="Configuración de la aplicación"
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
               <Button
                 variant="outline"
                 size="sm"

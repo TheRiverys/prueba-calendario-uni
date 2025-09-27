@@ -1,4 +1,4 @@
-﻿import { read, utils } from 'xlsx';
+﻿import ExcelJS from 'exceljs';
 import { format, parse, parseISO, isValid } from 'date-fns';
 import type { ImportedDelivery } from '../types';
 
@@ -63,40 +63,47 @@ const sanitizeRow = (row: RawCell[]): ImportedDelivery | null => {
 
 export const parseDeliveriesFile = async (file: File): Promise<ImportedDelivery[]> => {
   const buffer = await file.arrayBuffer();
-  const workbook = read(buffer, {
-    type: 'array',
-    cellDates: true,
-    dense: true
-  });
 
-  if (workbook.SheetNames.length === 0) {
-    return [];
+  try {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(buffer);
+
+    const worksheetNames = workbook.worksheets.map(ws => ws.name);
+    if (worksheetNames.length === 0) {
+      return [];
+    }
+
+    const worksheet = workbook.getWorksheet(worksheetNames[0]);
+    if (!worksheet) {
+      return [];
+    }
+    const imported: ImportedDelivery[] = [];
+    const targetWorksheet = worksheet;
+
+    // Iterar sobre todas las filas (empezando desde la fila 1)
+    targetWorksheet.eachRow((row, rowNumber) => {
+      // Saltar la primera fila si es header
+      if (rowNumber === 1) {
+        const firstCell = row.getCell(1).value;
+        if (firstCell && typeof firstCell === 'string' && firstCell.toLowerCase().includes('asign')) {
+          return; // Es header, saltar
+        }
+      }
+
+      const rowData: RawCell[] = [];
+      row.eachCell((cell) => {
+        rowData.push(cell.value as RawCell);
+      });
+
+      const sanitized = sanitizeRow(rowData);
+      if (sanitized) {
+        imported.push(sanitized);
+      }
+    });
+
+    return imported;
+  } catch (error) {
+    console.error('Error parsing Excel file:', error);
+    throw new Error('No se pudo procesar el archivo. Asegúrate de que sea un archivo Excel válido.');
   }
-
-  const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  const rows = utils.sheet_to_json<RawCell[]>(sheet, {
-    header: 1,
-    blankrows: false,
-    defval: ''
-  });
-
-  const imported: ImportedDelivery[] = [];
-
-  rows.forEach((row: RawCell[], index: number) => {
-    if (!Array.isArray(row)) {
-      return;
-    }
-
-    const isHeader = index === 0 && row[0] && typeof row[0] === 'string' && row[0].toLowerCase().includes('asign');
-    if (isHeader) {
-      return;
-    }
-
-    const sanitized = sanitizeRow(row);
-    if (sanitized) {
-      imported.push(sanitized);
-    }
-  });
-
-  return imported;
 };
