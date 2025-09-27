@@ -82,7 +82,7 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportedDelivery[
 
   const imported: ImportedDelivery[] = [];
 
-  rows.forEach((row, index) => {
+  rows.forEach((row: RawCell[], index: number) => {
     if (!Array.isArray(row)) {
       return;
     }
