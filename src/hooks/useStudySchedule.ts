@@ -7,23 +7,24 @@ type Priority = Delivery['priority'];
 interface PlannedDelivery {
   delivery: Delivery;
   dueDate: Date;
-  requiredDays: number;
+  minimumRequired: number;
 }
 
-interface Allocation {
+interface AllocationResult {
   start: Date;
   end: Date;
   studyDays: number;
   warning: boolean;
+  minimumRequired: number;
 }
 
 const PRIORITY_BASE_DAYS: Record<Priority, number> = {
-  low: 3,
-  normal: 5,
-  high: 7
+  low: 4,
+  normal: 6,
+  high: 8
 };
 
-const PRIORITY_WEIGHT: Record<Priority, number> = {
+const PRIORITY_ORDER: Record<Priority, number> = {
   high: 0,
   normal: 1,
   low: 2
@@ -32,7 +33,7 @@ const PRIORITY_WEIGHT: Record<Priority, number> = {
 const INTENSIVE_KEYWORDS = ['examen', 'final', 'proyecto', 'trabajo final'];
 const INTENSIVE_BONUS_DAYS = 2;
 
-const toDate = (value: string | null | undefined): Date | null => {
+const toNormalizedDate = (value: string | null | undefined): Date | null => {
   if (!value) {
     return null;
   }
@@ -45,7 +46,7 @@ const toDate = (value: string | null | undefined): Date | null => {
 
 const toIso = (value: Date): string => format(value, 'yyyy-MM-dd');
 
-const computeRequiredDays = (delivery: Delivery): number => {
+const computeMinimumRequired = (delivery: Delivery): number => {
   const base = PRIORITY_BASE_DAYS[delivery.priority];
   const name = delivery.name.toLowerCase();
   const needsBonus = INTENSIVE_KEYWORDS.some(keyword => name.includes(keyword));
@@ -57,7 +58,7 @@ const comparePlanned = (a: PlannedDelivery, b: PlannedDelivery): number => {
   if (dueDiff !== 0) {
     return dueDiff;
   }
-  const priorityDiff = PRIORITY_WEIGHT[a.delivery.priority] - PRIORITY_WEIGHT[b.delivery.priority];
+  const priorityDiff = PRIORITY_ORDER[a.delivery.priority] - PRIORITY_ORDER[b.delivery.priority];
   if (priorityDiff !== 0) {
     return priorityDiff;
   }
@@ -68,44 +69,126 @@ const comparePlanned = (a: PlannedDelivery, b: PlannedDelivery): number => {
   return a.delivery.name.localeCompare(b.delivery.name);
 };
 
-const allocateWindow = (
-  planned: PlannedDelivery,
-  suggestedStart: Date,
-  semesterStart: Date,
-  isFirst: boolean
-): Allocation => {
-  const required = planned.requiredDays;
-  const dueDate = planned.dueDate;
-  const baselineStart = startOfDay(suggestedStart);
+const minDate = (a: Date, b: Date): Date => (a.getTime() <= b.getTime() ? a : b);
 
-  let start = baselineStart;
-  if (isFirst || start < semesterStart) {
-    start = semesterStart;
-  }
-  if (start > dueDate) {
-    start = addDays(dueDate, -(required - 1));
-  }
+const buildLatestPossibleStarts = (
+  planned: PlannedDelivery[],
+  semesterStart: Date
+): Date[] => {
+  const latestStarts: Date[] = new Array(planned.length);
+  let nextTaskStart: Date | null = null;
 
-  let end = addDays(start, required - 1);
-  if (end > dueDate) {
-    end = dueDate;
-    const potentialStart = addDays(end, -(required - 1));
-    if (potentialStart < start) {
-      start = potentialStart;
+  for (let index = planned.length - 1; index >= 0; index -= 1) {
+    const { dueDate, minimumRequired } = planned[index];
+    let maxEnd = dueDate;
+    if (nextTaskStart) {
+      maxEnd = minDate(maxEnd, addDays(nextTaskStart, -1));
     }
+    let candidateStart = addDays(maxEnd, -(minimumRequired - 1));
+    if (candidateStart < semesterStart) {
+      candidateStart = semesterStart;
+    }
+    if (candidateStart > maxEnd) {
+      candidateStart = maxEnd;
+    }
+    latestStarts[index] = candidateStart;
+    nextTaskStart = candidateStart;
   }
 
-  if (start < semesterStart) {
-    start = semesterStart;
-  }
-  if (end < start) {
-    end = start;
+  return latestStarts;
+};
+
+const schedulePlannedDeliveries = (
+  planned: PlannedDelivery[],
+  semesterStart: Date
+): Map<number, AllocationResult> => {
+  const allocationMap = new Map<number, AllocationResult>();
+  if (planned.length === 0) {
+    return allocationMap;
   }
 
-  const studyDays = Math.max(1, differenceInCalendarDays(end, start) + 1);
-  const warning = start < baselineStart || studyDays < required || end.getTime() > dueDate.getTime();
+  const latestStarts = buildLatestPossibleStarts(planned, semesterStart);
+  let cursor = semesterStart;
 
-  return { start, end, studyDays, warning };
+  planned.forEach((item, index) => {
+    const { delivery, dueDate, minimumRequired } = item;
+    const baseStart = cursor.getTime() > dueDate.getTime() ? dueDate : cursor;
+
+    let maxEnd = dueDate;
+    if (index < planned.length - 1) {
+      maxEnd = minDate(maxEnd, addDays(latestStarts[index + 1], -1));
+    }
+
+    let start = baseStart.getTime() > maxEnd.getTime() ? maxEnd : baseStart;
+    const minStartToFit = addDays(maxEnd, -(minimumRequired - 1));
+    if (start.getTime() <= minStartToFit.getTime()) {
+      start = minStartToFit;
+      if (start.getTime() < baseStart.getTime()) {
+        start = baseStart;
+      }
+    }
+
+    if (start.getTime() > maxEnd.getTime()) {
+      start = maxEnd;
+    }
+
+    let end = maxEnd;
+    let studyDays = Math.max(1, differenceInCalendarDays(end, start) + 1);
+    if (studyDays < minimumRequired) {
+      end = minDate(dueDate, addDays(start, minimumRequired - 1));
+      studyDays = Math.max(1, differenceInCalendarDays(end, start) + 1);
+      if (studyDays < minimumRequired) {
+        start = addDays(end, -(minimumRequired - 1));
+        if (start.getTime() < baseStart.getTime()) {
+          start = baseStart;
+        }
+        if (start.getTime() > end.getTime()) {
+          start = end;
+        }
+        studyDays = Math.max(1, differenceInCalendarDays(end, start) + 1);
+      }
+    }
+
+    const warning = studyDays < minimumRequired || end.getTime() > dueDate.getTime();
+
+    allocationMap.set(delivery.id, {
+      start,
+      end,
+      studyDays,
+      warning,
+      minimumRequired
+    });
+
+    cursor = addDays(end, 1);
+  });
+
+  return allocationMap;
+};
+
+const fillGaps = (schedule: StudySchedule[]): StudySchedule[] => {
+  if (schedule.length <= 1) {
+    return schedule;
+  }
+
+  const filled: StudySchedule[] = [];
+  for (let index = 0; index < schedule.length; index += 1) {
+    const current = schedule[index];
+    const previous = filled[filled.length - 1];
+
+    if (previous) {
+      const expectedStart = addDays(previous.endDate, 1);
+      if (current.startDate.getTime() > expectedStart.getTime()) {
+        const gapDays = differenceInCalendarDays(current.startDate, expectedStart);
+        current.startDate = expectedStart;
+        current.studyStart = toIso(expectedStart);
+        current.studyDays += gapDays;
+      }
+    }
+
+    filled.push(current);
+  }
+
+  return filled;
 };
 
 export const useStudySchedule = (deliveries: Delivery[], semesterStartIso: string): StudySchedule[] => {
@@ -114,51 +197,37 @@ export const useStudySchedule = (deliveries: Delivery[], semesterStartIso: strin
       return [];
     }
 
-    const semesterStart = toDate(semesterStartIso);
+    const semesterStart = toNormalizedDate(semesterStartIso);
     if (!semesterStart) {
       return [];
     }
 
-    const plannedDeliveries = deliveries
-      .reduce<PlannedDelivery[]>((acc, delivery) => {
-        if (delivery.completed) {
-          return acc;
-        }
-        const dueDate = toDate(delivery.date);
+    const planned: PlannedDelivery[] = deliveries
+      .filter(delivery => !delivery.completed)
+      .map(delivery => {
+        const dueDate = toNormalizedDate(delivery.date);
         if (!dueDate) {
-          return acc;
+          return null;
         }
-        acc.push({
+        return {
           delivery,
           dueDate,
-          requiredDays: computeRequiredDays(delivery)
-        });
-        return acc;
-      }, [])
+          minimumRequired: computeMinimumRequired(delivery)
+        } as PlannedDelivery;
+      })
+      .filter((value): value is PlannedDelivery => value !== null)
       .sort(comparePlanned);
 
-    const allocationMap = new Map<number, Allocation & { minimumRequired: number }>();
-    let previousEnd: Date | null = null;
-
-    plannedDeliveries.forEach((planned, index) => {
-      const suggestedStart = previousEnd ? addDays(previousEnd, 1) : semesterStart;
-      const allocation = allocateWindow(planned, suggestedStart, semesterStart, index === 0);
-      previousEnd = allocation.end;
-      allocationMap.set(planned.delivery.id, {
-        ...allocation,
-        minimumRequired: planned.requiredDays
-      });
-    });
-
+    const allocations = schedulePlannedDeliveries(planned, semesterStart);
     const schedule: StudySchedule[] = [];
 
     deliveries.forEach(delivery => {
-      const dueDate = toDate(delivery.date);
+      const dueDate = toNormalizedDate(delivery.date);
       if (!dueDate) {
         return;
       }
 
-      const minimumRequired = computeRequiredDays(delivery);
+      const minimumRequired = computeMinimumRequired(delivery);
 
       if (delivery.completed) {
         schedule.push({
@@ -174,46 +243,42 @@ export const useStudySchedule = (deliveries: Delivery[], semesterStartIso: strin
         return;
       }
 
-      const allocation = allocationMap.get(delivery.id);
-      if (allocation) {
+      const allocation = allocations.get(delivery.id);
+      if (!allocation) {
+        const fallbackDays = Math.max(1, differenceInCalendarDays(dueDate, semesterStart) + 1);
+        const warning = fallbackDays < minimumRequired;
         schedule.push({
           ...delivery,
-          studyStart: toIso(allocation.start),
-          startDate: allocation.start,
-          endDate: allocation.end,
-          studyDays: allocation.studyDays,
-          warning: allocation.warning,
+          studyStart: toIso(semesterStart),
+          startDate: semesterStart,
+          endDate: dueDate,
+          studyDays: fallbackDays,
+          warning,
           minimumRequired,
-          allocatedDays: allocation.studyDays
+          allocatedDays: fallbackDays
         });
         return;
       }
 
-      const fallbackStudyDays = Math.max(1, differenceInCalendarDays(dueDate, semesterStart) + 1);
       schedule.push({
         ...delivery,
-        studyStart: toIso(semesterStart),
-        startDate: semesterStart,
-        endDate: dueDate,
-        studyDays: fallbackStudyDays,
-        warning: fallbackStudyDays < minimumRequired,
+        studyStart: toIso(allocation.start),
+        startDate: allocation.start,
+        endDate: allocation.end,
+        studyDays: allocation.studyDays,
+        warning: allocation.warning,
         minimumRequired,
-        allocatedDays: fallbackStudyDays
+        allocatedDays: allocation.studyDays
       });
     });
 
-    schedule.sort((a, b) => {
-      const startDiff = a.startDate.getTime() - b.startDate.getTime();
-      if (startDiff !== 0) {
-        return startDiff;
-      }
-      const dueDiff = parseISO(a.date).getTime() - parseISO(b.date).getTime();
-      if (dueDiff !== 0) {
-        return dueDiff;
-      }
-      return a.id - b.id;
-    });
+    const sorted = schedule
+      .filter(item => !item.completed)
+      .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
-    return schedule;
+    const filled = fillGaps(sorted);
+
+    const completed = schedule.filter(item => item.completed);
+    return [...completed, ...filled].sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
   }, [deliveries, semesterStartIso]);
 };

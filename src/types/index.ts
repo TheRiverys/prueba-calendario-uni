@@ -1,4 +1,4 @@
-﻿// Tipos principales de la aplicacion
+﻿// Tipos principales de la aplicación
 export interface Delivery {
   id: number;
   subject: string;
@@ -48,4 +48,9 @@ export interface StudyStats {
   overdue: number;
   thisWeek: number;
 }
-\nexport interface ImportedDelivery {\n  subject: string;\n  name: string;\n  dueDate: string;\n}\n
+
+export interface ImportedDelivery {
+  subject: string;
+  name: string;
+  dueDate: string;
+}
