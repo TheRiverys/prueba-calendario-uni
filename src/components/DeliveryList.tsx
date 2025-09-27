@@ -6,28 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
+import type { StudySchedule } from '../types';
 
-// Interfaces
-interface StudySchedule {
-  id: number;
-  subject: string;
-  name: string;
-  date: string;
-  color: string;
-  completed: boolean;
-  priority: 'low' | 'normal' | 'high';
-  startDate: Date;
-  endDate: Date;
-  studyDays: number;
-  warning: boolean;
-  calculatedDays?: number;
-}
 
 interface DeliveryListProps {
   schedule: StudySchedule[];
   onEdit: (delivery: StudySchedule) => void;
-  onDelete: (id: number) => void;
-  onToggleComplete: (id: number) => void;
+  onDelete: (id: StudySchedule['id']) => void;
+  onToggleComplete: (id: StudySchedule['id']) => void;
 }
 
 const DeliveryList: React.FC<DeliveryListProps> = ({ schedule, onEdit, onDelete, onToggleComplete }) => {

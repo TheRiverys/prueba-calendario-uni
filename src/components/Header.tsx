@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { BookOpen, ClipboardList, Clock, AlertTriangle, CheckCircle, Moon, Sun, Settings } from 'lucide-react';
+import { BookOpen, ClipboardList, Clock, AlertTriangle, CheckCircle, Moon, Sun, Settings, LogIn, LogOut } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Card, CardContent } from './ui/card';
@@ -16,7 +16,15 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ stats }) => {
-  const { theme, toggleTheme, openConfigModal } = useAppContext();
+  const {
+    theme,
+    toggleTheme,
+    openConfigModal,
+    user,
+    authLoading,
+    openAuthModal,
+    signOut
+  } = useAppContext();
   return (
     <>
       {/* Header */}
@@ -26,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({ stats }) => {
             <div className="flex items-center space-x-3 min-w-0">
               <BookOpen className="w-8 h-8 text-primary flex-shrink-0" />
               <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">
-                Calendario de Entregas Universitarias
+                Planificador inteligente del estudio
               </h1>
             </div>
             <div className="flex items-center space-x-3 sm:space-x-4">
@@ -46,6 +54,36 @@ export const Header: React.FC<HeaderProps> = ({ stats }) => {
               >
                 <Settings className="w-4 h-4" />
               </Button>
+
+              {authLoading ? (
+                <div className="w-8 h-8 flex items-center justify-center">
+                  <div className="w-4 h-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : user ? (
+                <div className="flex items-center space-x-2">
+                  <div className="text-sm text-muted-foreground hidden sm:block">
+                    {user.email}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => signOut()}
+                    title="Cerrar sesión"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={openAuthModal}
+                  title="Iniciar sesión o registrarse"
+                >
+                  <LogIn className="w-4 h-4" />
+                </Button>
+              )}
+
               <Button
                 variant="outline"
                 size="sm"

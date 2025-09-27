@@ -4,6 +4,9 @@ import { Header } from './components/Header';
 import { Controls } from './components/Controls';
 import { Views } from './components/Views';
 import { Modal } from './components/Modal';
+import { ConfigModal } from './components/ConfigModal';
+import { AuthDialog } from './features/auth/components/AuthDialog';
+import { useConsoleClear } from './hooks/useConsoleClear';
 import { pickColorForSubject, parseDeliveriesFile, createIcsCalendar } from './utils';
 
 const priorities: Array<{ value: 'low' | 'normal' | 'high'; label: string; color: string }> = [
@@ -13,6 +16,9 @@ const priorities: Array<{ value: 'low' | 'normal' | 'high'; label: string; color
 ];
 
 const AppContent: React.FC = () => {
+  // Hook para limpiar datos con comando de consola
+  useConsoleClear();
+
   const {
     activeView,
     setActiveView,
@@ -160,6 +166,9 @@ const AppContent: React.FC = () => {
         subjectOptions={subjects}
         priorities={priorities}
       />
+
+      <ConfigModal />
+      <AuthDialog />
     </div>
   );
 };

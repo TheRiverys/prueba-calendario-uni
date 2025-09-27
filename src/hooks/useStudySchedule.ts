@@ -1,28 +1,30 @@
 ﻿import { useMemo } from 'react';
 import { addDays, differenceInCalendarDays, format, parseISO, startOfDay } from 'date-fns';
-import type { Delivery, StudySchedule } from '../types';
+import type { Delivery, StudySchedule, ConfigSettings } from '../types';
+import { DEFAULT_CONFIG, DEFAULT_PRIORITY_VARIATIONS } from '../utils';
 
 type Priority = Delivery['priority'];
 
-interface PlannedDelivery {
+type PrioritySettings = {
+  base: number;
+  variation: Record<Priority, number>;
+};
+
+type PlannedDelivery = {
   delivery: Delivery;
   dueDate: Date;
   minimumRequired: number;
-}
+};
 
-interface AllocationResult {
+type AllocationResult = {
   start: Date;
   end: Date;
   studyDays: number;
   warning: boolean;
   minimumRequired: number;
-}
-
-const PRIORITY_BASE_DAYS: Record<Priority, number> = {
-  low: 4,
-  normal: 6,
-  high: 8
 };
+
+const DEFAULT_BASE_STUDY_DAYS = DEFAULT_CONFIG.baseStudyDays;
 
 const PRIORITY_ORDER: Record<Priority, number> = {
   high: 0,
@@ -46,11 +48,27 @@ const toNormalizedDate = (value: string | null | undefined): Date | null => {
 
 const toIso = (value: Date): string => format(value, 'yyyy-MM-dd');
 
-const computeMinimumRequired = (delivery: Delivery): number => {
-  const base = PRIORITY_BASE_DAYS[delivery.priority];
+const minDate = (a: Date, b: Date): Date => (a.getTime() <= b.getTime() ? a : b);
+
+const buildPrioritySettings = (config?: ConfigSettings): PrioritySettings => {
+  const baseStudyDays = Math.max(1, Math.round(config?.baseStudyDays ?? DEFAULT_BASE_STUDY_DAYS));
+
+  return {
+    base: baseStudyDays,
+    variation: {
+      high: config?.priorityVariations.high ?? DEFAULT_PRIORITY_VARIATIONS.high,
+      normal: config?.priorityVariations.normal ?? DEFAULT_PRIORITY_VARIATIONS.normal,
+      low: config?.priorityVariations.low ?? DEFAULT_PRIORITY_VARIATIONS.low
+    }
+  };
+};
+
+const computeMinimumRequired = (delivery: Delivery, settings: PrioritySettings): number => {
+  const base = settings.base;
+  const variation = settings.variation[delivery.priority];
   const name = delivery.name.toLowerCase();
   const needsBonus = INTENSIVE_KEYWORDS.some(keyword => name.includes(keyword));
-  return Math.max(1, base + (needsBonus ? INTENSIVE_BONUS_DAYS : 0));
+  return Math.max(1, base + variation + (needsBonus ? INTENSIVE_BONUS_DAYS : 0));
 };
 
 const comparePlanned = (a: PlannedDelivery, b: PlannedDelivery): number => {
@@ -69,87 +87,129 @@ const comparePlanned = (a: PlannedDelivery, b: PlannedDelivery): number => {
   return a.delivery.name.localeCompare(b.delivery.name);
 };
 
-const minDate = (a: Date, b: Date): Date => (a.getTime() <= b.getTime() ? a : b);
+const buildEarliestStarts = (planned: PlannedDelivery[], semesterStart: Date): Date[] => {
+  const earliestStarts: Date[] = new Array(planned.length);
+  let cursor = semesterStart;
 
-const buildLatestPossibleStarts = (
+  planned.forEach((item, index) => {
+    earliestStarts[index] = cursor;
+    cursor = addDays(cursor, item.minimumRequired);
+  });
+
+  return earliestStarts;
+};
+
+const buildLatestWindows = (
   planned: PlannedDelivery[],
+  earliestStarts: Date[],
   semesterStart: Date
-): Date[] => {
+): { latestStarts: Date[]; latestEnds: Date[] } => {
   const latestStarts: Date[] = new Array(planned.length);
-  let nextTaskStart: Date | null = null;
+  const latestEnds: Date[] = new Array(planned.length);
+
+  let nextStart = planned.length > 0 ? addDays(planned[planned.length - 1].dueDate, 1) : semesterStart;
 
   for (let index = planned.length - 1; index >= 0; index -= 1) {
     const { dueDate, minimumRequired } = planned[index];
+    const earliest = earliestStarts[index];
+
     let maxEnd = dueDate;
-    if (nextTaskStart) {
-      maxEnd = minDate(maxEnd, addDays(nextTaskStart, -1));
+    if (index < planned.length - 1) {
+      maxEnd = minDate(maxEnd, addDays(nextStart, -1));
     }
-    let candidateStart = addDays(maxEnd, -(minimumRequired - 1));
-    if (candidateStart < semesterStart) {
-      candidateStart = semesterStart;
+
+    let start = addDays(maxEnd, -(minimumRequired - 1));
+    if (start.getTime() < earliest.getTime()) {
+      start = earliest;
+      maxEnd = addDays(start, minimumRequired - 1);
+      if (maxEnd.getTime() > dueDate.getTime()) {
+        maxEnd = dueDate;
+        const adjustedStart = addDays(maxEnd, -(minimumRequired - 1));
+        if (adjustedStart.getTime() >= earliest.getTime()) {
+          start = adjustedStart;
+        }
+      }
     }
-    if (candidateStart > maxEnd) {
-      candidateStart = maxEnd;
+
+    if (maxEnd.getTime() < start.getTime()) {
+      maxEnd = start;
     }
-    latestStarts[index] = candidateStart;
-    nextTaskStart = candidateStart;
+
+    latestStarts[index] = start;
+    latestEnds[index] = maxEnd;
+    nextStart = start;
   }
 
-  return latestStarts;
+  return { latestStarts, latestEnds };
 };
 
-const schedulePlannedDeliveries = (
+const planAllocations = (
   planned: PlannedDelivery[],
-  semesterStart: Date
-): Map<number, AllocationResult> => {
-  const allocationMap = new Map<number, AllocationResult>();
-  if (planned.length === 0) {
-    return allocationMap;
-  }
-
-  const latestStarts = buildLatestPossibleStarts(planned, semesterStart);
+  semesterStart: Date,
+  earliestStarts: Date[],
+  latestStarts: Date[],
+  latestEnds: Date[]
+): Map<Delivery['id'], AllocationResult> => {
+  const allocationMap = new Map<Delivery['id'], AllocationResult>();
   let cursor = semesterStart;
 
   planned.forEach((item, index) => {
     const { delivery, dueDate, minimumRequired } = item;
-    const baseStart = cursor.getTime() > dueDate.getTime() ? dueDate : cursor;
 
-    let maxEnd = dueDate;
+    let start = cursor;
+    const earliest = earliestStarts[index];
+    if (start.getTime() < earliest.getTime()) {
+      start = earliest;
+    }
+
+    const latest = latestStarts[index];
+    if (start.getTime() > latest.getTime()) {
+      start = latest;
+    }
+
+    let availableEnd = latestEnds[index];
     if (index < planned.length - 1) {
-      maxEnd = minDate(maxEnd, addDays(latestStarts[index + 1], -1));
-    }
-
-    let start = baseStart.getTime() > maxEnd.getTime() ? maxEnd : baseStart;
-    const minStartToFit = addDays(maxEnd, -(minimumRequired - 1));
-    if (start.getTime() <= minStartToFit.getTime()) {
-      start = minStartToFit;
-      if (start.getTime() < baseStart.getTime()) {
-        start = baseStart;
+      const nextStartLimit = addDays(latestStarts[index + 1], -1);
+      if (nextStartLimit.getTime() < availableEnd.getTime()) {
+        availableEnd = nextStartLimit;
       }
     }
-
-    if (start.getTime() > maxEnd.getTime()) {
-      start = maxEnd;
+    if (availableEnd.getTime() > dueDate.getTime()) {
+      availableEnd = dueDate;
     }
 
-    let end = maxEnd;
-    let studyDays = Math.max(1, differenceInCalendarDays(end, start) + 1);
-    if (studyDays < minimumRequired) {
-      end = minDate(dueDate, addDays(start, minimumRequired - 1));
+    if (availableEnd.getTime() < start.getTime()) {
+      start = availableEnd;
+    }
+
+    const availableSpan = Math.max(1, differenceInCalendarDays(availableEnd, start) + 1);
+
+    let studyDays = minimumRequired;
+    let warning = false;
+    if (availableSpan < minimumRequired) {
+      studyDays = availableSpan;
+      warning = true;
+    }
+
+    let end = addDays(start, studyDays - 1);
+    if (end.getTime() > availableEnd.getTime()) {
+      end = availableEnd;
       studyDays = Math.max(1, differenceInCalendarDays(end, start) + 1);
-      if (studyDays < minimumRequired) {
-        start = addDays(end, -(minimumRequired - 1));
-        if (start.getTime() < baseStart.getTime()) {
-          start = baseStart;
-        }
-        if (start.getTime() > end.getTime()) {
-          start = end;
-        }
-        studyDays = Math.max(1, differenceInCalendarDays(end, start) + 1);
-      }
     }
 
-    const warning = studyDays < minimumRequired || end.getTime() > dueDate.getTime();
+    const extraCapacity = Math.max(0, differenceInCalendarDays(availableEnd, end));
+    if (extraCapacity > 0) {
+      end = addDays(end, extraCapacity);
+      studyDays = Math.max(1, differenceInCalendarDays(end, start) + 1);
+    }
+
+    if (end.getTime() > dueDate.getTime()) {
+      end = dueDate;
+      studyDays = Math.max(1, differenceInCalendarDays(end, start) + 1);
+      warning = true;
+    }
+
+    warning = warning || studyDays < minimumRequired;
 
     allocationMap.set(delivery.id, {
       start,
@@ -165,33 +225,11 @@ const schedulePlannedDeliveries = (
   return allocationMap;
 };
 
-const fillGaps = (schedule: StudySchedule[]): StudySchedule[] => {
-  if (schedule.length <= 1) {
-    return schedule;
-  }
-
-  const filled: StudySchedule[] = [];
-  for (let index = 0; index < schedule.length; index += 1) {
-    const current = schedule[index];
-    const previous = filled[filled.length - 1];
-
-    if (previous) {
-      const expectedStart = addDays(previous.endDate, 1);
-      if (current.startDate.getTime() > expectedStart.getTime()) {
-        const gapDays = differenceInCalendarDays(current.startDate, expectedStart);
-        current.startDate = expectedStart;
-        current.studyStart = toIso(expectedStart);
-        current.studyDays += gapDays;
-      }
-    }
-
-    filled.push(current);
-  }
-
-  return filled;
-};
-
-export const useStudySchedule = (deliveries: Delivery[], semesterStartIso: string): StudySchedule[] => {
+export const useStudySchedule = (
+  deliveries: Delivery[],
+  semesterStartIso: string,
+  config?: ConfigSettings
+): StudySchedule[] => {
   return useMemo(() => {
     if (!Array.isArray(deliveries) || deliveries.length === 0) {
       return [];
@@ -201,6 +239,8 @@ export const useStudySchedule = (deliveries: Delivery[], semesterStartIso: strin
     if (!semesterStart) {
       return [];
     }
+
+    const prioritySettings = buildPrioritySettings(config);
 
     const planned: PlannedDelivery[] = deliveries
       .filter(delivery => !delivery.completed)
@@ -212,13 +252,16 @@ export const useStudySchedule = (deliveries: Delivery[], semesterStartIso: strin
         return {
           delivery,
           dueDate,
-          minimumRequired: computeMinimumRequired(delivery)
-        } as PlannedDelivery;
+          minimumRequired: computeMinimumRequired(delivery, prioritySettings)
+        } satisfies PlannedDelivery;
       })
       .filter((value): value is PlannedDelivery => value !== null)
       .sort(comparePlanned);
 
-    const allocations = schedulePlannedDeliveries(planned, semesterStart);
+    const earliestStarts = buildEarliestStarts(planned, semesterStart);
+    const { latestStarts, latestEnds } = buildLatestWindows(planned, earliestStarts, semesterStart);
+    const allocations = planAllocations(planned, semesterStart, earliestStarts, latestStarts, latestEnds);
+
     const schedule: StudySchedule[] = [];
 
     deliveries.forEach(delivery => {
@@ -227,7 +270,7 @@ export const useStudySchedule = (deliveries: Delivery[], semesterStartIso: strin
         return;
       }
 
-      const minimumRequired = computeMinimumRequired(delivery);
+      const minimumRequired = computeMinimumRequired(delivery, prioritySettings);
 
       if (delivery.completed) {
         schedule.push({
@@ -272,13 +315,6 @@ export const useStudySchedule = (deliveries: Delivery[], semesterStartIso: strin
       });
     });
 
-    const sorted = schedule
-      .filter(item => !item.completed)
-      .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
-
-    const filled = fillGaps(sorted);
-
-    const completed = schedule.filter(item => item.completed);
-    return [...completed, ...filled].sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
-  }, [deliveries, semesterStartIso]);
+    return schedule.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+  }, [deliveries, semesterStartIso, config]);
 };

@@ -8,8 +8,8 @@ import { buildColorLegend } from '../utils';
 interface CalendarViewProps {
   schedule: StudySchedule[];
   onEdit: (delivery: StudySchedule) => void;
-  onDelete: (id: number) => void;
-  onToggleComplete: (id: number) => void;
+  onDelete: (id: StudySchedule['id']) => void;
+  onToggleComplete: (id: StudySchedule['id']) => void;
 }
 
 const CalendarView: React.FC<CalendarViewProps> = ({ schedule, onEdit, onDelete, onToggleComplete }) => {

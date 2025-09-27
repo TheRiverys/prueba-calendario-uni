@@ -1,23 +1,8 @@
 ﻿import React, { useMemo, useState } from 'react';
 import { BarChart3, Calendar, Clock, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import type { StudySchedule } from '../types';
 import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
-
-// Interfaces
-interface StudySchedule {
-  id: number;
-  subject: string;
-  name: string;
-  date: string;
-  color: string;
-  completed: boolean;
-  priority: 'low' | 'normal' | 'high';
-  startDate: Date;
-  endDate: Date;
-  studyDays: number;
-  warning: boolean;
-  calculatedDays?: number;
-}
 
 interface GanttViewProps {
   schedule: StudySchedule[];

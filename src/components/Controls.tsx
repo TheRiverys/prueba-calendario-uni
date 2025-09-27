@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { List, Calendar, BarChart3, Plus, Upload, Download } from 'lucide-react';
 import { Button } from './ui/button';
+import { AIControls } from './AIControls';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
@@ -50,7 +51,6 @@ export const Controls: React.FC<ControlsProps> = ({
               >
                 <List className="w-4 h-4 mr-2" />
                 <span className="hidden xs:inline">Lista</span>
-                <span className="xs:hidden">List</span>
               </Button>
 
               <Button
@@ -61,7 +61,6 @@ export const Controls: React.FC<ControlsProps> = ({
               >
                 <Calendar className="w-4 h-4 mr-2" />
                 <span className="hidden xs:inline">Calendario</span>
-                <span className="xs-hidden">Cal</span>
               </Button>
 
               <Button
@@ -72,7 +71,6 @@ export const Controls: React.FC<ControlsProps> = ({
               >
                 <BarChart3 className="w-4 h-4 mr-2" />
                 <span className="hidden xs:inline">Gantt</span>
-                <span className="xs-hidden">Gnt</span>
               </Button>
             </div>
 
@@ -155,6 +153,8 @@ export const Controls: React.FC<ControlsProps> = ({
             </Button>
           </div>
         </div>
+
+        <AIControls />
       </div>
     </div>
   );
