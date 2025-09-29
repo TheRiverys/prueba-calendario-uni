@@ -1,11 +1,14 @@
 
 import React, { Suspense, lazy } from 'react';
 import { useAppContext } from '../contexts/AppContext';
+import { Button } from './ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Calendar as CalendarIcon, BarChart3, Edit2 } from 'lucide-react';
 import type { StudySchedule } from '../types';
 
-const DeliveryList = lazy(() => import('./DeliveryList.tsx'));
-const CalendarView = lazy(() => import('./CalendarView.tsx'));
-const GanttView = lazy(() => import('./GanttView.tsx'));
+const DeliveryList = lazy(() => import('./DeliveryList'));
+const CalendarView = lazy(() => import('./CalendarView'));
+const GanttView = lazy(() => import('./GanttView'));
 
 interface ViewsProps {
   activeView: 'list' | 'calendar' | 'gantt';
@@ -19,7 +22,17 @@ const LoadingFallback: React.FC = () => (
 );
 
 export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
-  const { openModal, deleteDelivery, toggleCompleted } = useAppContext();
+  const {
+    openModal,
+    deleteDelivery,
+    toggleCompleted,
+    selectedSubject,
+    subjects,
+    sortBy,
+    setSelectedSubject,
+    setSortBy,
+    setActiveView
+  } = useAppContext();
 
   const renderListView = () => (
     <Suspense fallback={<LoadingFallback />}>
@@ -28,6 +41,14 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
         onEdit={openModal}
         onDelete={deleteDelivery}
         onToggleComplete={toggleCompleted}
+        selectedSubject={selectedSubject}
+        subjects={subjects}
+        onSubjectChange={setSelectedSubject}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        activeView={activeView}
+        onViewChange={setActiveView}
+        onAdd={() => openModal()}
       />
     </Suspense>
   );
@@ -55,14 +76,96 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
         return renderListView();
       case 'calendar':
         return (
-          <div className="bg-card border rounded-lg shadow-sm">
-            {renderCalendarView()}
+          <div className="w-full">
+            <div className="flex flex-col gap-6 sm:gap-4 border-b border-border/60 pb-5">
+              {/* Título y controles principales */}
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
+                  <CalendarIcon className="w-5 h-5" />
+                  Calendario
+                </h2>
+
+                {/* Controles de navegación y acciones */}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  {/* Selector de vista - Primera fila */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="hidden md:inline lg:inline text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Vista</span>
+                      <Select value={activeView} onValueChange={(v) => setActiveView(v as 'list' | 'calendar' | 'gantt')}>
+                        <SelectTrigger className="w-[120px] sm:w-[140px] lg:w-[160px]">
+                          <SelectValue placeholder="Vista" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="list">Lista</SelectItem>
+                          <SelectItem value="calendar">Calendario</SelectItem>
+                          <SelectItem value="gantt">Gantt</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Segunda fila: acción principal */}
+                  <div className="flex items-center justify-end">
+                    <Button onClick={() => openModal()} className="flex items-center gap-2 whitespace-nowrap">
+                      <Edit2 className="h-4 w-4" />
+                      <span className="hidden sm:inline">Nueva entrega</span>
+                      <span className="sm:hidden">Nueva</span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-6">
+              {renderCalendarView()}
+            </div>
           </div>
         );
       case 'gantt':
         return (
-          <div className="bg-card border rounded-lg shadow-sm">
-            {renderGanttView()}
+          <div className="w-full">
+            <div className="flex flex-col gap-6 sm:gap-4 border-b border-border/60 pb-5">
+              {/* Título y controles principales */}
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
+                  <BarChart3 className="w-5 h-5" />
+                  Gantt
+                </h2>
+
+                {/* Controles de navegación y acciones */}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  {/* Selector de vista - Primera fila */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="hidden md:inline lg:inline text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Vista</span>
+                      <Select value={activeView} onValueChange={(v) => setActiveView(v as 'list' | 'calendar' | 'gantt')}>
+                        <SelectTrigger className="w-[120px] sm:w-[140px] lg:w-[160px]">
+                          <SelectValue placeholder="Vista" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="list">Lista</SelectItem>
+                          <SelectItem value="calendar">Calendario</SelectItem>
+                          <SelectItem value="gantt">Gantt</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Segunda fila: acción principal */}
+                  <div className="flex items-center justify-end">
+                    <Button onClick={() => openModal()} className="flex items-center gap-2 whitespace-nowrap">
+                      <Edit2 className="h-4 w-4" />
+                      <span className="hidden sm:inline">Nueva entrega</span>
+                      <span className="sm:hidden">Nueva</span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-6">
+              {renderGanttView()}
+            </div>
           </div>
         );
       default:
@@ -71,7 +174,7 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
   };
 
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-14 mt-6 pb-10 mx-auto max-w-[1800px]">
+    <div className="w-full">
       {renderActiveView()}
     </div>
   );

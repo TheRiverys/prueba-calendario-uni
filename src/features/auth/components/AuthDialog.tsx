@@ -1,4 +1,4 @@
-
+﻿
 import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
 import { useAppContext } from '../../../contexts/AppContext';
@@ -68,7 +68,7 @@ export const AuthDialog: React.FC = () => {
 
   return (
     <Dialog open={authModalOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[420px]" aria-describedby={undefined}>
+      <DialogContent className="sm:max-w-[420px] md:max-w-[480px]" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>
             {mode === 'login' ? 'Iniciar sesión' : mode === 'register' ? 'Crear cuenta' : 'Recuperar contraseña'}
@@ -76,8 +76,12 @@ export const AuthDialog: React.FC = () => {
           <DialogDescription>{descriptions[mode]}</DialogDescription>
         </DialogHeader>
 
-        {renderForm()}
+        <div className="grid gap-6">
+          {renderForm()}
+        </div>
       </DialogContent>
     </Dialog>
   );
 };
+
+

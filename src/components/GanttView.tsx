@@ -1,5 +1,5 @@
-﻿import React, { useMemo, useState } from 'react';
-import { BarChart3, Calendar, Clock, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { BarChart3, Calendar, Clock, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
 import type { StudySchedule } from '../types';
 import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -181,61 +181,48 @@ const GanttView: React.FC<GanttViewProps> = ({ schedule }) => {
   };
 
   return (
-    <div className="bg-card border rounded-lg shadow-sm">
-      <div className="px-6 py-4 border-b border-border">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-foreground flex items-center">
-              <BarChart3 className="w-5 h-5 mr-2" />
-              Vista Gantt - Cronograma de Estudio
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Visualización temporal de los períodos de estudio recomendados para cada entrega
-            </p>
-          </div>
+    <div className="space-y-6">
+      {/* Barra de herramientas ligera */}
+      <div className="flex items-center justify-between border-b border-border/60 pb-4">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => handleZoom(zoomLevel - 0.5)}
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            title="Alejar vista"
+            aria-label="Alejar vista"
+          >
+            <ZoomOut className="w-4 h-4" />
+          </button>
+          <span className="px-2 py-1 bg-muted rounded text-sm font-medium">
+            {getZoomInfo().label}
+          </span>
+          <button
+            onClick={() => handleZoom(zoomLevel + 0.5)}
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            title="Acercar vista"
+            aria-label="Acercar vista"
+          >
+            <ZoomIn className="w-4 h-4" />
+          </button>
+        </div>
 
-          {/* Controles de zoom y navegación */}
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center space-x-1">
-              <button
-                onClick={() => handleZoom(zoomLevel - 0.5)}
-                className="p-2 hover:bg-muted rounded-lg transition-colors"
-                title="Alejar vista"
-              >
-                <ZoomOut className="w-4 h-4" />
-              </button>
-
-              <span className="px-2 py-1 bg-muted rounded text-sm font-medium">
-                {getZoomInfo().label}
-              </span>
-
-              <button
-                onClick={() => handleZoom(zoomLevel + 0.5)}
-                className="p-2 hover:bg-muted rounded-lg transition-colors"
-                title="Acercar vista"
-              >
-                <ZoomIn className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="flex items-center space-x-1 border-l pl-2">
-              <button
-                onClick={() => navigateTimeline('prev')}
-                className="p-2 hover:bg-muted rounded-lg transition-colors"
-                title="Mes anterior"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={() => navigateTimeline('next')}
-                className="p-2 hover:bg-muted rounded-lg transition-colors"
-                title="Mes siguiente"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => navigateTimeline('prev')}
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            title="Mes anterior"
+            aria-label="Mes anterior"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => navigateTimeline('next')}
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            title="Mes siguiente"
+            aria-label="Mes siguiente"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
@@ -376,7 +363,7 @@ const GanttView: React.FC<GanttViewProps> = ({ schedule }) => {
                         style={{ left: `${startPos}px` }}
                         title="Período de estudio muy corto"
                       >
-                        ⚠️
+                        <AlertTriangle className="w-4 h-4" />
                       </div>
                     )}
                   </div>
@@ -387,13 +374,13 @@ const GanttView: React.FC<GanttViewProps> = ({ schedule }) => {
         </div>
 
         {rows.length === 0 && (
-          <div className="pt-6 text-sm text-muted-foreground text-center">
+          <div className="pt-2 text-sm text-muted-foreground text-center">
             No hay entregas programadas para el periodo visible.
           </div>
         )}
 
-        {/* Leyenda */}
-        <div className="mt-6 pt-4 border-t border-border">
+        {/* Leyenda y métricas ligeras */}
+        <div className="mt-6 pt-4 border-t border-border space-y-3">
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-3 bg-muted-foreground/30 border border-border rounded"></div>
@@ -408,47 +395,44 @@ const GanttView: React.FC<GanttViewProps> = ({ schedule }) => {
               <span>Hoy</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="text-chart-3">⚠️</span>
+              <AlertTriangle className="w-4 h-4 text-chart-3" />
               <span>Menos de 4 días de estudio</span>
             </div>
           </div>
-        </div>
 
-        {/* Estadísticas rápidas */}
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-muted/30 rounded-lg p-3">
-            <div className="flex items-center space-x-2">
-              <Calendar className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Total de entregas</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center justify-between py-1">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Calendar className="w-4 h-4" />
+                <span className="text-sm">Total de entregas</span>
+              </div>
+              <p className="text-xl font-semibold text-foreground">{schedule.length}</p>
             </div>
-            <p className="text-xl font-bold text-foreground mt-1">{schedule.length}</p>
-          </div>
-
-          <div className="bg-muted/30 rounded-lg p-3">
-            <div className="flex items-center space-x-2">
-              <Clock className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Días totales de estudio</span>
+            <div className="flex items-center justify-between py-1">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Clock className="w-4 h-4" />
+                <span className="text-sm">Días totales de estudio</span>
+              </div>
+              <p className="text-xl font-semibold text-foreground">
+                {schedule.reduce((acc, item) => acc + item.studyDays, 0)}
+              </p>
             </div>
-            <p className="text-xl font-bold text-foreground mt-1">
-              {schedule.reduce((acc, item) => acc + item.studyDays, 0)}
-            </p>
-          </div>
-
-          <div className="bg-muted/30 rounded-lg p-3">
-            <div className="flex items-center space-x-2">
-              <BarChart3 className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Promedio días/entrega</span>
+            <div className="flex items-center justify-between py-1">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <BarChart3 className="w-4 h-4" />
+                <span className="text-sm">Promedio días/entrega</span>
+              </div>
+              <p className="text-xl font-semibold text-foreground">
+                {schedule.length > 0
+                  ? Math.round(schedule.reduce((acc, item) => acc + item.studyDays, 0) / schedule.length)
+                  : 0}
+              </p>
             </div>
-            <p className="text-xl font-bold text-foreground mt-1">
-              {schedule.length > 0
-                ? Math.round(schedule.reduce((acc, item) => acc + item.studyDays, 0) / schedule.length)
-                : 0}
-            </p>
           </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default GanttView;

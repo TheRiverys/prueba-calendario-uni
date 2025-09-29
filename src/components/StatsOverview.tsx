@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { ClipboardList, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
-import { Card } from './ui/card';
 
 interface StatsOverviewProps {
   stats: {
@@ -17,46 +16,57 @@ const statsConfig = [
     key: 'total',
     label: 'Total de entregas',
     icon: ClipboardList,
-    accent: 'text-foreground'
+    accent: 'text-foreground',
+    bgColor: 'bg-card',
+    borderColor: 'border-border'
   },
   {
     key: 'upcoming',
     label: 'Próximas',
     icon: Clock,
-    accent: 'text-chart-2'
+    accent: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200'
   },
   {
     key: 'thisWeek',
     label: 'Esta semana',
     icon: AlertTriangle,
-    accent: 'text-chart-3'
+    accent: 'text-amber-600',
+    bgColor: 'bg-amber-50',
+    borderColor: 'border-amber-200'
   },
   {
     key: 'overdue',
     label: 'Vencidas',
     icon: CheckCircle,
-    accent: 'text-destructive'
+    accent: 'text-red-600',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200'
   }
 ] as const;
 
 export const StatsOverview: React.FC<StatsOverviewProps> = ({ stats }) => {
   return (
-    <section className="mx-auto mt-6 max-w-[1800px] px-4 sm:px-6 lg:px-10 xl:px-14">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {statsConfig.map(({ key, label, icon: Icon, accent }) => (
-          <Card key={key} className="border border-border/70">
-            <div className="flex items-center justify-between p-5">
-              <div className="space-y-1">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-                <p className={`text-2xl font-semibold ${accent}`}>
-                  {stats[key as keyof typeof stats]}
-                </p>
-              </div>
-              <div className="rounded-full bg-muted/60 p-3">
-                <Icon className="w-5 h-5 text-muted-foreground" />
-              </div>
+    <section className="app-shell mt-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {statsConfig.map(({ key, label, icon: Icon, accent, bgColor, borderColor }) => (
+          <div
+            key={key}
+            className={`${bgColor} ${borderColor} border rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-between`}
+          >
+            <div className="flex-1">
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                {label}
+              </p>
+              <p className={`text-3xl font-bold ${accent} leading-none`}>
+                {stats[key as keyof typeof stats]}
+              </p>
             </div>
-          </Card>
+            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 ml-4">
+              <Icon className={`w-6 h-6 ${accent}`} />
+            </div>
+          </div>
         ))}
       </div>
     </section>

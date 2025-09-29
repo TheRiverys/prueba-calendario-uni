@@ -1,6 +1,7 @@
-﻿import React from 'react';
-import { Sparkles, Brain, RotateCcw } from 'lucide-react';
+import React from 'react';
+import { Sparkles, MessageSquare, Undo2 } from 'lucide-react';
 import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { useAppContext } from '../contexts/AppContext';
 import type { AiDetailedEntry } from '../types';
 
@@ -53,8 +54,8 @@ export const AIControls: React.FC = () => {
 
   const [schedulePreview, setSchedulePreview] = React.useState<AiSchedulePreview[]>([]);
   const [analysis, setAnalysis] = React.useState<string>('');
+  const [analysisOpen, setAnalysisOpen] = React.useState<boolean>(false);
   const [infoMessage, setInfoMessage] = React.useState<string>('');
-  const [lastAppliedAt, setLastAppliedAt] = React.useState<string | null>(null);
 
   const hasDeliveries = deliveries.length > 0;
 
@@ -68,124 +69,114 @@ export const AIControls: React.FC = () => {
 
     if (result.applied) {
       setInfoMessage('Plan de IA aplicado a las entregas.');
-      setLastAppliedAt(new Date().toISOString());
     } else if (result.entries.length === 0) {
       setInfoMessage('No se pudo generar un plan con IA. Se mantiene el algoritmo original.');
-      setLastAppliedAt(null);
     } else {
       setInfoMessage('Se generó un horario, pero no se encontraron entregas coincidentes para aplicarlo.');
-      setLastAppliedAt(null);
     }
   };
 
   const handleAnalyzeProgress = async () => {
     const result = await analyzeProgress();
     setAnalysis(result.trim());
+    setAnalysisOpen(true);
   };
 
   const handleResetSchedule = () => {
     clearAiSchedule();
     setSchedulePreview([]);
-    setLastAppliedAt(null);
     setInfoMessage('Planificación restaurada al algoritmo base.');
   };
 
-  const preview = schedulePreview.slice(0, 5);
-  const remainingItems = Math.max(0, schedulePreview.length - preview.length);
-
   return (
-    <div className="border-t border-border pt-4 space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <p className="text-sm font-medium text-foreground">Asistentes de IA</p>
-          <p className="text-xs text-muted-foreground">
-            Genera un horario sugerido o recibe recomendaciones personalizadas según tus entregas.
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Button
-            onClick={handleGenerateSchedule}
-            disabled={aiLoading || !hasDeliveries}
-          >
-            <Sparkles className="w-4 h-4 mr-2" />
-            {aiLoading ? 'Generando...' : 'Horario con IA'}
-          </Button>
-          <Button
-            variant="outline"
-            onClick={handleAnalyzeProgress}
-            disabled={aiLoading || !hasDeliveries}
-          >
-            <Brain className="w-4 h-4 mr-2" />
-            {aiLoading ? 'Analizando...' : 'Análisis IA'}
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={handleResetSchedule}
-            disabled={aiLoading || !aiScheduleApplied}
-          >
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Restaurar algoritmo
-          </Button>
-        </div>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleGenerateSchedule}
+          disabled={aiLoading || !hasDeliveries}
+          className="flex items-center gap-2 text-xs"
+          title="Generar horario con IA"
+        >
+          <Sparkles className="w-4 h-4" />
+          <span className="hidden sm:inline">Horario IA</span>
+          <span className="sm:hidden">IA</span>
+        </Button>
+
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleAnalyzeProgress}
+          disabled={aiLoading || !hasDeliveries}
+          className="flex items-center gap-2 text-xs"
+          title="Analizar progreso con IA"
+        >
+          <MessageSquare className="w-4 h-4" />
+          <span className="hidden sm:inline">Análisis</span>
+          <span className="sm:hidden">Análisis</span>
+        </Button>
+
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={handleResetSchedule}
+          disabled={aiLoading || !aiScheduleApplied}
+          className="flex items-center gap-2 text-xs"
+          title="Restaurar algoritmo por defecto"
+        >
+          <Undo2 className="w-4 h-4" />
+          <span className="hidden sm:inline">Reset</span>
+          <span className="sm:hidden">Reset</span>
+        </Button>
       </div>
 
       {!hasDeliveries && (
         <p className="text-xs text-muted-foreground">
-          Agrega entregas para habilitar las sugerencias automáticas.
+          Agrega entregas para usar IA.
         </p>
       )}
 
       {infoMessage && (
-        <p className="text-xs text-muted-foreground bg-muted/40 rounded-md px-3 py-2">
+        <p className="text-xs text-muted-foreground bg-muted/40 rounded-md px-2 py-1">
           {infoMessage}
         </p>
       )}
 
-      {lastAppliedAt && (
-        <p className="text-2xs text-muted-foreground">
-          Última actualización IA: {new Date(lastAppliedAt).toLocaleString()}
-        </p>
-      )}
-
       {aiError && (
-        <p className="text-xs text-destructive bg-destructive/10 rounded-md px-3 py-2">
+        <p className="text-xs text-destructive bg-destructive/10 rounded-md px-2 py-1">
           {aiError}
         </p>
       )}
 
-      {preview.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-xs font-medium text-foreground">
-            Horario sugerido (primeras {preview.length} entradas)
-          </p>
-          <div className="grid gap-2 text-xs">
-            {preview.map(entry => (
-              <div
-                key={`${entry.date}-${entry.subject}-${entry.summary}`}
-                className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center bg-muted/40 rounded-md px-3 py-2"
-              >
-                <span className="font-medium text-foreground">{entry.date}</span>
-                <span className="text-muted-foreground sm:text-center">{entry.subject}</span>
-                <span className="sm:text-right text-foreground">{entry.summary}</span>
-              </div>
-            ))}
-          </div>
-          {remainingItems > 0 && (
-            <p className="text-xs text-muted-foreground italic">
-              ...y {remainingItems} entradas adicionales disponibles en el horario completo.
-            </p>
-          )}
+      {schedulePreview.length > 0 && (
+        <div className="text-xs text-muted-foreground bg-muted/20 rounded-md px-2 py-1">
+          Horario IA: {schedulePreview.length} sesiones generadas
         </div>
       )}
 
-      {analysis.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-xs font-medium text-foreground">Recomendaciones de progreso</p>
-          <p className="text-xs text-muted-foreground whitespace-pre-wrap bg-muted/40 rounded-md px-3 py-2">
-            {analysis}
-          </p>
-        </div>
-      )}
+      <Dialog open={analysisOpen} onOpenChange={setAnalysisOpen}>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Análisis de progreso</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-auto">
+            {analysis ? (
+              <div className="space-y-3">
+                <div className="text-xs text-muted-foreground">Resumen generado por IA:</div>
+                <div className="text-sm whitespace-pre-wrap bg-muted/40 rounded-md px-3 py-2">
+                  {analysis}
+                </div>
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">No hay análisis disponible todavía.</div>
+            )}
+          </div>
+          <div className="flex justify-end">
+            <Button variant="outline" onClick={() => setAnalysisOpen(false)}>Cerrar</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

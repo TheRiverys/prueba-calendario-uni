@@ -32,9 +32,9 @@ export const useSupabaseSemesterStart = (user: User | null) => {
       if (data) {
         setSemesterStart(data.semester_start);
       } else {
-        // Si no hay fecha configurada, usar la fecha actual
-        const today = new Date().toISOString().split('T')[0];
-        setSemesterStart(today);
+        // Si no hay fecha configurada en Supabase, no establecer fecha por defecto aquí
+        // Dejar que el estado local maneje el valor inicial apropiado
+        setSemesterStart('');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error loading semester start');
@@ -55,13 +55,19 @@ export const useSupabaseSemesterStart = (user: User | null) => {
     try {
       const { error } = await supabase
         .from('semester_starts')
-        .upsert({
-          user_id: user.id,
-          semester_start: newSemesterStart,
-        });
+        .upsert(
+          {
+            user_id: user.id,
+            semester_start: newSemesterStart,
+          },
+          {
+            onConflict: 'user_id',
+          }
+        );
 
       if (error) throw error;
 
+      // Actualizar inmediatamente el estado local para evitar problemas de sincronización
       setSemesterStart(newSemesterStart);
       return newSemesterStart;
     } catch (err) {

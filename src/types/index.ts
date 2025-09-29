@@ -17,6 +17,11 @@ export interface StudySchedule extends Delivery {
   warning: boolean;
   minimumRequired: number;
   allocatedDays: number;
+  // Campos opcionales para compatibilidad con el algoritmo_correcto.md
+  // desiredExtraByPriority representa el extra deseado según la prioridad (puede ser negativo)
+  desiredExtraByPriority?: number;
+  // achievedExtra indica los días adicionales realmente conseguidos durante el reparto
+  achievedExtra?: number;
 }
 
 export interface FormData {
@@ -44,6 +49,8 @@ export interface ConfigSettings {
   minStudyTime: number;
   priorityVariations: PriorityVariations;
   openaiApiKey: string;
+  // Modo opcional: si es true, se intenta evitar solapes recortando solo el extra
+  sequentialStrictMode?: boolean;
 }
 
 export interface UserConfigRow {
@@ -116,3 +123,16 @@ export interface ImportedDelivery {
   name: string;
   dueDate: string;
 }
+
+export interface ImportValidationError {
+  row: number;
+  column: 'subject' | 'name' | 'dueDate' | 'structure' | 'header';
+  message: string;
+  value?: string;
+}
+
+export interface ImportResult {
+  deliveries: ImportedDelivery[];
+  errors: ImportValidationError[];
+}
+

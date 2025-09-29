@@ -1,4 +1,4 @@
-﻿import type { Delivery, StudySchedule } from '../types';
+import type { Delivery, StudySchedule } from '../types';
 
 const SUBJECT_COLORS = [
   'bg-chart-1', 'bg-chart-2', 'bg-chart-3', 'bg-chart-4', 'bg-chart-5', 'bg-chart-6',

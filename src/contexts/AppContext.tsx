@@ -170,7 +170,16 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   const semesterStart = React.useMemo(() => {
     if (isAuthenticated) {
-      return remoteSemesterStart || localSemesterStart;
+      // Si el usuario local tiene un valor específico (no la fecha por defecto),
+      // priorizarlo sobre el remoto para evitar que se resetee
+      const today = new Date().toISOString().split('T')[0];
+      if (localSemesterStart && localSemesterStart !== today) {
+        return localSemesterStart;
+      }
+      // Si el remoto tiene un valor válido, usarlo; de lo contrario, usar el local
+      return (remoteSemesterStart && remoteSemesterStart.trim() !== '')
+        ? remoteSemesterStart
+        : localSemesterStart;
     }
     return localSemesterStart;
   }, [isAuthenticated, remoteSemesterStart, localSemesterStart]);

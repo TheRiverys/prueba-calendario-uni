@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, Check, Trash2, Edit2 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, isSameDay, parseISO, isWithinInterval } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -208,74 +208,64 @@ const CalendarView: React.FC<CalendarViewProps> = ({ schedule, onEdit, onDelete,
 
   return (
     <div className="space-y-6">
-      <div className="bg-card border rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-border">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-foreground flex items-center">
-              <Calendar className="w-5 h-5 mr-2" />
-              Vista de Calendario
-            </h2>
-
-            <div className="flex items-center space-x-4">
-              {monthsWithDeliveries.length > 0 && (
-                <button
-                  onClick={goToNearestMonthWithDeliveries}
-                  className="px-3 py-1 text-sm bg-chart-1/10 text-chart-1 rounded-lg hover:bg-chart-1/20 transition-colors"
-                  title="Ir al mes más cercano con entregas"
-                >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Ver entregas
-                </button>
-              )}
-
-              <button
-                onClick={prevMonth}
-                className="p-2 hover:bg-muted rounded-lg transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-
-              <h3 className="text-lg font-medium text-foreground min-w-[200px] text-center">
-                {format(currentMonth, 'MMMM yyyy', { locale: es })}
-              </h3>
-
-              <button
-                onClick={nextMonth}
-                className="p-2 hover:bg-muted rounded-lg transition-colors"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
+      <div className="flex items-center justify-between border-b border-border/60 pb-4">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={prevMonth}
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            aria-label="Mes anterior"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <h3 className="text-lg font-medium text-foreground min-w-[200px] text-center">
+            {format(currentMonth, 'MMMM yyyy', { locale: es })}
+          </h3>
+          <button
+            onClick={nextMonth}
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            aria-label="Mes siguiente"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </div>
+        {monthsWithDeliveries.length > 0 && (
+          <button
+            onClick={goToNearestMonthWithDeliveries}
+            className="px-3 py-1 text-sm bg-chart-1/10 text-chart-1 rounded-lg hover:bg-chart-1/20 transition-colors"
+            title="Ir al mes más cercano con entregas"
+          >
+            <Calendar className="w-4 h-4 mr-2" />
+            Ver entregas
+          </button>
+        )}
+      </div>
 
-        <div className="p-6">
-          {/* Leyenda */}
-          <div className='mb-6 flex flex-wrap gap-4 text-sm'>
-            {legendItems.map(item => (
-              <div key={item.subject} className='flex items-center space-x-2'>
-                <div className={'w-4 h-4 rounded ' + item.color} />
-                <span className='text-muted-foreground'>{item.subject}</span>
-              </div>
-            ))}
-            {legendItems.length > 0 && (
-              <div className='flex items-center space-x-2 ml-4 border-l border-border pl-4'>
-                <div className='w-8 h-1 bg-muted-foreground/30 rounded' />
-                <span className='text-muted-foreground'>Periodo de estudio</span>
-              </div>
-            )}
+      {/* Leyenda */}
+      <div className='flex flex-wrap gap-4 text-sm px-4 py-4 sm:px-6'>
+        {legendItems.map(item => (
+          <div key={item.subject} className='flex items-center space-x-2'>
+            <div className={'w-4 h-4 rounded ' + item.color} />
+            <span className='text-muted-foreground'>{item.subject}</span>
           </div>
-          {/* Calendario */}
-          <div className="border border-border rounded-lg overflow-hidden">
-            <div className="grid grid-cols-7 bg-muted/50">
-              {renderDays()}
-            </div>
-            {renderCells()}
+        ))}
+        {legendItems.length > 0 && (
+          <div className='flex items-center space-x-2 ml-4 border-l border-border pl-4'>
+            <div className='w-8 h-1 bg-muted-foreground/30 rounded' />
+            <span className='text-muted-foreground'>Periodo de estudio</span>
           </div>
+        )}
+      </div>
+
+      {/* Calendario */}
+      <div className="border border-border rounded-lg overflow-hidden">
+        <div className="grid grid-cols-7 bg-muted/50">
+          {renderDays()}
         </div>
+        {renderCells()}
       </div>
     </div>
   );
 };
 
 export default CalendarView;
+

@@ -29,14 +29,14 @@ export const Modal: React.FC<ModalProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className='w-full max-w-md mx-4 sm:mx-auto'>
+      <DialogContent className="sm:max-w-lg md:max-w-xl">
         <DialogHeader>
           <DialogTitle>
             {editingDelivery ? 'Editar entrega' : 'Nueva entrega'}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={onSubmit} className='space-y-4'>
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <div className='space-y-2'>
             <Label htmlFor='subject'>Materia</Label>
             <Input
@@ -95,11 +95,11 @@ export const Modal: React.FC<ModalProps> = ({
             </Select>
           </div>
 
-          <div className='flex justify-end space-x-3 pt-4'>
-            <Button type='button' variant='outline' onClick={onClose}>
+          <div className="flex flex-col-reverse gap-2 pt-4 sm:flex-row sm:justify-end sm:gap-3">
+            <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto">
               Cancelar
             </Button>
-            <Button type='submit'>
+            <Button type="submit" className="w-full sm:w-auto">
               {editingDelivery ? 'Actualizar' : 'Crear'}
             </Button>
           </div>
@@ -108,3 +108,4 @@ export const Modal: React.FC<ModalProps> = ({
     </Dialog>
   );
 };
+
