@@ -58,6 +58,7 @@ export interface ConfigSettings {
 export interface UserConfigRow {
   id: string;
   user_id: string;
+  min_study_time: number | null;
   base_study_days: number | null;
   priority_variations: PriorityVariations | null;
   created_at: string;
