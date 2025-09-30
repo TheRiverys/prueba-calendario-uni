@@ -54,14 +54,16 @@ export const DEFAULT_CONFIG: ConfigSettings = {
   baseStudyDays: 4,
   minStudyTime: 2,
   priorityVariations: { ...DEFAULT_PRIORITY_VARIATIONS },
-  openaiApiKey: ''
+  openaiApiKey: '',
+  allocationWindowDays: 30
 };
 
 export const createDefaultConfig = (): ConfigSettings => ({
   baseStudyDays: DEFAULT_CONFIG.baseStudyDays,
   minStudyTime: DEFAULT_CONFIG.minStudyTime,
   priorityVariations: { ...DEFAULT_PRIORITY_VARIATIONS },
-  openaiApiKey: DEFAULT_CONFIG.openaiApiKey
+  openaiApiKey: DEFAULT_CONFIG.openaiApiKey,
+  allocationWindowDays: DEFAULT_CONFIG.allocationWindowDays
 });
 
 export const sanitizeConfig = (value: unknown): ConfigSettings => {
@@ -77,6 +79,7 @@ export const sanitizeConfig = (value: unknown): ConfigSettings => {
   );
   const minStudyTime = normalizeInteger(record.minStudyTime, defaults.minStudyTime);
   const priorityVariations = sanitizePriorityVariations(record.priorityVariations);
+  const allocationWindowDays = normalizeInteger(record.allocationWindowDays, defaults.allocationWindowDays ?? 30, 1);
 
   const openaiApiKey = typeof record.openaiApiKey === 'string'
     ? record.openaiApiKey.trim()
@@ -86,7 +89,8 @@ export const sanitizeConfig = (value: unknown): ConfigSettings => {
     baseStudyDays,
     minStudyTime,
     priorityVariations,
-    openaiApiKey
+    openaiApiKey,
+    allocationWindowDays
   } satisfies ConfigSettings;
 };
 

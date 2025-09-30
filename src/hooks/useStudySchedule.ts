@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react';
+import { useMemo } from 'react';
 import { addDays, differenceInCalendarDays, format, parseISO, startOfDay } from 'date-fns';
 import type { Delivery, StudySchedule, ConfigSettings } from '../types';
 import { DEFAULT_CONFIG, DEFAULT_PRIORITY_VARIATIONS } from '../utils';
@@ -76,14 +76,32 @@ const computeSequentialDurations = (
     return true;
   };
 
-  const allocateExtra = (prefixEnd: number, amount: number) => {
+  const allocateExtra = (groupStart: number, groupEnd: number, amount: number, config?: ConfigSettings) => {
+    const windowDays = config?.allocationWindowDays ?? 30;
+    const groupDueDate = planned[groupEnd].dueDate;
+
     let remaining = amount;
     while (remaining > 0) {
       const candidates: Array<{ idx: number; weight: number; achieved: number }> = [];
-      for (let k = 0; k <= prefixEnd; k += 1) {
-        if (!canGrow(k, prefixEnd)) {
+
+      // El bucle ahora mira hacia adelante en el array 'planned'
+      for (let k = groupStart; k < planned.length; k += 1) {
+        const task = planned[k];
+
+        // Condición 1: La tarea no puede haber superado su propia capacidad
+        if (!canGrow(k, groupEnd)) {
           continue;
         }
+
+        // Condición 2: La tarea debe estar dentro de la ventana de tiempo
+        const daysUntilDue = differenceInCalendarDays(task.dueDate, groupDueDate);
+        if (daysUntilDue < 0 || daysUntilDue > windowDays) {
+          // Si la tarea ya venció o está muy lejos en el futuro, la ignoramos
+          // (La condición daysUntilDue < 0 no debería ocurrir si k >= groupStart, pero es una buena salvaguarda)
+          if (daysUntilDue > windowDays) break; // Optimización: como el array está ordenado, no hace falta seguir
+          continue;
+        }
+
         candidates.push({
           idx: k,
           weight: Math.max(0, desiredExtras[k]),
@@ -95,6 +113,7 @@ const computeSequentialDurations = (
         break;
       }
 
+      // El resto de la lógica de ordenación y asignación permanece igual
       candidates.sort((a, b) => {
         if (b.weight !== a.weight) {
           return b.weight - a.weight;
@@ -110,7 +129,7 @@ const computeSequentialDurations = (
       });
 
       const chosen = candidates[0].idx;
-      if (!canGrow(chosen, prefixEnd)) {
+      if (!canGrow(chosen, groupEnd)) {
         break;
       }
 
@@ -179,7 +198,7 @@ const computeSequentialDurations = (
         }
       }
     } else if (slack > 0) {
-      allocateExtra(groupEnd, slack);
+      allocateExtra(groupStart, groupEnd, slack, config);
     }
 
     groupStart = groupEnd + 1;
