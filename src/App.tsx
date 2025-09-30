@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppProvider, useAppContext } from './contexts/AppContext';
 import { Header } from './components/Header';
+import { Profile } from './components/Profile';
 import { StatsOverview } from './components/StatsOverview';
 import { Controls } from './components/Controls';
 import { Views } from './components/Views';
@@ -23,6 +24,7 @@ const AppContent: React.FC = () => {
 
   const {
     activeView,
+    currentPage,
     semesterStart,
     setSemesterStart,
     studySchedule,
@@ -70,21 +72,27 @@ const AppContent: React.FC = () => {
     <div className='min-h-screen bg-background'>
       <Header />
 
-      {/* Controles de planificación - antes de las métricas */}
-      <div className="app-shell mt-6">
-        <Controls
-          semesterStart={semesterStart}
-          onSemesterStartChange={setSemesterStart}
-        />
-      </div>
+      {currentPage === 'profile' ? (
+        <Profile />
+      ) : (
+        <>
+          {/* Controles de planificación - antes de las métricas */}
+          <div className="app-shell mt-6">
+            <Controls
+              semesterStart={semesterStart}
+              onSemesterStartChange={setSemesterStart}
+            />
+          </div>
 
-      {/* Franja superior de métricas */}
-      <StatsOverview stats={stats} />
+          {/* Franja superior de métricas */}
+          <StatsOverview stats={stats} />
 
-      {/* Área principal: vistas - ocupa todo el ancho */}
-      <main className="app-shell mt-6 pb-12">
-        <Views activeView={activeView} schedule={studySchedule} />
-      </main>
+          {/* Área principal: vistas - ocupa todo el ancho */}
+          <main className="app-shell mt-6 pb-12">
+            <Views activeView={activeView} schedule={studySchedule} />
+          </main>
+        </>
+      )}
 
       {/* Modales y paneles */}
       <Modal

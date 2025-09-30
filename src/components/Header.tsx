@@ -19,7 +19,8 @@ const Header = (): JSX.Element => {
     user,
     authLoading,
     openAuthModal,
-    signOut
+    signOut,
+    setCurrentPage
   } = useAppContext();
 
   const [signingOut, setSigningOut] = useState(false);
@@ -127,15 +128,17 @@ const Header = (): JSX.Element => {
             {theme === 'light' ? <Sun className='h-4 w-4 transition-all' /> : <Moon className='h-4 w-4 transition-all' />}
           </Button>
 
-          <Button
-            variant='ghost'
-            size='icon'
-            onClick={openConfigModal}
-            className='h-9 w-9 transition-colors hover:bg-muted/80'
-            title='Configuración'
-          >
-            <Settings className='h-4 w-4' />
-          </Button>
+          {!user && (
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={openConfigModal}
+              className='h-9 w-9 transition-colors hover:bg-muted/80'
+              title='Configuración'
+            >
+              <Settings className='h-4 w-4' />
+            </Button>
+          )}
 
           {user ? (
             <div className='dropdown-container relative'>
@@ -166,7 +169,10 @@ const Header = (): JSX.Element => {
                     <hr className='my-2 border-border' />
                     <button
                       className='flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground'
-                      onClick={() => setDropdownOpen(false)}
+                      onClick={() => {
+                        setCurrentPage('profile');
+                        setDropdownOpen(false);
+                      }}
                       role='menuitem'
                     >
                       <User className='h-4 w-4' />

@@ -29,6 +29,8 @@ interface AppContextType {
   // Estado general
   activeView: 'list' | 'calendar' | 'gantt';
   setActiveView: (view: 'list' | 'calendar' | 'gantt') => void;
+  currentPage: 'dashboard' | 'profile';
+  setCurrentPage: (page: 'dashboard' | 'profile') => void;
   selectedSubject: string;
   setSelectedSubject: (subject: string) => void;
   sortBy: 'algorithm' | 'subject' | 'date';
@@ -47,6 +49,8 @@ interface AppContextType {
   signIn: (email: string, password: string) => Promise<string | null>;
   signUp: (email: string, password: string) => Promise<string | null>;
   resetPassword: (email: string) => Promise<string | null>;
+  updateProfile: (email?: string, password?: string) => Promise<string | null>;
+  deleteAccount: (password: string) => Promise<string | null>;
   signOut: () => Promise<string | null>;
 
   // Datos
@@ -116,6 +120,7 @@ const buildDeliveryKey = (subject: string, name: string, date: string): string =
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [activeView, setActiveView] = React.useState<'list' | 'calendar' | 'gantt'>('list');
+  const [currentPage, setCurrentPage] = React.useState<'dashboard' | 'profile'>('dashboard');
   const [selectedSubject, setSelectedSubject] = React.useState<string>('all');
   const [sortBy, setSortBy] = React.useState<'algorithm' | 'subject' | 'date'>('algorithm');
   const [theme, setTheme] = React.useState<'light' | 'dark'>('light');
@@ -518,9 +523,27 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     return null;
   }, [auth]);
 
+  const handleUpdateProfile = React.useCallback(async (email?: string, password?: string) => {
+    const { error } = await auth.updateProfile(email, password);
+    if (error) {
+      return error.message;
+    }
+    return null;
+  }, [auth]);
+
+  const handleDeleteAccount = React.useCallback(async (password: string) => {
+    const { error } = await auth.deleteAccount(password);
+    if (error) {
+      return error.message;
+    }
+    return null;
+  }, [auth]);
+
   const contextValue: AppContextType = {
     activeView,
     setActiveView,
+    currentPage,
+    setCurrentPage,
     selectedSubject,
     setSelectedSubject,
     sortBy,
@@ -537,6 +560,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     signIn: handleSignIn,
     signUp: handleSignUp,
     resetPassword: handleResetPassword,
+    updateProfile: handleUpdateProfile,
+    deleteAccount: handleDeleteAccount,
     signOut: handleSignOut,
     deliveries,
     studySchedule: filteredSchedule,

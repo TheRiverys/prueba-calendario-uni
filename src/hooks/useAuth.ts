@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
-import { signInWithEmail, signUpWithEmail, sendResetPasswordEmail, signOut as supabaseSignOut } from '../features/auth/services/authService';
+import { signInWithEmail, signUpWithEmail, sendResetPasswordEmail, signOut as supabaseSignOut, updateProfile, deleteAccount } from '../features/auth/services/authService';
 import { supabase } from '../lib/supabase';
 
 export interface AuthState {
@@ -59,10 +59,17 @@ export const useAuth = () => {
   };
 
   const resetPassword = async (email: string) => {
-    const redirectTo = typeof window !== 'undefined'
-      ? `${window.location.origin}/auth/reset-password`
-      : undefined;
-    const { error } = await sendResetPasswordEmail({ email, redirectTo });
+    const { error } = await sendResetPasswordEmail({ email });
+    return { data: null, error: buildError(error) };
+  };
+
+  const updateUserProfile = async (email?: string, password?: string) => {
+    const { error } = await updateProfile({ email, password });
+    return { data: null, error: buildError(error) };
+  };
+
+  const deleteUserAccount = async (password: string) => {
+    const { error } = await deleteAccount({ password });
     return { data: null, error: buildError(error) };
   };
 
@@ -72,5 +79,7 @@ export const useAuth = () => {
     signIn,
     signOut,
     resetPassword,
+    updateProfile: updateUserProfile,
+    deleteAccount: deleteUserAccount,
   };
 };
