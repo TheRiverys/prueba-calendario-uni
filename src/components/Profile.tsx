@@ -1,9 +1,9 @@
 import { type JSX, useState } from 'react';
-import { Edit3, Trash2, Eye, EyeOff, AlertTriangle, User } from 'lucide-react';
+import { Edit3, Trash2, Eye, EyeOff, AlertTriangle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { useAppContext } from '../contexts/AppContext';
 
 const Profile = (): JSX.Element => {

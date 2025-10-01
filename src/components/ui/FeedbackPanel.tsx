@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Button } from './ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Button } from './button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
+import { Input } from './input';
+import { Label } from './label';
+import { Textarea } from './textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 import { MessageSquare, X, Send, Lightbulb, Bug, MessageCircle } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { BuyMeACoffee } from './BuyMeACoffee';
-import { useSupabaseFeedback } from '../hooks/useSupabaseFeedback';
+import { BuyMeACoffee } from '@/components/ui/BuyMeACoffee';
+import { useSupabaseFeedback } from '@/hooks/supabase/useSupabaseFeedback';
 
 type FeedbackType = 'sugerencia' | 'error' | 'comentario';
 

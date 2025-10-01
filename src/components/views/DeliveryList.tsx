@@ -4,11 +4,11 @@ import { Calendar, Clock, AlertTriangle, CheckCircle, XCircle, Edit2, Trash2, Ch
 import { format, differenceInDays, differenceInCalendarDays, isBefore, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 // Se elimina Card para un layout menos "encajonado"
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { AIControls } from './AIControls';
-import type { StudySchedule } from '../types';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { AIControls } from '../AIControls';
+import type { StudySchedule } from '../../types';
 
 interface DeliveryListProps {
   schedule: StudySchedule[];

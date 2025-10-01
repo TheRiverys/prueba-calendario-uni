@@ -4,15 +4,15 @@ import type { User } from '@supabase/supabase-js';
 import { differenceInCalendarDays, format, isValid, parseISO } from 'date-fns';
 import { useAuth } from '../hooks/useAuth';
 import { useDeliveries } from '../hooks/useDeliveries';
-import { useSupabaseDeliveries } from '../hooks/useSupabaseDeliveries';
+import { useSupabaseDeliveries } from '@/hooks/supabase/useSupabaseDeliveries';
 import { useStudySchedule } from '../hooks/useStudySchedule';
 import { useStats } from '../hooks/useStats';
 import { useModal } from '../hooks/useModal';
 import { useSemesterStart } from '../hooks/useSemesterStart';
-import { useSupabaseSemesterStart } from '../hooks/useSupabaseSemesterStart';
+import { useSupabaseSemesterStart } from '../hooks/supabase/useSupabaseSemesterStart';
 import { useAI } from '../hooks/useAI';
 import { useConfig } from '../hooks/useConfig';
-import { useSupabaseConfig } from '../hooks/useSupabaseConfig';
+import { useSupabaseConfig } from '../hooks/supabase/useSupabaseConfig';
 import { createDefaultConfig } from '../utils';
 import type {
   Delivery,

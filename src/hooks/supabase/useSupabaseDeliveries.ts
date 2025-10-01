@@ -1,8 +1,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
-import type { Delivery, DeliveryRow } from '../types';
+import { supabase } from '@/lib/supabase';
+import type { Delivery, DeliveryRow } from '@/types';
 
 type DeliveryInput = Omit<Delivery, 'id' | 'completed'>;
 type DeliveryUpdate = Partial<Omit<Delivery, 'id'>>;

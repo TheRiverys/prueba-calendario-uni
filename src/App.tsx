@@ -8,7 +8,7 @@ import { Views } from './components/Views';
 import { Modal } from './components/Modal';
 import { ConfigModal } from './components/ConfigModal';
 import { AuthDialog } from './features/auth/components/AuthDialog';
-import { FeedbackPanel } from './components/FeedbackPanel';
+import { FeedbackPanel } from './components/ui/FeedbackPanel';
 import { useConsoleClear } from './hooks/useConsoleClear';
 import { pickColorForSubject } from './utils';
 

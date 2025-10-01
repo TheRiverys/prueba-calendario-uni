@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 export const useSupabaseSemesterStart = (user: User | null) => {
   const [semesterStart, setSemesterStart] = useState<string>('');

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from './useAuth';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '../useAuth';
 
 type FeedbackType = 'sugerencia' | 'error' | 'comentario';
 

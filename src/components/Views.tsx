@@ -6,9 +6,9 @@ import { useAppContext } from "@/contexts/AppContext"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-const DeliveryList = lazy(() => import("./DeliveryList"))
-const CalendarView = lazy(() => import("./CalendarView"))
-const GanttView = lazy(() => import("./GanttView"))
+const DeliveryList = lazy(() => import("./views/DeliveryList"))
+const CalendarView = lazy(() => import("./views/CalendarView"))
+const GanttView = lazy(() => import("./views/GanttView"))
 
 interface ViewsProps {
   activeView: "list" | "calendar" | "gantt"
