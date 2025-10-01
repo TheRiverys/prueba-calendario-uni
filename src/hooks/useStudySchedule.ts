@@ -210,7 +210,9 @@ const computeSequentialDurations = (
 export const useStudySchedule = (
   deliveries: Delivery[],
   semesterStartIso: string,
-  config?: ConfigSettings
+  config?: ConfigSettings,
+  semesterStartTrigger?: number,
+  deliveriesTrigger?: number
 ): StudySchedule[] => {
   return useMemo(() => {
     if (!Array.isArray(deliveries) || deliveries.length === 0) {
@@ -349,5 +351,5 @@ export const useStudySchedule = (
     });
 
     return schedule.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
-  }, [deliveries, semesterStartIso, config]);
+  }, [deliveries, semesterStartIso, config, semesterStartTrigger, deliveriesTrigger]);
 };

@@ -127,6 +127,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [configModalOpen, setConfigModalOpen] = React.useState(false);
   const [authModalOpen, setAuthModalOpen] = React.useState(false);
   const [aiOverrides, setAiOverrides] = React.useState<Map<Delivery['id'], AiScheduleOverride>>(() => new Map());
+  const [semesterStartTrigger, setSemesterStartTrigger] = React.useState(0);
+  const [deliveriesTrigger, setDeliveriesTrigger] = React.useState(0);
 
   const auth = useAuth();
   const isAuthenticated = Boolean(auth.user);
@@ -253,6 +255,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     } else {
       addLocalDelivery(delivery);
     }
+    setDeliveriesTrigger(prev => prev + 1); // ← Activar trigger del algoritmo
   }, [isAuthenticated, addRemoteDelivery, addLocalDelivery]);
 
   const addDeliveries = React.useCallback((entries: Omit<Delivery, 'id' | 'completed'>[]) => {
@@ -270,6 +273,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     } else {
       addLocalDeliveries(entries);
     }
+    setDeliveriesTrigger(prev => prev + 1); // ← Activar trigger del algoritmo
   }, [isAuthenticated, addRemoteDeliveries, addLocalDeliveries]);
 
   const updateDelivery = React.useCallback((id: Delivery['id'], updates: Partial<Delivery>) => {
@@ -284,6 +288,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     } else {
       updateLocalDelivery(id, updates);
     }
+    setDeliveriesTrigger(prev => prev + 1); // ← Activar trigger del algoritmo
   }, [isAuthenticated, updateRemoteDelivery, updateLocalDelivery]);
 
   const deleteDelivery = React.useCallback((id: Delivery['id']) => {
@@ -298,6 +303,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     } else {
       deleteLocalDelivery(id);
     }
+    setDeliveriesTrigger(prev => prev + 1); // ← Activar trigger del algoritmo
   }, [isAuthenticated, deleteRemoteDelivery, deleteLocalDelivery]);
 
   const toggleCompleted = React.useCallback((id: Delivery['id']) => {
@@ -312,9 +318,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     } else {
       toggleLocalCompleted(id);
     }
+    setDeliveriesTrigger(prev => prev + 1); // ← Activar trigger del algoritmo
   }, [isAuthenticated, toggleRemoteCompleted, toggleLocalCompleted]);
 
-  const baseSchedule = useStudySchedule(deliveries, semesterStart, config);
+  const baseSchedule = useStudySchedule(deliveries, semesterStart, config, semesterStartTrigger, deliveriesTrigger);
 
   const fullSchedule = React.useMemo(() => {
     if (aiOverrides.size === 0) {
@@ -418,6 +425,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       })();
     }
     clearAiSchedule();
+    setSemesterStartTrigger(prev => prev + 1); // ← Activar trigger del algoritmo
   }, [isAuthenticated, updateRemoteSemesterStart, setLocalSemesterStart, clearAiSchedule]);
 
   const generateStudySchedule = React.useCallback(async (): Promise<AiScheduleResult> => {
