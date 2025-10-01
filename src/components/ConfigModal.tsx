@@ -1,8 +1,10 @@
-﻿import React from 'react';
-import { useConfig } from '../hooks/useConfig';
-import { useAppContext } from '../contexts/AppContext';
-import { pickColorForSubject, parseDeliveriesFile, createIcsCalendar } from '../utils';
-import type { ImportValidationError } from '../types';
+﻿import React from "react"
+import { Upload, Download } from "lucide-react"
+
+import type { ImportValidationError } from "@/types"
+import { useConfig } from "@/hooks/useConfig"
+import { useAppContext } from "@/contexts/AppContext"
+import { pickColorForSubject, parseDeliveriesFile, createIcsCalendar } from "@/utils"
 import {
   Dialog,
   DialogContent,
@@ -10,44 +12,42 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle
-} from './ui/dialog';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-// Eliminado Card para un diseño más plano
-import { Upload, Download } from 'lucide-react';
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
-const COLUMN_DISPLAY_NAMES: Record<ImportValidationError['column'], string> = {
-  subject: 'Materia',
-  name: 'Título',
-  dueDate: 'Fecha de entrega',
-  structure: 'Estructura del archivo',
-  header: 'Cabecera'
-};
+const COLUMN_DISPLAY_NAMES: Record<ImportValidationError["column"], string> = {
+  subject: "Materia",
+  name: "Título",
+  dueDate: "Fecha de entrega",
+  structure: "Estructura del archivo",
+  header: "Cabecera"
+}
 
-const MAX_ERRORS_IN_ALERT = 5;
+const MAX_ERRORS_IN_ALERT = 5
 
 const formatImportErrors = (importErrors: ImportValidationError[]): string => {
   if (importErrors.length === 0) {
-    return '';
+    return ""
   }
 
   const lines = importErrors.slice(0, MAX_ERRORS_IN_ALERT).map(error => {
-    const label = COLUMN_DISPLAY_NAMES[error.column];
-    const location = error.row > 0 ? `Fila ${error.row}` : 'General';
-    const suffix = label ? ` (${label})` : '';
-    return `- ${location}${suffix}: ${error.message}`;
-  });
+    const label = COLUMN_DISPLAY_NAMES[error.column]
+    const location = error.row > 0 ? `Fila ${error.row}` : "General"
+    const suffix = label ? ` (${label})` : ""
+    return `- ${location}${suffix}: ${error.message}`
+  })
 
   if (importErrors.length > MAX_ERRORS_IN_ALERT) {
-    lines.push(`- ...${importErrors.length - MAX_ERRORS_IN_ALERT} error(es) adicional(es)`);
+    lines.push(`- ...${importErrors.length - MAX_ERRORS_IN_ALERT} error(es) adicional(es)`)
   }
 
-  return lines.join('\n');
-};
+  return lines.join("\n")
+}
 
 export const ConfigModal: React.FC = () => {
-  const { config, updateConfig, resetConfig } = useConfig();
+  const { config, updateConfig, resetConfig } = useConfig()
   const {
     configModalOpen,
     closeConfigModal,
@@ -55,94 +55,94 @@ export const ConfigModal: React.FC = () => {
     addDeliveries,
     fullSchedule,
     semesterStart
-  } = useAppContext();
+  } = useAppContext()
 
-  const importInputRef = React.useRef<HTMLInputElement | null>(null);
+  const importInputRef = React.useRef<HTMLInputElement | null>(null)
 
   const totalDaysByPriority = {
     high: Math.max(1, config.baseStudyDays + config.priorityVariations.high),
     normal: Math.max(1, config.baseStudyDays + config.priorityVariations.normal),
     low: Math.max(1, config.baseStudyDays + config.priorityVariations.low)
-  } as const;
+  } as const
 
-  const handleSave = () => {
-    closeConfigModal();
-  };
+  const handleSave = (): void => {
+    closeConfigModal()
+  }
 
-  const handleReset = () => {
-    resetConfig();
-  };
+  const handleReset = (): void => {
+    resetConfig()
+  }
 
-  const handleOpenChange = (open: boolean) => {
+  const handleOpenChange = (open: boolean): void => {
     if (!open) {
-      closeConfigModal();
+      closeConfigModal()
     }
-  };
+  }
 
-  const handleImportClick = () => {
-    importInputRef.current?.click();
-  };
+  const handleImportClick = (): void => {
+    importInputRef.current?.click()
+  }
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = event.target.files?.[0]
     if (!file) {
-      return;
+      return
     }
 
     try {
-      const { deliveries: importedRows, errors: importErrors } = await parseDeliveriesFile(file);
+      const { deliveries: importedRows, errors: importErrors } = await parseDeliveriesFile(file)
 
       if (importedRows.length === 0) {
         const baseMessage = (
           importErrors.length > 0
             ? `No se importó ninguna entrega. Corrige los siguientes errores:\n${formatImportErrors(importErrors)}`
-            : 'No se encontraron filas válidas en el archivo.'
-        );
-        window.alert(baseMessage);
-        return;
+            : "No se encontraron filas válidas en el archivo."
+        )
+        window.alert(baseMessage)
+        return
       }
 
       const newDeliveries = importedRows.map(row => ({
         subject: row.subject,
         name: row.name,
         date: row.dueDate,
-        priority: 'normal' as const,
+        priority: "normal" as const,
         color: pickColorForSubject(row.subject, deliveries)
-      }));
+      }))
 
-      addDeliveries(newDeliveries);
+      addDeliveries(newDeliveries)
 
       if (importErrors.length > 0) {
         window.alert(
           `Se importaron ${newDeliveries.length} entregas, pero detectamos ${importErrors.length} fila(s) con problemas:\n${formatImportErrors(importErrors)}`
-        );
+        )
       } else {
-        window.alert(`Se importaron ${newDeliveries.length} entregas correctamente.`);
+        window.alert(`Se importaron ${newDeliveries.length} entregas correctamente.`)
       }
     } catch (error) {
-      console.error('Error al importar entregas', error);
-      window.alert(error instanceof Error ? error.message : 'No se pudo importar el archivo.');
+      console.error("Error al importar entregas", error)
+      window.alert(error instanceof Error ? error.message : "No se pudo importar el archivo.")
     } finally {
-      event.target.value = '';
+      event.target.value = ""
     }
-  };
+  }
 
-  const handleExport = () => {
+  const handleExport = (): void => {
     if (fullSchedule.length === 0) {
-      window.alert('No hay entregas para exportar.');
-      return;
+      window.alert("No hay entregas para exportar.")
+      return
     }
 
-    const calendar = createIcsCalendar(fullSchedule);
-    const blob = new Blob([calendar], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    const filename = `entregas-${semesterStart || 'calendario'}.ics`;
-    link.href = url;
-    link.download = filename;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
+    const calendar = createIcsCalendar(fullSchedule)
+    const blob = new Blob([calendar], { type: "text/calendar;charset=utf-8" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    const filename = `entregas-${semesterStart || "calendario"}.ics`
+    link.href = url
+    link.download = filename
+    link.click()
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <Dialog open={configModalOpen} onOpenChange={handleOpenChange}>
@@ -329,10 +329,11 @@ export const ConfigModal: React.FC = () => {
 
         <input
           ref={importInputRef}
-          type='file'
-          accept='.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-          className='hidden'
+          type="file"
+          accept=".csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          className="hidden"
           onChange={handleFileChange}
+          aria-label="Archivo de importación"
         />
 
         <DialogFooter className="gap-2 sm:gap-3 sm:justify-end">
@@ -345,8 +346,8 @@ export const ConfigModal: React.FC = () => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
 
 

@@ -1,25 +1,25 @@
+import React, { Suspense, lazy } from "react"
+import { Calendar as CalendarIcon, BarChart3, Edit2 } from "lucide-react"
 
-import React, { Suspense, lazy } from 'react';
-import { useAppContext } from '../contexts/AppContext';
-import { Button } from './ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Calendar as CalendarIcon, BarChart3, Edit2 } from 'lucide-react';
-import type { StudySchedule } from '../types';
+import type { StudySchedule } from "@/types"
+import { useAppContext } from "@/contexts/AppContext"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-const DeliveryList = lazy(() => import('./DeliveryList'));
-const CalendarView = lazy(() => import('./CalendarView'));
-const GanttView = lazy(() => import('./GanttView'));
+const DeliveryList = lazy(() => import("./DeliveryList"))
+const CalendarView = lazy(() => import("./CalendarView"))
+const GanttView = lazy(() => import("./GanttView"))
 
 interface ViewsProps {
-  activeView: 'list' | 'calendar' | 'gantt';
-  schedule: StudySchedule[];
+  activeView: "list" | "calendar" | "gantt"
+  schedule: StudySchedule[]
 }
 
 const LoadingFallback: React.FC = () => (
   <div className="flex justify-center items-center h-64 text-sm text-muted-foreground">
     Cargando…
   </div>
-);
+)
 
 export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
   const {
@@ -32,9 +32,9 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
     setSelectedSubject,
     setSortBy,
     setActiveView
-  } = useAppContext();
+  } = useAppContext()
 
-  const renderListView = () => (
+  const renderListView = (): React.JSX.Element => (
     <Suspense fallback={<LoadingFallback />}>
       <DeliveryList
         schedule={schedule}
@@ -51,47 +51,47 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
         onAdd={() => openModal()}
       />
     </Suspense>
-  );
+  )
 
-  const renderCalendarView = () => (
+  const renderCalendarView = (): React.JSX.Element => (
     <Suspense fallback={<LoadingFallback />}>
       <CalendarView
         schedule={schedule}
         onEdit={openModal}
         onDelete={deleteDelivery}
         onToggleComplete={toggleCompleted}
+        selectedSubject={selectedSubject}
+        subjects={subjects}
+        onSubjectChange={setSelectedSubject}
       />
     </Suspense>
-  );
+  )
 
-  const renderGanttView = () => (
+  const renderGanttView = (): React.JSX.Element => (
     <Suspense fallback={<LoadingFallback />}>
       <GanttView schedule={schedule} />
     </Suspense>
-  );
+  )
 
-  const renderActiveView = () => {
+  const renderActiveView = (): React.JSX.Element | null => {
     switch (activeView) {
-      case 'list':
-        return renderListView();
-      case 'calendar':
+      case "list":
+        return renderListView()
+      case "calendar":
         return (
           <div className="w-full">
             <div className="flex flex-col gap-6 sm:gap-4 border-b border-border/60 pb-5">
-              {/* Título y controles principales */}
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
                   <CalendarIcon className="w-5 h-5" />
                   Calendario
                 </h2>
 
-                {/* Controles de navegación y acciones */}
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                  {/* Selector de vista - Primera fila */}
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="hidden md:inline lg:inline text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Vista</span>
-                      <Select value={activeView} onValueChange={(v) => setActiveView(v as 'list' | 'calendar' | 'gantt')}>
+                      <Select value={activeView} onValueChange={(v) => setActiveView(v as "list" | "calendar" | "gantt")}>
                         <SelectTrigger className="w-[120px] sm:w-[140px] lg:w-[160px]">
                           <SelectValue placeholder="Vista" />
                         </SelectTrigger>
@@ -104,7 +104,6 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
                     </div>
                   </div>
 
-                  {/* Segunda fila: acción principal */}
                   <div className="flex items-center justify-end">
                     <Button onClick={() => openModal()} className="flex items-center gap-2 whitespace-nowrap">
                       <Edit2 className="h-4 w-4" />
@@ -120,25 +119,22 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
               {renderCalendarView()}
             </div>
           </div>
-        );
-      case 'gantt':
+        )
+      case "gantt":
         return (
           <div className="w-full">
             <div className="flex flex-col gap-6 sm:gap-4 border-b border-border/60 pb-5">
-              {/* Título y controles principales */}
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
                   <BarChart3 className="w-5 h-5" />
                   Gantt
                 </h2>
 
-                {/* Controles de navegación y acciones */}
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                  {/* Selector de vista - Primera fila */}
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="hidden md:inline lg:inline text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Vista</span>
-                      <Select value={activeView} onValueChange={(v) => setActiveView(v as 'list' | 'calendar' | 'gantt')}>
+                      <Select value={activeView} onValueChange={(v) => setActiveView(v as "list" | "calendar" | "gantt")}>
                         <SelectTrigger className="w-[120px] sm:w-[140px] lg:w-[160px]">
                           <SelectValue placeholder="Vista" />
                         </SelectTrigger>
@@ -151,7 +147,6 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
                     </div>
                   </div>
 
-                  {/* Segunda fila: acción principal */}
                   <div className="flex items-center justify-end">
                     <Button onClick={() => openModal()} className="flex items-center gap-2 whitespace-nowrap">
                       <Edit2 className="h-4 w-4" />
@@ -167,15 +162,15 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
               {renderGanttView()}
             </div>
           </div>
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <div className="w-full">
       {renderActiveView()}
     </div>
-  );
-};
+  )
+}

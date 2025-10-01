@@ -1,50 +1,49 @@
-
-import React from 'react';
-import { ClipboardList, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
+import React from "react"
+import { ClipboardList, Clock, AlertTriangle, CheckCircle } from "lucide-react"
 
 interface StatsOverviewProps {
   stats: {
-    total: number;
-    upcoming: number;
-    overdue: number;
-    thisWeek: number;
-  };
+    total: number
+    upcoming: number
+    overdue: number
+    thisWeek: number
+  }
 }
 
 const statsConfig = [
   {
-    key: 'total',
-    label: 'Total de entregas',
+    key: "total",
+    label: "Total de entregas",
     icon: ClipboardList,
-    accent: 'text-foreground',
-    bgColor: 'bg-card',
-    borderColor: 'border-border'
+    accent: "text-foreground",
+    bgColor: "bg-card",
+    borderColor: "border-border"
   },
   {
-    key: 'upcoming',
-    label: 'Próximas',
+    key: "upcoming",
+    label: "Próximas",
     icon: Clock,
-    accent: 'text-blue-600',
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200'
+    accent: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-50 dark:bg-blue-950/50",
+    borderColor: "border-blue-200 dark:border-blue-800"
   },
   {
-    key: 'thisWeek',
-    label: 'Esta semana',
+    key: "thisWeek",
+    label: "Esta semana",
     icon: AlertTriangle,
-    accent: 'text-amber-600',
-    bgColor: 'bg-amber-50',
-    borderColor: 'border-amber-200'
+    accent: "text-amber-600 dark:text-amber-400",
+    bgColor: "bg-amber-50 dark:bg-amber-950/50",
+    borderColor: "border-amber-200 dark:border-amber-800"
   },
   {
-    key: 'overdue',
-    label: 'Vencidas',
+    key: "overdue",
+    label: "Vencidas",
     icon: CheckCircle,
-    accent: 'text-red-600',
-    bgColor: 'bg-red-50',
-    borderColor: 'border-red-200'
+    accent: "text-red-600 dark:text-red-400",
+    bgColor: "bg-red-50 dark:bg-red-950/50",
+    borderColor: "border-red-200 dark:border-red-800"
   }
-] as const;
+] as const
 
 export const StatsOverview: React.FC<StatsOverviewProps> = ({ stats }) => {
   return (
@@ -63,12 +62,12 @@ export const StatsOverview: React.FC<StatsOverviewProps> = ({ stats }) => {
                 {stats[key as keyof typeof stats]}
               </p>
             </div>
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 ml-4">
+            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 ml-4">
               <Icon className={`w-6 h-6 ${accent}`} />
             </div>
           </div>
         ))}
       </div>
     </section>
-  );
-};
+  )
+}
