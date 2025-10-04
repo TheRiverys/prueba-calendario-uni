@@ -137,4 +137,3 @@ export interface ImportResult {
   deliveries: ImportedDelivery[];
   errors: ImportValidationError[];
 }
-

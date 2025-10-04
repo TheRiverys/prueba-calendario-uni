@@ -25,7 +25,8 @@ export const useSupabaseSemesterStart = (user: User | null) => {
         .eq('user_id', user.id)
         .single();
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 es "not found"
+      if (error && error.code !== 'PGRST116') {
+        // PGRST116 es "not found"
         throw error;
       }
 
@@ -53,17 +54,15 @@ export const useSupabaseSemesterStart = (user: User | null) => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
-        .from('semester_starts')
-        .upsert(
-          {
-            user_id: user.id,
-            semester_start: newSemesterStart,
-          },
-          {
-            onConflict: 'user_id',
-          }
-        );
+      const { error } = await supabase.from('semester_starts').upsert(
+        {
+          user_id: user.id,
+          semester_start: newSemesterStart,
+        },
+        {
+          onConflict: 'user_id',
+        }
+      );
 
       if (error) throw error;
 

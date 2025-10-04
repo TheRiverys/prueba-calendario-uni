@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { supabase } from "@/lib/supabase";
+import { supabase } from '@/lib/supabase';
 import type { ConfigSettings, UserConfigRow } from '@/types';
 import { createDefaultConfig, sanitizeConfig } from '@/utils';
 
@@ -13,7 +13,7 @@ const parseConfig = (row: UserConfigRow | null): ConfigSettings => {
     baseStudyDays: row.base_study_days ?? undefined,
     minStudyTime: row.min_study_time ?? undefined,
     priorityVariations: row.priority_variations ?? undefined,
-    openaiApiKey: ''
+    openaiApiKey: '',
   });
 };
 
@@ -57,39 +57,40 @@ export const useSupabaseConfig = (user: User | null) => {
     void loadConfig();
   }, [loadConfig]);
 
-  const updateConfig = useCallback(async (partial: Partial<ConfigSettings>) => {
-    if (!user) {
-      return null;
-    }
+  const updateConfig = useCallback(
+    async (partial: Partial<ConfigSettings>) => {
+      if (!user) {
+        return null;
+      }
 
-    const current = config ?? createDefaultConfig();
-    const candidate = sanitizeConfig({
-      ...current,
-      ...partial,
-      openaiApiKey: ''
-    });
+      const current = config ?? createDefaultConfig();
+      const candidate = sanitizeConfig({
+        ...current,
+        ...partial,
+        openaiApiKey: '',
+      });
 
-    try {
-      const { error: mutationError } = await supabase
-        .from('user_configs')
-        .upsert({
+      try {
+        const { error: mutationError } = await supabase.from('user_configs').upsert({
           user_id: user.id,
           min_study_time: candidate.minStudyTime,
           base_study_days: candidate.baseStudyDays,
-          priority_variations: candidate.priorityVariations
+          priority_variations: candidate.priorityVariations,
         });
 
-      if (mutationError) {
-        throw mutationError;
-      }
+        if (mutationError) {
+          throw mutationError;
+        }
 
-      setConfig(candidate);
-      return candidate;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error updating config');
-      throw err;
-    }
-  }, [config, user]);
+        setConfig(candidate);
+        return candidate;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error updating config');
+        throw err;
+      }
+    },
+    [config, user]
+  );
 
   const resetConfig = useCallback(async () => {
     const defaults = createDefaultConfig();
@@ -103,6 +104,6 @@ export const useSupabaseConfig = (user: User | null) => {
     error,
     updateConfig,
     resetConfig,
-    refetch: loadConfig
+    refetch: loadConfig,
   } as const;
 };

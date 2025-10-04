@@ -1,6 +1,7 @@
 import type { ConfigSettings, PriorityVariations } from '../types';
 
-const isNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
+const isNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value);
 
 const normalizeInteger = (candidate: unknown, fallback: number, minimum = 1): number => {
   if (!isNumber(candidate)) {
@@ -21,7 +22,7 @@ const sanitizePriorityVariations = (value: unknown): PriorityVariations => {
   return {
     high: isNumber(record.high) ? record.high : fallback.high,
     normal: isNumber(record.normal) ? record.normal : fallback.normal,
-    low: isNumber(record.low) ? record.low : fallback.low
+    low: isNumber(record.low) ? record.low : fallback.low,
   };
 };
 
@@ -34,9 +35,7 @@ const extractLegacyBaseStudyDays = (value: unknown): number | null => {
   if (isNumber(normal)) {
     return Math.max(1, Math.round(normal));
   }
-  const candidates = ['high', 'low']
-    .map(key => record[key])
-    .filter(isNumber) as number[];
+  const candidates = ['high', 'low'].map((key) => record[key]).filter(isNumber) as number[];
   if (candidates.length === 0) {
     return null;
   }
@@ -47,7 +46,7 @@ const extractLegacyBaseStudyDays = (value: unknown): number | null => {
 export const DEFAULT_PRIORITY_VARIATIONS: PriorityVariations = {
   high: 1,
   normal: 0,
-  low: -1
+  low: -1,
 };
 
 export const DEFAULT_CONFIG: ConfigSettings = {
@@ -55,7 +54,7 @@ export const DEFAULT_CONFIG: ConfigSettings = {
   minStudyTime: 2,
   priorityVariations: { ...DEFAULT_PRIORITY_VARIATIONS },
   openaiApiKey: '',
-  allocationWindowDays: 30
+  allocationWindowDays: 30,
 };
 
 export const createDefaultConfig = (): ConfigSettings => ({
@@ -63,7 +62,7 @@ export const createDefaultConfig = (): ConfigSettings => ({
   minStudyTime: DEFAULT_CONFIG.minStudyTime,
   priorityVariations: { ...DEFAULT_PRIORITY_VARIATIONS },
   openaiApiKey: DEFAULT_CONFIG.openaiApiKey,
-  allocationWindowDays: DEFAULT_CONFIG.allocationWindowDays
+  allocationWindowDays: DEFAULT_CONFIG.allocationWindowDays,
 });
 
 export const sanitizeConfig = (value: unknown): ConfigSettings => {
@@ -79,18 +78,21 @@ export const sanitizeConfig = (value: unknown): ConfigSettings => {
   );
   const minStudyTime = normalizeInteger(record.minStudyTime, defaults.minStudyTime);
   const priorityVariations = sanitizePriorityVariations(record.priorityVariations);
-  const allocationWindowDays = normalizeInteger(record.allocationWindowDays, defaults.allocationWindowDays ?? 30, 1);
+  const allocationWindowDays = normalizeInteger(
+    record.allocationWindowDays,
+    defaults.allocationWindowDays ?? 30,
+    1
+  );
 
-  const openaiApiKey = typeof record.openaiApiKey === 'string'
-    ? record.openaiApiKey.trim()
-    : defaults.openaiApiKey;
+  const openaiApiKey =
+    typeof record.openaiApiKey === 'string' ? record.openaiApiKey.trim() : defaults.openaiApiKey;
 
   return {
     baseStudyDays,
     minStudyTime,
     priorityVariations,
     openaiApiKey,
-    allocationWindowDays
+    allocationWindowDays,
   } satisfies ConfigSettings;
 };
 

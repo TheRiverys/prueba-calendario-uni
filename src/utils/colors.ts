@@ -1,8 +1,18 @@
 import type { Delivery, StudySchedule } from '../types';
 
 const SUBJECT_COLORS = [
-  'bg-chart-1', 'bg-chart-2', 'bg-chart-3', 'bg-chart-4', 'bg-chart-5', 'bg-chart-6',
-  'bg-chart-7', 'bg-chart-8', 'bg-chart-9', 'bg-chart-10', 'bg-chart-11', 'bg-chart-12'
+  'bg-chart-1',
+  'bg-chart-2',
+  'bg-chart-3',
+  'bg-chart-4',
+  'bg-chart-5',
+  'bg-chart-6',
+  'bg-chart-7',
+  'bg-chart-8',
+  'bg-chart-9',
+  'bg-chart-10',
+  'bg-chart-11',
+  'bg-chart-12',
 ];
 
 const hashSubject = (subject: string): number => {
@@ -15,7 +25,7 @@ const hashSubject = (subject: string): number => {
 };
 
 export const pickColorForSubject = (subject: string, deliveries: Delivery[]): string => {
-  const existing = deliveries.find(delivery => delivery.subject === subject)?.color;
+  const existing = deliveries.find((delivery) => delivery.subject === subject)?.color;
   if (existing) {
     return existing;
   }
@@ -26,9 +36,11 @@ export const pickColorForSubject = (subject: string, deliveries: Delivery[]): st
   return SUBJECT_COLORS[paletteIndex];
 };
 
-export const buildColorLegend = (schedule: StudySchedule[]): Array<{ subject: string; color: string }> => {
+export const buildColorLegend = (
+  schedule: StudySchedule[]
+): Array<{ subject: string; color: string }> => {
   const legend = new Map<string, string>();
-  schedule.forEach(item => {
+  schedule.forEach((item) => {
     if (!legend.has(item.subject)) {
       legend.set(item.subject, item.color);
     }

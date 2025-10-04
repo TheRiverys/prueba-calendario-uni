@@ -51,21 +51,24 @@ export class AIService {
   static async generateStudyPlan(
     deliveries: Array<{ subject: string; name: string; date: string; priority: string }>,
     semesterStart: string
-  ): Promise<Array<{
-    subject: string;
-    name: string;
-    deliveryDate: string;
-    startDate: string;
-    endDate: string;
-    priority?: 'low' | 'normal' | 'high';
-    estimatedHours: number;
-  }>> {
+  ): Promise<
+    Array<{
+      subject: string;
+      name: string;
+      deliveryDate: string;
+      startDate: string;
+      endDate: string;
+      priority?: 'low' | 'normal' | 'high';
+      estimatedHours: number;
+    }>
+  > {
     try {
       const config = getConfig();
 
-      const baseStudyDaysValue = typeof config.baseStudyDays === 'number'
-        ? config.baseStudyDays
-        : DEFAULT_CONFIG.baseStudyDays ?? 4;
+      const baseStudyDaysValue =
+        typeof config.baseStudyDays === 'number'
+          ? config.baseStudyDays
+          : (DEFAULT_CONFIG.baseStudyDays ?? 4);
       const baseStudyDays = Math.max(1, Math.round(baseStudyDaysValue));
 
       const prompt = `
@@ -149,10 +152,12 @@ export class AIService {
   ): Array<{ date: string; hours: number; subject: string; task: string }> {
     const schedule: Array<{ date: string; hours: number; subject: string; task: string }> = [];
 
-    studyPlan.forEach(plan => {
+    studyPlan.forEach((plan) => {
       const startDate = new Date(plan.startDate);
       const endDate = new Date(plan.endDate);
-      const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const totalDays = Math.ceil(
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
 
       // Distribuir las horas estimadas en los días disponibles
       const dailyHours = Math.min(plan.estimatedHours / totalDays, 6); // Máximo 6 horas por día
@@ -167,7 +172,7 @@ export class AIService {
           date: currentDate.toISOString().split('T')[0],
           hours: Math.round(hoursToday * 10) / 10, // Redondear a 1 decimal
           subject: plan.subject,
-          task: `Trabajar en: ${plan.name}`
+          task: `Trabajar en: ${plan.name}`,
         });
 
         remainingHours -= hoursToday;
@@ -194,10 +199,10 @@ export class AIService {
         Entregas pendientes: ${upcomingDeliveries.length}
 
         Detalles de completadas:
-        ${completedDeliveries.map(d => `- ${d.subject} (${d.date})`).join('\n')}
+        ${completedDeliveries.map((d) => `- ${d.subject} (${d.date})`).join('\n')}
 
         Detalles de pendientes:
-        ${upcomingDeliveries.map(d => `- ${d.subject}: ${d.priority} (${d.date})`).join('\n')}
+        ${upcomingDeliveries.map((d) => `- ${d.subject}: ${d.priority} (${d.date})`).join('\n')}
 
         Proporciona consejos específicos para mejorar la productividad y gestión del tiempo.
         Responde en español, de forma concisa pero útil.

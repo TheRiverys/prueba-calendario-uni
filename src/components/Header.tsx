@@ -3,7 +3,9 @@ import { Calendar, ChevronDown, LogOut, Moon, Settings, Sun, User } from 'lucide
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Button } from './ui/button';
-import { useAppContext } from '../contexts/AppContext';
+import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
+import { useAuthContext } from '@/contexts/auth/AuthContext';
+import { useConfigContext } from '@/contexts/config/ConfigContext';
 
 const FALLBACK_LOGO = (
   <svg className='h-5 w-5 text-primary' viewBox='0 0 20 20' fill='currentColor' aria-hidden='true'>
@@ -12,16 +14,9 @@ const FALLBACK_LOGO = (
 );
 
 const Header = (): JSX.Element => {
-  const {
-    theme,
-    toggleTheme,
-    openConfigModal,
-    user,
-    authLoading,
-    openAuthModal,
-    signOut,
-    setCurrentPage
-  } = useAppContext();
+  const { theme, toggleTheme, setCurrentPage } = usePreferencesContext();
+  const { openConfigModal } = useConfigContext();
+  const { user, loading: authLoading, openAuthModal, signOut } = useAuthContext();
 
   const [signingOut, setSigningOut] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -31,7 +26,7 @@ const Header = (): JSX.Element => {
     const now = new Date();
     return {
       longFormat: format(now, "EEEE, d 'de' MMMM 'de' yyyy", { locale: es }),
-      shortFormat: format(now, 'd/MM/yyyy', { locale: es })
+      shortFormat: format(now, 'd/MM/yyyy', { locale: es }),
     };
   }, []);
 
@@ -112,7 +107,9 @@ const Header = (): JSX.Element => {
         <div className='hidden items-center gap-2 rounded-md border bg-muted/30 px-4 py-2 lg:flex'>
           <Calendar className='h-4 w-4 text-muted-foreground' />
           <div className='flex flex-col'>
-            <span className='text-xs font-medium uppercase tracking-wide text-muted-foreground'>Hoy</span>
+            <span className='text-xs font-medium uppercase tracking-wide text-muted-foreground'>
+              Hoy
+            </span>
             <span className='text-sm font-semibold text-foreground'>{today.longFormat}</span>
           </div>
         </div>
@@ -125,7 +122,11 @@ const Header = (): JSX.Element => {
             className='h-9 w-9 transition-colors hover:bg-muted/80'
             title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
           >
-            {theme === 'light' ? <Sun className='h-4 w-4 transition-all' /> : <Moon className='h-4 w-4 transition-all' />}
+            {theme === 'light' ? (
+              <Sun className='h-4 w-4 transition-all' />
+            ) : (
+              <Moon className='h-4 w-4 transition-all' />
+            )}
           </Button>
 
           {!user && (
@@ -145,15 +146,19 @@ const Header = (): JSX.Element => {
               <Button
                 variant='ghost'
                 className='flex h-9 items-center gap-2 px-3 transition-colors hover:bg-muted/80'
-                onClick={() => setDropdownOpen(prev => !prev)}
+                onClick={() => setDropdownOpen((prev) => !prev)}
                 aria-expanded={dropdownOpen}
                 aria-haspopup='menu'
               >
                 <div className='flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary'>
                   {getUserInitials(user.email)}
                 </div>
-                <span className='hidden max-w-[150px] truncate text-sm font-medium md:inline'>{user.email}</span>
-                <ChevronDown className={`h-3 w-3 text-muted-foreground transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                <span className='hidden max-w-[150px] truncate text-sm font-medium md:inline'>
+                  {user.email}
+                </span>
+                <ChevronDown
+                  className={`h-3 w-3 text-muted-foreground transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
+                />
               </Button>
 
               {dropdownOpen && (
@@ -200,7 +205,7 @@ const Header = (): JSX.Element => {
                       role='menuitem'
                     >
                       <LogOut className='h-4 w-4' />
-                      <span>{signingOut ? 'Saliendo…' : 'Cerrar sesión'}</span>
+                      <span>{signingOut ? 'Saliendo...' : 'Cerrar sesión'}</span>
                     </button>
                   </div>
                 </div>
@@ -230,4 +235,3 @@ const Header = (): JSX.Element => {
 };
 
 export { Header };
-

@@ -1,7 +1,13 @@
-
 import { useEffect, useState } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
-import { signInWithEmail, signUpWithEmail, sendResetPasswordEmail, signOut as supabaseSignOut, updateProfile, deleteAccount } from '../features/auth/services/authService';
+import {
+  signInWithEmail,
+  signUpWithEmail,
+  sendResetPasswordEmail,
+  signOut as supabaseSignOut,
+  updateProfile,
+  deleteAccount,
+} from '../features/auth/services/authService';
 import { supabase } from '../lib/supabase';
 
 export interface AuthState {

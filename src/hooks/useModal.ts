@@ -19,7 +19,7 @@ const buildEmptyForm = (defaultStart: string): FormData => ({
   name: '',
   date: '',
   studyStart: defaultStart,
-  priority: 'normal'
+  priority: 'normal',
 });
 
 interface ModalState {
@@ -52,7 +52,7 @@ export const useModal = (defaultStudyStart: string): ModalState => {
         name: delivery.name,
         date: toIsoDate(delivery.date),
         studyStart: delivery.studyStart ? toIsoDate(delivery.studyStart) : resolvedDefaultStart,
-        priority: delivery.priority
+        priority: delivery.priority,
       });
     } else {
       setEditingDelivery(null);
@@ -68,9 +68,9 @@ export const useModal = (defaultStudyStart: string): ModalState => {
   };
 
   const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -81,6 +81,6 @@ export const useModal = (defaultStudyStart: string): ModalState => {
     openModal,
     closeModal,
     handleInputChange,
-    setFormData
+    setFormData,
   };
 };

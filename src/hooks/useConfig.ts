@@ -25,14 +25,14 @@ export const useConfig = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const updateConfig = useCallback((partial: Partial<ConfigSettings>) => {
-    setConfig(previous => {
+    setConfig((previous) => {
       const candidate = {
         ...previous,
         ...partial,
         priorityVariations: {
           ...previous.priorityVariations,
-          ...(partial.priorityVariations ?? {})
-        }
+          ...(partial.priorityVariations ?? {}),
+        },
       };
       const sanitized = sanitizeConfig(candidate);
       persistConfig(sanitized);
@@ -60,7 +60,7 @@ export const useConfig = () => {
     isModalOpen,
     openModal,
     closeModal,
-    resetConfig
+    resetConfig,
   };
 };
 

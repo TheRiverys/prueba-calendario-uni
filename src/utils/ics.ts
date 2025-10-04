@@ -15,13 +15,9 @@ const formatTimestamp = (date: Date): string => format(toUtc(date), "yyyyMMdd'T'
 
 export const createIcsCalendar = (schedule: StudySchedule[]): string => {
   const generatedAt = new Date();
-  const lines = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//Calendario de Entregas//ES'
-  ];
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Calendario de Entregas//ES'];
 
-  schedule.forEach(item => {
+  schedule.forEach((item) => {
     const eventStart = formatDate(item.endDate);
     const eventEnd = formatDate(addDays(item.endDate, 1));
     const description = escapeText(

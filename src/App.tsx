@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppProvider, useAppContext } from './contexts/AppContext';
+import { AppProvider } from './contexts/AppContext';
 import { Header } from './components/Header';
 import { Profile } from './components/Profile';
 import { StatsOverview } from './components/StatsOverview';
@@ -11,34 +11,34 @@ import { AuthDialog } from './features/auth/components/AuthDialog';
 import { FeedbackPanel } from './components/ui/FeedbackPanel';
 import { useConsoleClear } from './hooks/useConsoleClear';
 import { pickColorForSubject } from './utils';
+import { usePreferencesContext } from './contexts/preferences/PreferencesContext';
+import { useSemesterContext } from './contexts/semester/SemesterContext';
+import { useScheduleContext } from './contexts/schedule/ScheduleContext';
+import { useDeliveriesContext } from './contexts/deliveries/DeliveriesContext';
 
 const priorities: Array<{ value: 'low' | 'normal' | 'high'; label: string; color: string }> = [
   { value: 'low', label: 'Baja', color: 'bg-muted' },
   { value: 'normal', label: 'Normal', color: 'bg-chart-1' },
-  { value: 'high', label: 'Alta', color: 'bg-destructive' }
+  { value: 'high', label: 'Alta', color: 'bg-destructive' },
 ];
 
 const AppContent: React.FC = () => {
-  // Hook para limpiar datos con comando de consola
   useConsoleClear();
 
+  const { activeView, currentPage } = usePreferencesContext();
+  const { semesterStart, setSemesterStart } = useSemesterContext();
+  const { studySchedule, stats } = useScheduleContext();
   const {
-    activeView,
-    currentPage,
-    semesterStart,
-    setSemesterStart,
-    studySchedule,
-    stats,
-    subjects,
     deliveries,
+    subjects,
     modalOpen,
     editingDelivery,
     formData,
     closeModal,
     handleInputChange,
     addDelivery,
-    updateDelivery
-  } = useAppContext();
+    updateDelivery,
+  } = useDeliveriesContext();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -56,7 +56,7 @@ const AppContent: React.FC = () => {
       name,
       date: formData.date,
       priority: formData.priority,
-      color
+      color,
     };
 
     if (editingDelivery) {
@@ -76,25 +76,18 @@ const AppContent: React.FC = () => {
         <Profile />
       ) : (
         <>
-          {/* Controles de planificación - antes de las métricas */}
-          <div className="app-shell mt-6">
-            <Controls
-              semesterStart={semesterStart}
-              onSemesterStartChange={setSemesterStart}
-            />
+          <div className='app-shell mt-6'>
+            <Controls semesterStart={semesterStart} onSemesterStartChange={setSemesterStart} />
           </div>
 
-          {/* Franja superior de métricas */}
           <StatsOverview stats={stats} />
 
-          {/* Área principal: vistas - ocupa todo el ancho */}
-          <main className="app-shell mt-6 pb-12">
+          <main className='app-shell mt-6 pb-12'>
             <Views activeView={activeView} schedule={studySchedule} />
           </main>
         </>
       )}
 
-      {/* Modales y paneles */}
       <Modal
         isOpen={modalOpen}
         onClose={closeModal}

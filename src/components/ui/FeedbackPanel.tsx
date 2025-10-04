@@ -15,7 +15,7 @@ type FeedbackType = 'sugerencia' | 'error' | 'comentario';
 const feedbackOptions: { value: FeedbackType; label: string; icon: LucideIcon }[] = [
   { value: 'sugerencia', label: 'Sugerencia', icon: Lightbulb },
   { value: 'error', label: 'Error', icon: Bug },
-  { value: 'comentario', label: 'Comentario', icon: MessageCircle }
+  { value: 'comentario', label: 'Comentario', icon: MessageCircle },
 ];
 
 export const FeedbackPanel: React.FC = () => {
@@ -55,38 +55,43 @@ export const FeedbackPanel: React.FC = () => {
     <>
       {/* Panel de feedback */}
       {isOpen && (
-        <div className="fixed bottom-20 left-6 z-50">
-          <Card className="w-80 shadow-2xl">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <MessageSquare className="w-4 h-4" />
+        <div className='fixed bottom-20 left-6 z-50'>
+          <Card className='w-80 shadow-2xl'>
+            <CardHeader className='pb-3'>
+              <div className='flex items-center justify-between'>
+                <CardTitle className='flex items-center gap-2 text-base'>
+                  <MessageSquare className='w-4 h-4' />
                   Enviar Feedback
                 </CardTitle>
                 <Button
-                  variant="ghost"
-                  size="sm"
+                  variant='ghost'
+                  size='sm'
                   onClick={() => setIsOpen(false)}
-                  className="h-6 w-6 p-0"
+                  className='h-6 w-6 p-0'
                 >
-                  <X className="w-3 h-3" />
+                  <X className='w-3 h-3' />
                 </Button>
               </div>
-              <CardDescription className="text-sm">
+              <CardDescription className='text-sm'>
                 Ayúdanos a mejorar la aplicación
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 pt-0">
-              <div className="space-y-1">
-                <Label htmlFor="feedback-type" className="text-sm">Tipo de feedback</Label>
-                <Select value={feedbackType} onValueChange={(value: FeedbackType) => setFeedbackType(value)}>
-                  <SelectTrigger className="h-8">
-                    <SelectValue placeholder="Selecciona una opción" />
+            <CardContent className='space-y-3 pt-0'>
+              <div className='space-y-1'>
+                <Label htmlFor='feedback-type' className='text-sm'>
+                  Tipo de feedback
+                </Label>
+                <Select
+                  value={feedbackType}
+                  onValueChange={(value: FeedbackType) => setFeedbackType(value)}
+                >
+                  <SelectTrigger className='h-8'>
+                    <SelectValue placeholder='Selecciona una opción' />
                   </SelectTrigger>
                   <SelectContent>
                     {feedbackOptions.map(({ value, label, icon: Icon }) => (
-                      <SelectItem key={value} value={value} className="flex items-center gap-2">
-                        <Icon className="w-3 h-3 text-muted-foreground" />
+                      <SelectItem key={value} value={value} className='flex items-center gap-2'>
+                        <Icon className='w-3 h-3 text-muted-foreground' />
                         <span>{label}</span>
                       </SelectItem>
                     ))}
@@ -94,52 +99,58 @@ export const FeedbackPanel: React.FC = () => {
                 </Select>
               </div>
 
-              <div className="space-y-1">
-                <Label htmlFor="title" className="text-sm">Título</Label>
+              <div className='space-y-1'>
+                <Label htmlFor='title' className='text-sm'>
+                  Título
+                </Label>
                 <Input
-                  id="title"
-                  placeholder="Breve descripción del feedback"
+                  id='title'
+                  placeholder='Breve descripción del feedback'
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="h-8"
+                  className='h-8'
                 />
               </div>
 
-              <div className="space-y-1">
-                <Label htmlFor="description" className="text-sm">Descripción</Label>
+              <div className='space-y-1'>
+                <Label htmlFor='description' className='text-sm'>
+                  Descripción
+                </Label>
                 <Textarea
-                  id="description"
-                  placeholder="Describe tu feedback en detalle..."
+                  id='description'
+                  placeholder='Describe tu feedback en detalle...'
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={2}
-                  className="resize-none"
+                  className='resize-none'
                 />
               </div>
 
-              <div className="space-y-1">
-                <Label htmlFor="email" className="text-sm">Email (opcional)</Label>
+              <div className='space-y-1'>
+                <Label htmlFor='email' className='text-sm'>
+                  Email (opcional)
+                </Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="tu@email.com"
+                  id='email'
+                  type='email'
+                  placeholder='tu@email.com'
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-8"
+                  className='h-8'
                 />
               </div>
 
               <Button
                 onClick={handleSubmit}
                 disabled={!title.trim() || !description.trim() || isSubmitting}
-                className="w-full h-8"
-                size="sm"
+                className='w-full h-8'
+                size='sm'
               >
                 {isSubmitting ? (
                   <>Enviando...</>
                 ) : (
                   <>
-                    <Send className="w-3 h-3 mr-1" />
+                    <Send className='w-3 h-3 mr-1' />
                     Enviar
                   </>
                 )}
@@ -150,14 +161,14 @@ export const FeedbackPanel: React.FC = () => {
       )}
 
       {/* Botones flotantes */}
-      <div className="fixed bottom-4 left-4 flex flex-col gap-2 z-40">
+      <div className='fixed bottom-4 left-4 flex flex-col gap-2 z-40'>
         <Button
-          variant="outline"
-          size="sm"
+          variant='outline'
+          size='sm'
           onClick={() => setIsOpen(true)}
-          className="bg-background/80 backdrop-blur-sm border shadow-lg hover:bg-background/90"
+          className='bg-background/80 backdrop-blur-sm border shadow-lg hover:bg-background/90'
         >
-          <MessageSquare className="w-4 h-4 mr-2" />
+          <MessageSquare className='w-4 h-4 mr-2' />
           Feedback
         </Button>
 
@@ -167,8 +178,3 @@ export const FeedbackPanel: React.FC = () => {
     </>
   );
 };
-
-
-
-
-

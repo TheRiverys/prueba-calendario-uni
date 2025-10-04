@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
@@ -15,7 +14,7 @@ const mapRowToDelivery = (row: DeliveryRow): Delivery => ({
   studyStart: row.study_start ?? undefined,
   color: row.color ?? '',
   completed: row.completed,
-  priority: row.priority
+  priority: row.priority,
 });
 
 const mapInputToRow = (input: DeliveryInput, userId: string) => ({
@@ -26,7 +25,7 @@ const mapInputToRow = (input: DeliveryInput, userId: string) => ({
   priority: input.priority,
   color: input.color,
   completed: false,
-  study_start: input.studyStart ?? null
+  study_start: input.studyStart ?? null,
 });
 
 const mapUpdateToRow = (updates: DeliveryUpdate) => {
@@ -81,113 +80,128 @@ export const useSupabaseDeliveries = (user: User | null) => {
     void loadDeliveries();
   }, [loadDeliveries]);
 
-  const addDelivery = useCallback(async (deliveryData: DeliveryInput) => {
-    if (!user) {
-      return null;
-    }
-
-    try {
-      const { data, error: mutationError } = await supabase
-        .from('deliveries')
-        .insert(mapInputToRow(deliveryData, user.id))
-        .select('*')
-        .single<DeliveryRow>();
-
-      if (mutationError) {
-        throw mutationError;
+  const addDelivery = useCallback(
+    async (deliveryData: DeliveryInput) => {
+      if (!user) {
+        return null;
       }
 
-      const created = mapRowToDelivery(data);
-      setDeliveries(prev => [...prev, created]);
-      return created;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error adding delivery');
-      throw err;
-    }
-  }, [user]);
+      try {
+        const { data, error: mutationError } = await supabase
+          .from('deliveries')
+          .insert(mapInputToRow(deliveryData, user.id))
+          .select('*')
+          .single<DeliveryRow>();
 
-  const updateDelivery = useCallback(async (id: Delivery['id'], updates: DeliveryUpdate) => {
-    if (!user) {
-      return null;
-    }
+        if (mutationError) {
+          throw mutationError;
+        }
 
-    try {
-      const { data, error: mutationError } = await supabase
-        .from('deliveries')
-        .update(mapUpdateToRow(updates))
-        .eq('id', id)
-        .eq('user_id', user.id)
-        .select('*')
-        .single<DeliveryRow>();
+        const created = mapRowToDelivery(data);
+        setDeliveries((prev) => [...prev, created]);
+        return created;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error adding delivery');
+        throw err;
+      }
+    },
+    [user]
+  );
 
-      if (mutationError) {
-        throw mutationError;
+  const updateDelivery = useCallback(
+    async (id: Delivery['id'], updates: DeliveryUpdate) => {
+      if (!user) {
+        return null;
       }
 
-      const updated = mapRowToDelivery(data);
-      setDeliveries(prev => prev.map(delivery => (delivery.id === id ? updated : delivery)));
-      return updated;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error updating delivery');
-      throw err;
-    }
-  }, [user]);
+      try {
+        const { data, error: mutationError } = await supabase
+          .from('deliveries')
+          .update(mapUpdateToRow(updates))
+          .eq('id', id)
+          .eq('user_id', user.id)
+          .select('*')
+          .single<DeliveryRow>();
 
-  const deleteDelivery = useCallback(async (id: Delivery['id']) => {
-    if (!user) {
-      return;
-    }
+        if (mutationError) {
+          throw mutationError;
+        }
 
-    try {
-      const { error: mutationError } = await supabase
-        .from('deliveries')
-        .delete()
-        .eq('id', id)
-        .eq('user_id', user.id);
+        const updated = mapRowToDelivery(data);
+        setDeliveries((prev) => prev.map((delivery) => (delivery.id === id ? updated : delivery)));
+        return updated;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error updating delivery');
+        throw err;
+      }
+    },
+    [user]
+  );
 
-      if (mutationError) {
-        throw mutationError;
+  const deleteDelivery = useCallback(
+    async (id: Delivery['id']) => {
+      if (!user) {
+        return;
       }
 
-      setDeliveries(prev => prev.filter(delivery => delivery.id !== id));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error deleting delivery');
-      throw err;
-    }
-  }, [user]);
+      try {
+        const { error: mutationError } = await supabase
+          .from('deliveries')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', user.id);
 
-  const toggleCompleted = useCallback(async (id: Delivery['id']) => {
-    const current = deliveries.find(delivery => delivery.id === id);
-    if (!current) {
-      return null;
-    }
-    return updateDelivery(id, { completed: !current.completed });
-  }, [deliveries, updateDelivery]);
+        if (mutationError) {
+          throw mutationError;
+        }
 
-  const addDeliveries = useCallback(async (entries: DeliveryInput[]) => {
-    if (!user || entries.length === 0) {
-      return [] as Delivery[];
-    }
+        setDeliveries((prev) => prev.filter((delivery) => delivery.id !== id));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error deleting delivery');
+        throw err;
+      }
+    },
+    [user]
+  );
 
-    try {
-      const payload = entries.map(entry => mapInputToRow(entry, user.id));
-      const { data, error: mutationError } = await supabase
-        .from('deliveries')
-        .insert(payload)
-        .select('*');
+  const toggleCompleted = useCallback(
+    async (id: Delivery['id']) => {
+      const current = deliveries.find((delivery) => delivery.id === id);
+      if (!current) {
+        return null;
+      }
+      return updateDelivery(id, { completed: !current.completed });
+    },
+    [deliveries, updateDelivery]
+  );
 
-      if (mutationError) {
-        throw mutationError;
+  const addDeliveries = useCallback(
+    async (entries: DeliveryInput[]) => {
+      if (!user || entries.length === 0) {
+        return [] as Delivery[];
       }
 
-      const created = (data ?? []).map(mapRowToDelivery);
-      setDeliveries(prev => [...prev, ...created]);
-      return created;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error adding deliveries');
-      throw err;
-    }
-  }, [user]);
+      try {
+        const payload = entries.map((entry) => mapInputToRow(entry, user.id));
+        const { data, error: mutationError } = await supabase
+          .from('deliveries')
+          .insert(payload)
+          .select('*');
+
+        if (mutationError) {
+          throw mutationError;
+        }
+
+        const created = (data ?? []).map(mapRowToDelivery);
+        setDeliveries((prev) => [...prev, ...created]);
+        return created;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error adding deliveries');
+        throw err;
+      }
+    },
+    [user]
+  );
 
   return {
     deliveries,
@@ -198,6 +212,6 @@ export const useSupabaseDeliveries = (user: User | null) => {
     deleteDelivery,
     toggleCompleted,
     addDeliveries,
-    refetch: loadDeliveries
+    refetch: loadDeliveries,
   } as const;
 };

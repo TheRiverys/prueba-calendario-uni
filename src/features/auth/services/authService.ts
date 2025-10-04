@@ -1,4 +1,3 @@
-
 import { supabase } from '../../../lib/supabase';
 
 type AuthResponse = { error: string | null };
@@ -24,12 +23,18 @@ type ResetPasswordOptions = {
   redirectTo?: string;
 };
 
-export const signInWithEmail = async ({ email, password }: SignInOptions): Promise<AuthResponse> => {
+export const signInWithEmail = async ({
+  email,
+  password,
+}: SignInOptions): Promise<AuthResponse> => {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   return { error: error?.message ?? null };
 };
 
-export const signUpWithEmail = async ({ email, password }: SignUpOptions): Promise<AuthResponse> => {
+export const signUpWithEmail = async ({
+  email,
+  password,
+}: SignUpOptions): Promise<AuthResponse> => {
   const { error } = await supabase.auth.signUp({ email, password });
   return { error: error?.message ?? null };
 };
@@ -39,7 +44,10 @@ export const signOut = async (): Promise<AuthResponse> => {
   return { error: error?.message ?? null };
 };
 
-export const updateProfile = async ({ email, password }: UpdateProfileOptions): Promise<AuthResponse> => {
+export const updateProfile = async ({
+  email,
+  password,
+}: UpdateProfileOptions): Promise<AuthResponse> => {
   const updates: any = {};
 
   if (email) {
@@ -62,7 +70,7 @@ export const deleteAccount = async ({ password }: DeleteAccountOptions): Promise
   // Primero verificar la contraseña actual
   const { error: signInError } = await supabase.auth.signInWithPassword({
     email: (await supabase.auth.getUser()).data.user?.email || '',
-    password
+    password,
   });
 
   if (signInError) {
@@ -74,9 +82,12 @@ export const deleteAccount = async ({ password }: DeleteAccountOptions): Promise
   return { error: error?.message ?? null };
 };
 
-export const sendResetPasswordEmail = async ({ email, redirectTo }: ResetPasswordOptions): Promise<AuthResponse> => {
+export const sendResetPasswordEmail = async ({
+  email,
+  redirectTo,
+}: ResetPasswordOptions): Promise<AuthResponse> => {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo
+    redirectTo,
   });
   return { error: error?.message ?? null };
 };

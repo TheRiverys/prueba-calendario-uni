@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import type { Delivery } from '../types';
 
@@ -51,7 +50,7 @@ const sanitizeDelivery = (candidate: StoredDelivery): Delivery | null => {
     studyStart: typeof studyStart === 'string' && studyStart.length > 0 ? studyStart : undefined,
     color: color,
     completed,
-    priority
+    priority,
   } satisfies Delivery;
 };
 
@@ -111,12 +110,12 @@ export const useDeliveries = () => {
   }, [deliveries]);
 
   const addDelivery = (delivery: DeliveryInput) => {
-    setDeliveries(prev => {
+    setDeliveries((prev) => {
       const nextId = getNextId(prev);
       const newDelivery: Delivery = {
         ...delivery,
         id: nextId,
-        completed: false
+        completed: false,
       };
       return [...prev, newDelivery];
     });
@@ -126,16 +125,16 @@ export const useDeliveries = () => {
     if (items.length === 0) {
       return;
     }
-    setDeliveries(prev => {
+    setDeliveries((prev) => {
       const next = [...prev];
       let nextId = getNextId(prev);
       const toDelivery = (input: DeliveryInput, id: string): Delivery => ({
         ...input,
         id,
-        completed: false
+        completed: false,
       });
 
-      items.forEach(item => {
+      items.forEach((item) => {
         next.push(toDelivery(item, nextId));
         nextId = getNextId([...next]);
       });
@@ -144,21 +143,23 @@ export const useDeliveries = () => {
   };
 
   const updateDelivery = (id: string, updates: Partial<Delivery>) => {
-    setDeliveries(prev => prev.map(delivery => (delivery.id === id ? { ...delivery, ...updates } : delivery)));
+    setDeliveries((prev) =>
+      prev.map((delivery) => (delivery.id === id ? { ...delivery, ...updates } : delivery))
+    );
   };
 
   const deleteDelivery = (id: string) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar esta entrega?')) {
-      setDeliveries(prev => prev.filter(delivery => delivery.id !== id));
+      setDeliveries((prev) => prev.filter((delivery) => delivery.id !== id));
     }
   };
 
   const toggleCompleted = (id: string) => {
-    setDeliveries(prev => prev.map(delivery => (
-      delivery.id === id
-        ? { ...delivery, completed: !delivery.completed }
-        : delivery
-    )));
+    setDeliveries((prev) =>
+      prev.map((delivery) =>
+        delivery.id === id ? { ...delivery, completed: !delivery.completed } : delivery
+      )
+    );
   };
 
   return {
@@ -167,6 +168,6 @@ export const useDeliveries = () => {
     addDeliveries,
     updateDelivery,
     deleteDelivery,
-    toggleCompleted
+    toggleCompleted,
   } as const;
 };

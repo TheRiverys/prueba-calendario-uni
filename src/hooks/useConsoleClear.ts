@@ -27,7 +27,6 @@ export const useConsoleClear = () => {
         setTimeout(() => {
           window.location.reload();
         }, 1000);
-
       } catch (error) {
         console.error('❌ Error al limpiar los datos:', error);
       }
@@ -37,7 +36,9 @@ export const useConsoleClear = () => {
     window.ClearAllData = clearAllData;
 
     // Mensaje de ayuda en la consola
-    console.log('💡 Consejo: Escribe ClearAllData() en la consola para borrar todos los datos de localStorage');
+    console.log(
+      '💡 Consejo: Escribe ClearAllData() en la consola para borrar todos los datos de localStorage'
+    );
 
     // Cleanup: remover la función global cuando se desmonte el componente
     return () => {

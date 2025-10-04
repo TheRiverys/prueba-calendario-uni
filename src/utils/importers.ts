@@ -15,12 +15,12 @@ const DATE_FORMATS = ['yyyy-MM-dd', 'dd/MM/yyyy', 'dd-MM-yyyy', 'MM/dd/yyyy'];
 const HEADER_ALIASES: Record<ImportableColumn, string[]> = {
   subject: ['subject', 'materia', 'asignatura', 'curso', 'clase'],
   name: ['name', 'nombre', 'titulo', 'tarea', 'actividad', 'trabajo'],
-  dueDate: ['fecha', 'fecha limite', 'fecha de entrega', 'entrega', 'due', 'due date']
+  dueDate: ['fecha', 'fecha limite', 'fecha de entrega', 'entrega', 'due', 'due date'],
 };
 const COLUMN_LABELS: Record<ImportableColumn, string> = {
   subject: 'materia/asignatura',
   name: 'título/tarea',
-  dueDate: 'fecha de entrega'
+  dueDate: 'fecha de entrega',
 };
 const REQUIRED_COLUMNS: ImportableColumn[] = ['subject', 'name', 'dueDate'];
 const EXCEL_EPOCH = new Date(Date.UTC(1899, 11, 30));
@@ -29,7 +29,7 @@ const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 const createDefaultMapping = (): ColumnMapping => ({
   subject: 0,
   name: 1,
-  dueDate: 2
+  dueDate: 2,
 });
 
 const normalizeHeaderToken = (value: RawCell): string | null => {
@@ -80,13 +80,15 @@ const detectColumnMapping = (row: RawCell[]): Partial<Record<ImportableColumn, n
       return;
     }
 
-    (Object.entries(HEADER_ALIASES) as Array<[ImportableColumn, string[]]>).some(([column, aliases]) => {
-      if (aliases.includes(normalized) && mapping[column] === undefined) {
-        mapping[column] = index;
-        return true;
+    (Object.entries(HEADER_ALIASES) as Array<[ImportableColumn, string[]]>).some(
+      ([column, aliases]) => {
+        if (aliases.includes(normalized) && mapping[column] === undefined) {
+          mapping[column] = index;
+          return true;
+        }
+        return false;
       }
-      return false;
-    });
+    );
   });
 
   return mapping;
@@ -137,7 +139,7 @@ const normalizeDate = (value: RawCell): DateNormalizationResult => {
 };
 
 const isRowEmpty = (row: RawCell[]): boolean =>
-  row.every(value => {
+  row.every((value) => {
     if (value === null || value === undefined) {
       return true;
     }
@@ -156,17 +158,15 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
     const workbook = new ExcelJS.Workbook();
 
     const isCSV =
-      fileName.endsWith('.csv') ||
-      file.type === 'text/csv' ||
-      file.type === 'application/csv';
+      fileName.endsWith('.csv') || file.type === 'text/csv' || file.type === 'application/csv';
 
     if (isCSV) {
       const csvContent = new TextDecoder('utf-8').decode(buffer);
       const worksheet = workbook.addWorksheet('Sheet1');
-      const lines = csvContent.split(/\r?\n/).filter(line => line.trim().length > 0);
+      const lines = csvContent.split(/\r?\n/).filter((line) => line.trim().length > 0);
 
       lines.forEach((line, index) => {
-        const values = line.split(',').map(cell => cell.trim().replace(/\"/g, ''));
+        const values = line.split(',').map((cell) => cell.trim().replace(/\"/g, ''));
         const row = worksheet.getRow(index + 1);
         values.forEach((value, columnIndex) => {
           row.getCell(columnIndex + 1).value = value;
@@ -180,7 +180,7 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
       errors.push({
         row: 0,
         column: 'structure',
-        message: 'El archivo no contiene hojas. Añade al menos una pestaña con datos.'
+        message: 'El archivo no contiene hojas. Añade al menos una pestaña con datos.',
       });
       return { deliveries: [], errors };
     }
@@ -191,7 +191,7 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
       errors.push({
         row: 0,
         column: 'structure',
-        message: 'No se pudo leer la hoja de cálculo principal.'
+        message: 'No se pudo leer la hoja de cálculo principal.',
       });
       return { deliveries: [], errors };
     }
@@ -210,7 +210,7 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
       errors.push({
         row: 0,
         column: 'structure',
-        message: 'El archivo está vacío. Asegúrate de incluir encabezados y filas con datos.'
+        message: 'El archivo está vacío. Asegúrate de incluir encabezados y filas con datos.',
       });
       return { deliveries: [], errors };
     }
@@ -223,14 +223,16 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
     if (Object.keys(headerMapping).length > 0) {
       dataRows = rows.slice(1);
 
-      const missingColumns = REQUIRED_COLUMNS.filter(column => headerMapping[column] === undefined);
+      const missingColumns = REQUIRED_COLUMNS.filter(
+        (column) => headerMapping[column] === undefined
+      );
       if (missingColumns.length > 0) {
-        const missingLabels = missingColumns.map(column => COLUMN_LABELS[column]).join(', ');
+        const missingLabels = missingColumns.map((column) => COLUMN_LABELS[column]).join(', ');
         errors.push({
           row: firstRow.rowNumber,
           column: 'header',
           message: `La cabecera debe incluir las columnas: ${missingLabels}.`,
-          value: firstRow.values.map(toCellString).filter(Boolean).join(', ')
+          value: firstRow.values.map(toCellString).filter(Boolean).join(', '),
         });
         return { deliveries: [], errors };
       }
@@ -241,7 +243,7 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
         row: firstRow.rowNumber,
         column: 'header',
         message: `La primera fila debe incluir al menos ${REQUIRED_COLUMNS.length} columnas (materia, título, fecha).`,
-        value: firstRow.values.map(toCellString).join(', ')
+        value: firstRow.values.map(toCellString).join(', '),
       });
       return { deliveries: [], errors };
     }
@@ -250,7 +252,7 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
       errors.push({
         row: 0,
         column: 'structure',
-        message: 'No se encontraron filas de datos después de la cabecera.'
+        message: 'No se encontraron filas de datos después de la cabecera.',
       });
       return { deliveries: [], errors };
     }
@@ -274,7 +276,7 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
           row: rowNumber,
           column: 'subject',
           message: 'La materia es obligatoria.',
-          value: toCellString(subjectValue)
+          value: toCellString(subjectValue),
         });
       }
 
@@ -284,7 +286,7 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
           row: rowNumber,
           column: 'name',
           message: 'El título o descripción de la entrega es obligatorio.',
-          value: toCellString(nameValue)
+          value: toCellString(nameValue),
         });
       }
 
@@ -300,7 +302,7 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
           row: rowNumber,
           column: 'dueDate',
           message,
-          value: toCellString(dueDateValue)
+          value: toCellString(dueDateValue),
         });
       }
 
@@ -323,14 +325,17 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
 
     if (error instanceof Error) {
       if (error.message.includes('zip file')) {
-        throw new Error('El archivo parece ser un CSV. Asegúrate de que el archivo tenga extensión .csv o .xlsx.');
+        throw new Error(
+          'El archivo parece ser un CSV. Asegúrate de que el archivo tenga extensión .csv o .xlsx.'
+        );
       }
       if (error.message.includes('CSV')) {
         throw new Error('Error al procesar el archivo CSV. Verifica que el formato sea correcto.');
       }
     }
 
-    throw new Error('No se pudo procesar el archivo. Asegúrate de que sea un archivo Excel (.xlsx) o CSV válido.');
+    throw new Error(
+      'No se pudo procesar el archivo. Asegúrate de que sea un archivo Excel (.xlsx) o CSV válido.'
+    );
   }
 };
-

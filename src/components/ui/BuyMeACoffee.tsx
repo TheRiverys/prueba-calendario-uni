@@ -13,7 +13,7 @@ export const BuyMeACoffee: React.FC = () => {
     script.setAttribute('data-description', 'Ayúdame en Buy me a coffee!');
     script.setAttribute(
       'data-message',
-      'Gracias por visitar! Si esta aplicación te ha ayudado de alguna manera, considera comprarnos un café. ☕✨',
+      'Gracias por visitar! Si esta aplicación te ha ayudado de alguna manera, considera comprarnos un café. ☕✨'
     );
     script.setAttribute('data-color', '#FFDD00');
     script.setAttribute('data-position', 'Right');

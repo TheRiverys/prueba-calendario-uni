@@ -1,13 +1,15 @@
 import { type JSX, useState } from 'react';
-import { Edit3, Trash2, Eye, EyeOff, AlertTriangle } from 'lucide-react';
+import { Edit3, Trash2, Eye, EyeOff, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { useAppContext } from '../contexts/AppContext';
+import { useAuthContext } from '@/contexts/auth/AuthContext';
+import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
 
 const Profile = (): JSX.Element => {
-  const { user, updateProfile, deleteAccount, setCurrentPage } = useAppContext();
+  const { user, updateProfile, deleteAccount } = useAuthContext();
+  const { setCurrentPage } = usePreferencesContext();
   const [isEditing, setIsEditing] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -17,14 +19,14 @@ const Profile = (): JSX.Element => {
   const [success, setSuccess] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    email: user?.email || '',
+    email: user?.email ?? '',
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     setError(null);
     setSuccess(null);
   };
@@ -49,27 +51,29 @@ const Profile = (): JSX.Element => {
   };
 
   const handleUpdateProfile = async () => {
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      return;
+    }
 
     setLoading(true);
     setError(null);
     setSuccess(null);
 
     try {
-      const error = await updateProfile(formData.email, formData.newPassword || undefined);
-      if (error) {
-        setError(error);
+      const message = await updateProfile(formData.email, formData.newPassword || undefined);
+      if (message) {
+        setError(message);
       } else {
         setSuccess('Perfil actualizado exitosamente');
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           currentPassword: '',
           newPassword: '',
-          confirmPassword: ''
+          confirmPassword: '',
         }));
         setIsEditing(false);
       }
-    } catch (err) {
+    } catch {
       setError('Error inesperado al actualizar el perfil');
     } finally {
       setLoading(false);
@@ -82,19 +86,21 @@ const Profile = (): JSX.Element => {
       return;
     }
 
-    if (window.confirm('¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) {
+    if (
+      window.confirm(
+        '¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.'
+      )
+    ) {
       setLoading(true);
       setError(null);
       setSuccess(null);
 
       try {
-        const error = await deleteAccount(formData.currentPassword);
-        if (error) {
-          setError(error);
-        } else {
-          // La eliminación fue exitosa, el usuario será redirigido automáticamente
+        const message = await deleteAccount(formData.currentPassword);
+        if (message) {
+          setError(message);
         }
-      } catch (err) {
+      } catch {
         setError('Error inesperado al eliminar la cuenta');
       } finally {
         setLoading(false);
@@ -103,155 +109,191 @@ const Profile = (): JSX.Element => {
   };
 
   const getUserInitials = (email?: string): string => {
-    if (!email) return '??';
+    if (!email) {
+      return '??';
+    }
     return email.substring(0, 2).toUpperCase();
   };
 
   return (
     <div className='app-shell mt-6 pb-12'>
-      <div className='max-w-4xl mx-auto'>
-        {/* Encabezado */}
+      <div className='mx-auto max-w-4xl'>
         <div className='mb-8'>
-          <div className='flex items-center justify-between mb-6'>
+          <div className='mb-6 flex items-center justify-between'>
             <div className='flex items-center gap-4'>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={() => setCurrentPage('dashboard')}
-              >
-                ← Volver al Dashboard
+              <Button variant='ghost' size='sm' onClick={() => setCurrentPage('dashboard')}>
+                <ArrowLeft className='mr-2 h-4 w-4' /> Volver al Dashboard
               </Button>
             </div>
           </div>
           <div className='flex flex-col gap-2'>
             <h1 className='text-3xl font-bold text-foreground'>Perfil de Usuario</h1>
             <p className='text-base text-muted-foreground'>
-              Gestiona tu información personal y configuración de cuenta
+              Gestiona tus credenciales y controla la seguridad de tu cuenta.
             </p>
           </div>
         </div>
 
-        <div className='space-y-6'>
-          {/* Información Personal */}
-          <Card className='bg-card border-border shadow-sm'>
-            <CardHeader className='pb-4'>
+        <div className='grid gap-6 md:grid-cols-[2fr,3fr]'>
+          <Card className='h-fit'>
+            <CardHeader className='space-y-2'>
               <CardTitle className='flex items-center gap-3 text-base'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary'>
+                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-lg font-medium text-primary'>
                   {getUserInitials(user?.email)}
                 </div>
-                Información Personal
+                <div className='flex flex-col gap-1'>
+                  <span className='text-base font-semibold text-foreground'>{user?.email}</span>
+                  <span className='text-xs text-muted-foreground'>
+                    Cuenta sincronizada con Supabase
+                  </span>
+                </div>
               </CardTitle>
             </CardHeader>
-            <CardContent className='space-y-4'>
-              <div className='grid gap-4 sm:grid-cols-2'>
-                <div className='space-y-2'>
-                  <Label htmlFor='email' className='text-sm font-medium'>Correo Electrónico</Label>
-                  <Input
-                    id='email'
-                    type='email'
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    disabled={!isEditing}
-                    className={isEditing ? '' : 'bg-muted/50'}
-                  />
-                </div>
-
-                <div className='space-y-2'>
-                  <Label className='text-sm font-medium text-muted-foreground'>Estado de la cuenta</Label>
-                  <div className='flex items-center gap-2 p-2 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-md'>
-                    <div className='h-2 w-2 bg-green-500 rounded-full'></div>
-                    <span className='text-sm text-green-700 dark:text-green-400'>Cuenta activa</span>
-                  </div>
-                </div>
+            <CardContent className='space-y-4 text-sm text-muted-foreground'>
+              <div className='flex items-center justify-between'>
+                <span>Estado</span>
+                <span className='flex items-center gap-2 font-medium text-green-600 dark:text-green-400'>
+                  <span className='h-2 w-2 rounded-full bg-green-500' />
+                  Activa
+                </span>
+              </div>
+              <div className='flex items-center justify-between'>
+                <span>Proveedor</span>
+                <span className='font-medium text-foreground'>Correo y contraseña</span>
+              </div>
+              <div className='flex items-center justify-between'>
+                <span>Última actualización</span>
+                <span className='font-medium text-foreground'>Sesión actual</span>
               </div>
             </CardContent>
           </Card>
 
-          {/* Configuración de Seguridad */}
-          <Card className='bg-card border-border shadow-sm'>
-            <CardHeader className='pb-4'>
+          <Card className='md:col-span-1'>
+            <CardHeader className='flex flex-col gap-1'>
               <CardTitle className='flex items-center gap-2 text-base'>
                 <Edit3 className='h-4 w-4' />
-                Cambiar contraseña
+                Seguridad y credenciales
               </CardTitle>
             </CardHeader>
-            <CardContent className='space-y-4'>
-              {!isEditing ? (
-                <div className='flex flex-col gap-3'>
+            <CardContent className='space-y-6'>
+              <div className='space-y-2'>
+                <Label htmlFor='email'>Correo electrónico</Label>
+                <Input
+                  id='email'
+                  type='email'
+                  value={formData.email}
+                  onChange={(event) => handleInputChange('email', event.target.value)}
+                  disabled={!isEditing || loading}
+                />
+              </div>
+
+              <div className='grid gap-4 sm:grid-cols-2'>
+                <div className='space-y-2'>
+                  <Label htmlFor='newPassword'>Nueva contraseña</Label>
+                  <div className='relative'>
+                    <Input
+                      id='newPassword'
+                      type={showNewPassword ? 'text' : 'password'}
+                      value={formData.newPassword}
+                      onChange={(event) => handleInputChange('newPassword', event.target.value)}
+                      placeholder='••••••'
+                      disabled={!isEditing || loading}
+                    />
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      size='icon'
+                      className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
+                      onClick={() => setShowNewPassword((prev) => !prev)}
+                    >
+                      {showNewPassword ? (
+                        <EyeOff className='h-4 w-4' />
+                      ) : (
+                        <Eye className='h-4 w-4' />
+                      )}
+                    </Button>
+                  </div>
+                  <p className='text-xs text-muted-foreground'>Mínimo 6 caracteres.</p>
+                </div>
+
+                <div className='space-y-2'>
+                  <Label htmlFor='confirmPassword'>Confirmar contraseña</Label>
+                  <div className='relative'>
+                    <Input
+                      id='confirmPassword'
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={formData.confirmPassword}
+                      onChange={(event) => handleInputChange('confirmPassword', event.target.value)}
+                      placeholder='••••••'
+                      disabled={!isEditing || loading}
+                    />
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      size='icon'
+                      className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className='h-4 w-4' />
+                      ) : (
+                        <Eye className='h-4 w-4' />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className='space-y-2'>
+                <Label htmlFor='currentPassword'>Contraseña actual</Label>
+                <div className='relative'>
+                  <Input
+                    id='currentPassword'
+                    type={showCurrentPassword ? 'text' : 'password'}
+                    value={formData.currentPassword}
+                    onChange={(event) => handleInputChange('currentPassword', event.target.value)}
+                    placeholder='Necesaria para confirmar cambios sensibles'
+                    disabled={!isEditing || loading}
+                    className='pr-10'
+                  />
                   <Button
-                    onClick={() => setIsEditing(true)}
-                    variant='outline'
-                    className='w-full sm:w-auto'
+                    type='button'
+                    variant='ghost'
+                    size='icon'
+                    className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
+                    onClick={() => setShowCurrentPassword((prev) => !prev)}
                   >
-                    <Edit3 className='h-4 w-4 mr-2' />
-                    Cambiar contraseña
+                    {showCurrentPassword ? (
+                      <EyeOff className='h-4 w-4' />
+                    ) : (
+                      <Eye className='h-4 w-4' />
+                    )}
                   </Button>
                 </div>
-              ) : (
-                <div className='space-y-4'>
-                  <div className='grid gap-4 sm:grid-cols-2'>
-                    <div className='space-y-2'>
-                      <Label htmlFor='newPassword' className='text-sm font-medium'>
-                        Nueva contraseña
-                      </Label>
-                      <div className='relative'>
-                        <Input
-                          id='newPassword'
-                          type={showNewPassword ? 'text' : 'password'}
-                          value={formData.newPassword}
-                          onChange={(e) => handleInputChange('newPassword', e.target.value)}
-                          placeholder='Mínimo 6 caracteres'
-                          className='pr-10'
-                        />
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
-                          onClick={() => setShowNewPassword(!showNewPassword)}
-                        >
-                          {showNewPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
-                        </Button>
-                      </div>
-                    </div>
+              </div>
 
-                    <div className='space-y-2'>
-                      <Label htmlFor='confirmPassword' className='text-sm font-medium'>
-                        Confirmar contraseña
-                      </Label>
-                      <div className='relative'>
-                        <Input
-                          id='confirmPassword'
-                          type={showConfirmPassword ? 'text' : 'password'}
-                          value={formData.confirmPassword}
-                          onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                          placeholder='Repite la contraseña'
-                          className='pr-10'
-                        />
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        >
-                          {showConfirmPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+              {!isEditing && (
+                <Button variant='outline' onClick={() => setIsEditing(true)} className='w-full'>
+                  Editar credenciales
+                </Button>
+              )}
 
+              {isEditing && (
+                <div className='space-y-4 rounded-md border border-border p-4'>
+                  <p className='text-sm text-muted-foreground'>
+                    Guarda los cambios para aplicar las nuevas credenciales.
+                  </p>
                   <div className='flex flex-col-reverse gap-2 pt-4 sm:flex-row sm:justify-end sm:gap-3'>
                     <Button
                       type='button'
                       variant='outline'
                       onClick={() => {
                         setIsEditing(false);
-                        setFormData(prev => ({
+                        setFormData((prev) => ({
                           ...prev,
                           currentPassword: '',
                           newPassword: '',
-                          confirmPassword: ''
+                          confirmPassword: '',
                         }));
                         setError(null);
                         setSuccess(null);
@@ -263,7 +305,11 @@ const Profile = (): JSX.Element => {
                     </Button>
                     <Button
                       onClick={handleUpdateProfile}
-                      disabled={loading || !formData.newPassword || formData.newPassword !== formData.confirmPassword}
+                      disabled={
+                        loading ||
+                        !formData.newPassword ||
+                        formData.newPassword !== formData.confirmPassword
+                      }
                       className='w-full sm:w-auto'
                     >
                       {loading ? 'Actualizando...' : 'Guardar contraseña'}
@@ -274,7 +320,6 @@ const Profile = (): JSX.Element => {
             </CardContent>
           </Card>
 
-          {/* Zona de Peligro */}
           <Card className='border-destructive/50 bg-destructive/5'>
             <CardHeader className='pb-4'>
               <CardTitle className='flex items-center gap-2 text-base text-destructive'>
@@ -283,36 +328,34 @@ const Profile = (): JSX.Element => {
               </CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
-              <div className='p-4 bg-destructive/10 border border-destructive/20 rounded-lg'>
+              <div className='rounded-lg border border-destructive/20 bg-destructive/10 p-4'>
                 <div className='flex items-start gap-3'>
-                  <AlertTriangle className='h-5 w-5 text-destructive mt-0.5 flex-shrink-0' />
+                  <AlertTriangle className='mt-0.5 h-5 w-5 flex-shrink-0 text-destructive' />
                   <div className='space-y-2'>
-                    <p className='text-sm font-medium text-destructive'>
-                      Acción irreversible
-                    </p>
+                    <p className='text-sm font-medium text-destructive'>Acción irreversible</p>
                     <p className='text-sm text-destructive/80'>
                       Al eliminar tu cuenta perderás permanentemente:
                     </p>
-                    <ul className='text-sm text-destructive/80 space-y-1 ml-4'>
-                      <li>• Todas tus entregas y horarios de estudio</li>
-                      <li>• Tu configuración personalizada</li>
-                      <li>• Tu historial y estadísticas</li>
-                      <li>• Acceso a la aplicación con esta cuenta</li>
+                    <ul className='ml-4 space-y-1 text-sm text-destructive/80'>
+                      <li> Todas tus entregas y horarios de estudio</li>
+                      <li> Tu configuración personalizada</li>
+                      <li> Tu historial y estadísticas</li>
+                      <li> Acceso a la aplicación con esta cuenta</li>
                     </ul>
                   </div>
                 </div>
               </div>
 
               <div className='space-y-2'>
-                <Label htmlFor='currentPassword' className='text-sm font-medium'>
+                <Label htmlFor='delete-current-password' className='text-sm font-medium'>
                   Confirmar contraseña actual
                 </Label>
                 <div className='relative'>
                   <Input
-                    id='currentPassword'
+                    id='delete-current-password'
                     type={showCurrentPassword ? 'text' : 'password'}
                     value={formData.currentPassword}
-                    onChange={(e) => handleInputChange('currentPassword', e.target.value)}
+                    onChange={(event) => handleInputChange('currentPassword', event.target.value)}
                     placeholder='Ingresa tu contraseña para confirmar'
                     className='pr-10'
                   />
@@ -321,9 +364,13 @@ const Profile = (): JSX.Element => {
                     variant='ghost'
                     size='icon'
                     className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
-                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    onClick={() => setShowCurrentPassword((prev) => !prev)}
                   >
-                    {showCurrentPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
+                    {showCurrentPassword ? (
+                      <EyeOff className='h-4 w-4' />
+                    ) : (
+                      <Eye className='h-4 w-4' />
+                    )}
                   </Button>
                 </div>
               </div>
@@ -335,7 +382,7 @@ const Profile = (): JSX.Element => {
                   disabled={loading || !formData.currentPassword}
                   className='w-full'
                 >
-                  <Trash2 className='h-4 w-4 mr-2' />
+                  <Trash2 className='mr-2 h-4 w-4' />
                   {loading ? 'Eliminando cuenta...' : 'Eliminar cuenta permanentemente'}
                 </Button>
               </div>
@@ -344,9 +391,8 @@ const Profile = (): JSX.Element => {
         </div>
       </div>
 
-      {/* Mensajes de estado */}
       {error && (
-        <div className='mt-6 p-4 border border-destructive/50 bg-destructive/5 rounded-md'>
+        <div className='mt-6 rounded-md border border-destructive/50 bg-destructive/5 p-4'>
           <div className='flex items-center gap-2 text-destructive'>
             <AlertTriangle className='h-4 w-4' />
             <span className='text-sm font-medium'>{error}</span>
@@ -355,9 +401,9 @@ const Profile = (): JSX.Element => {
       )}
 
       {success && (
-        <div className='mt-6 p-4 border border-green-500/50 bg-green-50 dark:bg-green-950/50 rounded-md'>
+        <div className='mt-6 rounded-md border border-green-500/50 bg-green-50 p-4 dark:bg-green-950/50'>
           <div className='flex items-center gap-2 text-green-700 dark:text-green-400'>
-            <div className='h-2 w-2 bg-green-500 rounded-full'></div>
+            <div className='h-2 w-2 rounded-full bg-green-500' />
             <span className='text-sm font-medium'>{success}</span>
           </div>
         </div>
