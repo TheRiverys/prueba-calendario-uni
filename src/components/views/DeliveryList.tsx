@@ -500,7 +500,15 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
           </div>
         ) : (
           <div className="rounded-xl border border-dashed border-border bg-muted/20 p-10 text-center text-muted-foreground">
-            No hay entregas registradas. Añade la primera para comenzar a planificar tu calendario.
+            <div className="space-y-4">
+              <p>No hay entregas registradas.</p>
+              <p className="text-sm">Añade la primera para comenzar a planificar tu calendario.</p>
+              <Button onClick={onAdd} className="flex items-center gap-2 mx-auto">
+                <Edit2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Nueva entrega</span>
+                <span className="sm:hidden">Nueva</span>
+              </Button>
+            </div>
           </div>
         )}
       </div>
