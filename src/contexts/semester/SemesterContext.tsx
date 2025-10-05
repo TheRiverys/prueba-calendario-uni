@@ -7,6 +7,7 @@ import React, {
   type ReactNode,
 } from 'react';
 
+import { toast } from '@/components/ui/sonner';
 import { useAuthContext } from '@/contexts/auth/AuthContext';
 import { useSupabaseSemesterStart } from '@/hooks/supabase/useSupabaseSemesterStart';
 import { useSemesterStart as useLocalSemesterStart } from '@/hooks/useSemesterStart';
@@ -56,7 +57,9 @@ export const SemesterProvider: React.FC<SemesterProviderProps> = ({ children }) 
           try {
             await updateRemoteSemesterStart(value);
           } catch (error) {
-            console.error('No se pudo actualizar la fecha de inicio en Supabase', error);
+            toast.error('No se pudo actualizar la fecha de inicio en Supabase', {
+              description: error instanceof Error ? error.message : String(error),
+            });
           }
         })();
       }

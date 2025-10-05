@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { toast } from '@/components/ui/sonner';
+
 import type { Delivery } from '../types';
 
 const STORAGE_KEY = 'deliveries';
@@ -75,7 +77,9 @@ const readStoredDeliveries = (): Delivery[] => {
       .map(sanitizeDelivery)
       .filter((delivery): delivery is Delivery => delivery !== null);
   } catch (error) {
-    console.warn('No se pudo recuperar las entregas almacenadas.', error);
+    toast.error('No se pudieron recuperar las entregas almacenadas.', {
+      description: error instanceof Error ? error.message : String(error),
+    });
     return [];
   }
 };
@@ -106,7 +110,9 @@ export const useDeliveries = () => {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(deliveries));
     } catch (error) {
-      console.warn('No se pudo persistir las entregas.', error);
+      toast.error('No se pudieron guardar las entregas.', {
+        description: error instanceof Error ? error.message : String(error),
+      });
     }
   }, [deliveries]);
 

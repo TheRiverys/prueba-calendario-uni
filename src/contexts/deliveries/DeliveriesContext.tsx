@@ -9,6 +9,7 @@ import {
   type FC,
 } from 'react';
 
+import { toast } from '@/components/ui/sonner';
 import { useAuthContext } from '@/contexts/auth/AuthContext';
 import { useSemesterContext } from '@/contexts/semester/SemesterContext';
 import { useSupabaseDeliveries } from '@/hooks/supabase/useSupabaseDeliveries';
@@ -89,7 +90,9 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({ children }) =>
           try {
             await addRemoteDelivery(delivery);
           } catch (error) {
-            console.error('No se pudo crear la entrega en Supabase', error);
+            toast.error('No se pudo crear la entrega en Supabase', {
+              description: error instanceof Error ? error.message : String(error),
+            });
           }
         })();
       } else {
@@ -110,7 +113,9 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({ children }) =>
           try {
             await addRemoteDeliveries(entries);
           } catch (error) {
-            console.error('No se pudo importar entregas en Supabase', error);
+            toast.error('No se pudo importar entregas en Supabase', {
+              description: error instanceof Error ? error.message : String(error),
+            });
           }
         })();
       } else {
@@ -128,7 +133,9 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({ children }) =>
           try {
             await updateRemoteDelivery(id, updates);
           } catch (error) {
-            console.error('No se pudo actualizar la entrega en Supabase', error);
+            toast.error('No se pudo actualizar la entrega en Supabase', {
+              description: error instanceof Error ? error.message : String(error),
+            });
           }
         })();
       } else {
@@ -146,7 +153,9 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({ children }) =>
           try {
             await deleteRemoteDelivery(id);
           } catch (error) {
-            console.error('No se pudo eliminar la entrega en Supabase', error);
+            toast.error('No se pudo eliminar la entrega en Supabase', {
+              description: error instanceof Error ? error.message : String(error),
+            });
           }
         })();
       } else {
@@ -164,7 +173,9 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({ children }) =>
           try {
             await toggleRemoteCompleted(id);
           } catch (error) {
-            console.error('No se pudo actualizar el estado de la entrega en Supabase', error);
+            toast.error('No se pudo actualizar el estado de la entrega en Supabase', {
+              description: error instanceof Error ? error.message : String(error),
+            });
           }
         })();
       } else {

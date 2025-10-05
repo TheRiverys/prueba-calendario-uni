@@ -1,4 +1,4 @@
-﻿import {
+import {
   MessageSquare,
   X,
   Send,
@@ -10,6 +10,7 @@
 import React, { useState } from 'react';
 
 import { BuyMeACoffee } from '@/components/ui/BuyMeACoffee';
+import { toast } from '@/components/ui/sonner';
 import { useSupabaseFeedback } from '@/hooks/supabase/useSupabaseFeedback';
 
 import { Button } from './button';
@@ -56,9 +57,11 @@ export const FeedbackPanel: React.FC = () => {
       setFeedbackType('comentario');
       setIsOpen(false);
 
-      window.alert('¡Gracias por tu feedback! Lo hemos recibido correctamente.');
+      toast.success('¡Gracias por tu feedback! Lo hemos recibido correctamente.');
     } else {
-      window.alert(`Error al enviar el feedback: ${result.error}`);
+      toast.error('Error al enviar el feedback', {
+        description: result.error,
+      });
     }
   };
 

@@ -22,7 +22,10 @@ interface GanttViewProps {
 }
 
 const GanttView: React.FC<GanttViewProps> = ({ schedule }) => {
-  const today = new Date();
+  const todayRef = useRef(new Date());
+
+  const today = todayRef.current;
+
   const scrollViewportRef = useRef<HTMLDivElement>(null);
 
   const dayWidth = 40;

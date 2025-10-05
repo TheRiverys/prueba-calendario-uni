@@ -1,4 +1,6 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { toast } from '@/components/ui/sonner';
 
 const SEMESTER_START_STORAGE_KEY = 'semester-start-date';
 
@@ -23,7 +25,9 @@ export const useSemesterStart = () => {
       const stored = window.localStorage.getItem(SEMESTER_START_STORAGE_KEY);
       return sanitizeIsoDate(stored);
     } catch (error) {
-      console.warn('No se pudo leer la fecha de inicio de semestre almacenada', error);
+      toast.error('No se pudo leer la fecha de inicio de semestre almacenada', {
+        description: error instanceof Error ? error.message : String(error),
+      });
       return getTodayIso();
     }
   });
@@ -32,7 +36,9 @@ export const useSemesterStart = () => {
     try {
       window.localStorage.setItem(SEMESTER_START_STORAGE_KEY, semesterStart);
     } catch (error) {
-      console.warn('No se pudo persistir la fecha de inicio de semestre', error);
+      toast.error('No se pudo persistir la fecha de inicio de semestre', {
+        description: error instanceof Error ? error.message : String(error),
+      });
     }
   }, [semesterStart]);
 

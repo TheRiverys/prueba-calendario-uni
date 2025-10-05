@@ -9,6 +9,7 @@ import React, {
   type ReactNode,
 } from 'react';
 
+import { toast } from '@/components/ui/sonner';
 import { useDeliveriesContext } from '@/contexts/deliveries/DeliveriesContext';
 import { useSemesterContext } from '@/contexts/semester/SemesterContext';
 import { useAI } from '@/hooks/useAI';
@@ -133,7 +134,9 @@ export const AiProvider: React.FC<AiProviderProps> = ({ children }) => {
         applied: overrides.size > 0,
       } satisfies AiScheduleResult;
     } catch (error) {
-      console.error('Error generando horario con IA:', error);
+      toast.error('Error generando horario con IA.', {
+        description: error instanceof Error ? error.message : String(error),
+      });
       clearAiSchedule();
       return { entries: [], applied: false } satisfies AiScheduleResult;
     }

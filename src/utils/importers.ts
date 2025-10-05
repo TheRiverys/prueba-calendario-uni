@@ -1,4 +1,4 @@
-﻿import { format, parse, parseISO, isValid } from 'date-fns';
+import { format, parse, parseISO, isValid } from 'date-fns';
 import ExcelJS from 'exceljs';
 
 import type { ImportResult, ImportValidationError, ImportedDelivery } from '../types';
@@ -320,8 +320,6 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
 
     return { deliveries, errors };
   } catch (error) {
-    console.error('Error parsing file:', error);
-
     if (error instanceof Error) {
       if (error.message.includes('zip file')) {
         throw new Error(

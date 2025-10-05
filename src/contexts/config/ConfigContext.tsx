@@ -7,6 +7,7 @@ import React, {
   type ReactNode,
 } from 'react';
 
+import { toast } from '@/components/ui/sonner';
 import { useAuthContext } from '@/contexts/auth/AuthContext';
 import { useSupabaseConfig } from '@/hooks/supabase/useSupabaseConfig';
 import { useConfig as useLocalConfig } from '@/hooks/useConfig';
@@ -73,7 +74,9 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
             try {
               await updateRemoteConfig(rest);
             } catch (error) {
-              console.error('No se pudo actualizar la configuración en Supabase', error);
+              toast.error('No se pudo actualizar la configuración en Supabase', {
+                description: error instanceof Error ? error.message : String(error),
+              });
             }
           })();
         }
@@ -90,7 +93,9 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
         try {
           await resetRemoteConfig();
         } catch (error) {
-          console.error('No se pudo restaurar la configuración en Supabase', error);
+          toast.error('No se pudo restaurar la configuración en Supabase', {
+            description: error instanceof Error ? error.message : String(error),
+          });
         }
       })();
       const defaults = createDefaultConfig();

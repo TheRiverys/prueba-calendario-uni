@@ -4,6 +4,8 @@ import * as React from 'react';
 import { getOAuthProviderInfo } from '@/lib/oauthUtils';
 import { cn } from '@/lib/utils';
 
+import type { User } from '@supabase/supabase-js';
+
 const Avatar = React.forwardRef<
   React.ComponentRef<typeof AvatarPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
@@ -44,17 +46,7 @@ const AvatarFallback = React.forwardRef<
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
 
 interface UserAvatarProps {
-  readonly user: {
-    email?: string | null;
-    user_metadata?: {
-      avatar_url?: string | null;
-      full_name?: string | null;
-      picture?: string | null;
-    } | null;
-    app_metadata?: {
-      provider?: string | null;
-    } | null;
-  } | null;
+  readonly user: User | null;
   readonly className?: string;
   readonly size?: 'sm' | 'md' | 'lg' | 'xl';
 }

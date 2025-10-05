@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 
+import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/lib/supabase';
 
 import { useAuth } from '../useAuth';
@@ -58,7 +59,9 @@ export const useSupabaseFeedback = () => {
 
       return data || [];
     } catch (err) {
-      console.error('Error getting user feedback:', err);
+      toast.error('No se pudo obtener tu feedback guardado.', {
+        description: err instanceof Error ? err.message : String(err),
+      });
       return [];
     }
   }, [user]);

@@ -1,4 +1,4 @@
-﻿import { Upload, Download } from 'lucide-react';
+import { Upload, Download } from 'lucide-react';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from '@/components/ui/sonner';
 import { useConfigContext } from '@/contexts/config/ConfigContext';
 import { useDeliveriesContext } from '@/contexts/deliveries/DeliveriesContext';
 import { useScheduleContext } from '@/contexts/schedule/ScheduleContext';
@@ -26,22 +27,22 @@ const COLUMN_DISPLAY_NAMES: Record<ImportValidationError['column'], string> = {
   header: 'Cabecera',
 };
 
-const MAX_ERRORS_IN_ALERT = 5;
+const MAX_ERRORS_IN_TOAST = 5;
 
 const formatImportErrors = (importErrors: ImportValidationError[]): string => {
   if (importErrors.length === 0) {
     return '';
   }
 
-  const lines = importErrors.slice(0, MAX_ERRORS_IN_ALERT).map(error => {
+  const lines = importErrors.slice(0, MAX_ERRORS_IN_TOAST).map(error => {
     const label = COLUMN_DISPLAY_NAMES[error.column];
     const location = error.row > 0 ? `Fila ${error.row}` : 'General';
     const suffix = label ? ` (${label})` : '';
     return `- ${location}${suffix}: ${error.message}`;
   });
 
-  if (importErrors.length > MAX_ERRORS_IN_ALERT) {
-    lines.push(`- ...${importErrors.length - MAX_ERRORS_IN_ALERT} error(es) adicional(es)`);
+  if (importErrors.length > MAX_ERRORS_IN_TOAST) {
+    lines.push(`- ...${importErrors.length - MAX_ERRORS_IN_TOAST} error(es) adicional(es)`);
   }
 
   return lines.join('\n');
@@ -89,11 +90,13 @@ export const ConfigModal: React.FC = () => {
       const { deliveries: importedRows, errors: importErrors } = await parseDeliveriesFile(file);
 
       if (importedRows.length === 0) {
-        const baseMessage =
-          importErrors.length > 0
-            ? `No se importÃ³ ninguna entrega. Corrige los siguientes errores:\n${formatImportErrors(importErrors)}`
-            : 'No se encontraron filas vÃ¡lidas en el archivo.';
-        window.alert(baseMessage);
+        if (importErrors.length > 0) {
+          toast.error('No se importó ninguna entrega.', {
+            description: formatImportErrors(importErrors),
+          });
+        } else {
+          toast.error('No se encontraron filas válidas en el archivo.');
+        }
         return;
       }
 
@@ -108,15 +111,16 @@ export const ConfigModal: React.FC = () => {
       addDeliveries(newDeliveries);
 
       if (importErrors.length > 0) {
-        window.alert(
-          `Se importaron ${newDeliveries.length} entregas, pero detectamos ${importErrors.length} fila(s) con problemas:\n${formatImportErrors(importErrors)}`
-        );
+        toast.warning(`Se importaron ${newDeliveries.length} entregas con incidencias.`, {
+          description: formatImportErrors(importErrors),
+        });
       } else {
-        window.alert(`Se importaron ${newDeliveries.length} entregas correctamente.`);
+        toast.success(`Se importaron ${newDeliveries.length} entregas correctamente.`);
       }
     } catch (error) {
-      console.error('Error al importar entregas', error);
-      window.alert(error instanceof Error ? error.message : 'No se pudo importar el archivo.');
+      toast.error('No se pudo importar el archivo.', {
+        description: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       event.target.value = '';
     }
@@ -124,7 +128,7 @@ export const ConfigModal: React.FC = () => {
 
   const handleExport = (): void => {
     if (fullSchedule.length === 0) {
-      window.alert('No hay entregas para exportar.');
+      toast.info('No hay entregas para exportar.');
       return;
     }
 
@@ -139,9 +143,11 @@ export const ConfigModal: React.FC = () => {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      toast.success('Archivo .ics generado correctamente.');
     } catch (error) {
-      console.error('Error exportando calendario', error);
-      window.alert('No se pudo generar el archivo .ics.');
+      toast.error('No se pudo generar el archivo .ics.', {
+        description: error instanceof Error ? error.message : String(error),
+      });
     }
   };
 

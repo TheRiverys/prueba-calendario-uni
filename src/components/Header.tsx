@@ -3,6 +3,7 @@ import { es } from 'date-fns/locale';
 import { Calendar, ChevronDown, LogOut, Moon, Settings, Sun, User } from 'lucide-react';
 import { type JSX, useCallback, useEffect, useMemo, useState } from 'react';
 
+import { toast } from '@/components/ui/sonner';
 import { useAuthContext } from '@/contexts/auth/AuthContext';
 import { useConfigContext } from '@/contexts/config/ConfigContext';
 import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
@@ -38,7 +39,9 @@ const Header = (): JSX.Element => {
     try {
       const message = await signOut();
       if (message) {
-        console.error('No se pudo cerrar la sesión:', message);
+        toast.error('No se pudo cerrar la sesión.', {
+          description: message,
+        });
       }
     } finally {
       setSigningOut(false);

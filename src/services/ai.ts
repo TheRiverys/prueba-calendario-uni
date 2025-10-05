@@ -1,6 +1,8 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 
+import { toast } from '@/components/ui/sonner';
+
 // Configuración del modelo gpt-5-nano
 const AI_MODEL = 'gpt-5-nano';
 
@@ -131,7 +133,9 @@ export class AIService {
         return []; // fallback
       }
     } catch (error) {
-      console.error('Error en IA de plan de estudio:', error);
+      toast.error('Error al generar el plan de estudio con IA.', {
+        description: error instanceof Error ? error.message : String(error),
+      });
       return []; // fallback
     }
   }
@@ -216,7 +220,9 @@ export class AIService {
 
       return result.text;
     } catch (error) {
-      console.error('Error en análisis de IA:', error);
+      toast.error('Error al analizar el progreso con IA.', {
+        description: error instanceof Error ? error.message : String(error),
+      });
       return 'Continúa trabajando sistemáticamente en tus entregas.'; // fallback
     }
   }

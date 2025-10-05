@@ -7,6 +7,7 @@ import { Modal } from './components/Modal';
 import { Profile } from './components/Profile';
 import { StatsOverview } from './components/StatsOverview';
 import { FeedbackPanel } from './components/ui/FeedbackPanel';
+import { Toaster } from './components/ui/sonner';
 import { Views } from './components/Views';
 import { AppProvider } from './contexts/AppContext';
 import { useDeliveriesContext } from './contexts/deliveries/DeliveriesContext';
@@ -111,6 +112,7 @@ const App: React.FC = () => {
   return (
     <AppProvider>
       <AppContent />
+      <Toaster />
     </AppProvider>
   );
 };
