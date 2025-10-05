@@ -1,0 +1,5 @@
+# Ejecutar linting con la nueva configuración
+npm run lint
+
+# Formatear código
+npm run format
