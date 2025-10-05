@@ -24,16 +24,16 @@ import type { StudySchedule } from '../../types';
 
 interface DeliveryListProps {
   readonly schedule: StudySchedule[];
-  readonly onEdit: (delivery: StudySchedule) => void;
-  readonly onDelete: (id: StudySchedule['id']) => void;
-  readonly onToggleComplete: (id: StudySchedule['id']) => void;
+  readonly onEdit: (_deliveryItem: StudySchedule) => void;
+  readonly onDelete: (_deliveryId: StudySchedule['id']) => void;
+  readonly onToggleComplete: (_deliveryId: StudySchedule['id']) => void;
   readonly selectedSubject: string;
   readonly subjects: string[];
-  readonly onSubjectChange: (subject: string) => void;
+  readonly onSubjectChange: (_subject: string) => void;
   readonly sortBy: 'algorithm' | 'subject' | 'date';
-  readonly onSortChange: (sort: 'algorithm' | 'subject' | 'date') => void;
+  readonly onSortChange: (_sortOption: 'algorithm' | 'subject' | 'date') => void;
   readonly activeView: 'list' | 'calendar' | 'gantt';
-  readonly onViewChange: (view: 'list' | 'calendar' | 'gantt') => void;
+  readonly onViewChange: (_viewOption: 'list' | 'calendar' | 'gantt') => void;
   readonly onAdd: () => void;
 }
 

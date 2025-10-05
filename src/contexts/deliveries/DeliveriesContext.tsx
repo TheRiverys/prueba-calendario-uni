@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   type ReactNode,
+  type FC,
 } from 'react';
 
 import { useAuthContext } from '@/contexts/auth/AuthContext';
@@ -19,27 +20,27 @@ interface DeliveriesContextValue {
   deliveries: Delivery[];
   deliveriesVersion: number;
   subjects: string[];
-  addDelivery: (delivery: Omit<Delivery, 'id' | 'completed'>) => void;
-  addDeliveries: (entries: Omit<Delivery, 'id' | 'completed'>[]) => void;
-  updateDelivery: (id: Delivery['id'], updates: Partial<Delivery>) => void;
-  deleteDelivery: (id: Delivery['id']) => void;
-  toggleCompleted: (id: Delivery['id']) => void;
+  addDelivery: (_delivery: Omit<Delivery, 'id' | 'completed'>) => void;
+  addDeliveries: (_entries: Omit<Delivery, 'id' | 'completed'>[]) => void;
+  updateDelivery: (_id: Delivery['id'], _updates: Partial<Delivery>) => void;
+  deleteDelivery: (_id: Delivery['id']) => void;
+  toggleCompleted: (_id: Delivery['id']) => void;
   modalOpen: boolean;
   editingDelivery: Delivery | null;
   formData: FormData;
-  openModal: (delivery?: Delivery | null) => void;
+  openModal: (_delivery?: Delivery | null) => void;
   closeModal: () => void;
-  handleInputChange: (field: keyof FormData, value: string) => void;
-  setFormData: (data: FormData) => void;
+  handleInputChange: (_field: keyof FormData, _value: string) => void;
+  setFormData: (_data: FormData) => void;
 }
 
 const DeliveriesContext = createContext<DeliveriesContextValue | undefined>(undefined);
 
 interface DeliveriesProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
-export const DeliveriesProvider: React.FC<DeliveriesProviderProps> = ({ children }) => {
+export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({ children }) => {
   const { user } = useAuthContext();
   const isAuthenticated = Boolean(user);
   const { semesterStart } = useSemesterContext();

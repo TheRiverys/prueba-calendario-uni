@@ -50,7 +50,7 @@ const Header = (): JSX.Element => {
       return undefined;
     }
 
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: globalThis.MouseEvent) => {
       const target = event.target as Element;
       if (!target.closest('.dropdown-container')) {
         setDropdownOpen(false);

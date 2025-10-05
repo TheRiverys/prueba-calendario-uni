@@ -1,4 +1,4 @@
-import { Upload, Download } from 'lucide-react';
+﻿import { Upload, Download } from 'lucide-react';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ import { pickColorForSubject, parseDeliveriesFile, createIcsCalendar } from '@/u
 
 const COLUMN_DISPLAY_NAMES: Record<ImportValidationError['column'], string> = {
   subject: 'Materia',
-  name: 'Título',
+  name: 'TÃ­tulo',
   dueDate: 'Fecha de entrega',
   structure: 'Estructura del archivo',
   header: 'Cabecera',
@@ -91,8 +91,8 @@ export const ConfigModal: React.FC = () => {
       if (importedRows.length === 0) {
         const baseMessage =
           importErrors.length > 0
-            ? `No se importó ninguna entrega. Corrige los siguientes errores:\n${formatImportErrors(importErrors)}`
-            : 'No se encontraron filas válidas en el archivo.';
+            ? `No se importÃ³ ninguna entrega. Corrige los siguientes errores:\n${formatImportErrors(importErrors)}`
+            : 'No se encontraron filas vÃ¡lidas en el archivo.';
         window.alert(baseMessage);
         return;
       }
@@ -130,7 +130,7 @@ export const ConfigModal: React.FC = () => {
 
     try {
       const calendar = createIcsCalendar(fullSchedule);
-      const blob = new Blob([calendar], { type: 'text/calendar;charset=utf-8' });
+      const blob = new globalThis.Blob([calendar], { type: 'text/calendar;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -149,23 +149,23 @@ export const ConfigModal: React.FC = () => {
     <Dialog open={configModalOpen} onOpenChange={handleOpenChange}>
       <DialogContent className='max-h-[90vh] overflow-auto sm:max-w-2xl'>
         <DialogHeader>
-          <DialogTitle>Configuración</DialogTitle>
+          <DialogTitle>ConfiguraciÃ³n</DialogTitle>
           <DialogDescription>
-            Ajusta los parámetros del planificador, importa entregas o exporta tu calendario.
+            Ajusta los parÃ¡metros del planificador, importa entregas o exporta tu calendario.
           </DialogDescription>
         </DialogHeader>
 
         <div className='space-y-8'>
           <section className='space-y-4'>
             <div className='flex flex-col gap-1'>
-              <h3 className='text-foreground text-base font-semibold'>Planificación base</h3>
+              <h3 className='text-foreground text-base font-semibold'>PlanificaciÃ³n base</h3>
               <p className='text-muted-foreground text-sm'>
-                Configura los días de estudio predeterminados.
+                Configura los dÃ­as de estudio predeterminados.
               </p>
             </div>
             <div className='grid gap-4 md:grid-cols-2'>
               <div className='space-y-2'>
-                <Label htmlFor='baseStudyDays'>Días base de estudio</Label>
+                <Label htmlFor='baseStudyDays'>DÃ­as base de estudio</Label>
                 <Input
                   id='baseStudyDays'
                   type='number'
@@ -175,12 +175,12 @@ export const ConfigModal: React.FC = () => {
                   }
                 />
                 <p className='text-muted-foreground text-xs'>
-                  Días mínimos que se asignarán a cada entrega.
+                  DÃ­as mÃ­nimos que se asignarÃ¡n a cada entrega.
                 </p>
               </div>
 
               <div className='space-y-2'>
-                <Label htmlFor='minStudyTime'>Tiempo mínimo por sesión (horas)</Label>
+                <Label htmlFor='minStudyTime'>Tiempo mÃ­nimo por sesiÃ³n (horas)</Label>
                 <Input
                   id='minStudyTime'
                   type='number'
@@ -190,13 +190,13 @@ export const ConfigModal: React.FC = () => {
                   }
                 />
                 <p className='text-muted-foreground text-xs'>
-                  Duración mínima recomendada de cada sesión.
+                  DuraciÃ³n mÃ­nima recomendada de cada sesiÃ³n.
                 </p>
               </div>
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor='allocationWindowDays'>Ventana de asignación (días)</Label>
+              <Label htmlFor='allocationWindowDays'>Ventana de asignaciÃ³n (dÃ­as)</Label>
               <Input
                 id='allocationWindowDays'
                 type='number'
@@ -206,7 +206,7 @@ export const ConfigModal: React.FC = () => {
                 }
               />
               <p className='text-muted-foreground text-xs'>
-                Define cuántos días alrededor de una entrega puede extenderse el plan.
+                Define cuÃ¡ntos dÃ­as alrededor de una entrega puede extenderse el plan.
               </p>
             </div>
           </section>
@@ -215,7 +215,7 @@ export const ConfigModal: React.FC = () => {
             <div className='flex flex-col gap-1'>
               <h3 className='text-foreground text-base font-semibold'>Prioridades</h3>
               <p className='text-muted-foreground text-sm'>
-                Ajusta variaciones de tiempo según la prioridad.
+                Ajusta variaciones de tiempo segÃºn la prioridad.
               </p>
             </div>
 
@@ -235,7 +235,7 @@ export const ConfigModal: React.FC = () => {
                     })
                   }
                 />
-                <p className='text-muted-foreground text-xs'>días extra respecto al valor base</p>
+                <p className='text-muted-foreground text-xs'>dÃ­as extra respecto al valor base</p>
               </div>
 
               <div className='space-y-2'>
@@ -253,7 +253,7 @@ export const ConfigModal: React.FC = () => {
                     })
                   }
                 />
-                <p className='text-muted-foreground text-xs'>días respecto al valor base</p>
+                <p className='text-muted-foreground text-xs'>dÃ­as respecto al valor base</p>
               </div>
 
               <div className='space-y-2'>
@@ -271,22 +271,22 @@ export const ConfigModal: React.FC = () => {
                     })
                   }
                 />
-                <p className='text-muted-foreground text-xs'>días menos</p>
+                <p className='text-muted-foreground text-xs'>dÃ­as menos</p>
               </div>
             </div>
 
             <div className='bg-muted rounded-md p-3'>
               <p className='mb-2 text-sm font-medium'>Ejemplo</p>
               <p className='text-muted-foreground text-sm'>
-                Con {config.baseStudyDays} días base, prioridad alta reservar{' '}
-                {totalDaysByPriority.high} días, normal {totalDaysByPriority.normal} y baja{' '}
+                Con {config.baseStudyDays} dÃ­as base, prioridad alta reservar{' '}
+                {totalDaysByPriority.high} dÃ­as, normal {totalDaysByPriority.normal} y baja{' '}
                 {totalDaysByPriority.low}.
               </p>
             </div>
           </section>
           <section className='border-border space-y-4 border-t pt-6'>
             <div className='flex flex-col gap-1'>
-              <h3 className='text-foreground text-base font-semibold'>Configuración de IA</h3>
+              <h3 className='text-foreground text-base font-semibold'>ConfiguraciÃ³n de IA</h3>
               <p className='text-muted-foreground text-sm'>Clave API para funciones de IA.</p>
             </div>
             <div className='space-y-2'>
@@ -299,7 +299,7 @@ export const ConfigModal: React.FC = () => {
                 onChange={event => updateConfig({ openaiApiKey: event.target.value })}
               />
               <p className='text-muted-foreground text-xs'>
-                Necesaria para generación de planes y análisis. Se almacena localmente.
+                Necesaria para generaciÃ³n de planes y anÃ¡lisis. Se almacena localmente.
               </p>
             </div>
           </section>
@@ -316,7 +316,7 @@ export const ConfigModal: React.FC = () => {
                 <div className='space-y-2'>
                   <Label className='text-sm font-medium'>Importar entregas</Label>
                   <div className='border-border/70 bg-muted/20 text-muted-foreground flex flex-col gap-3 rounded-lg border border-dashed p-4 text-sm'>
-                    <p>Sube un CSV o Excel con columnas: materia, título y fecha (AAAA-MM-DD).</p>
+                    <p>Sube un CSV o Excel con columnas: materia, tÃ­tulo y fecha (AAAA-MM-DD).</p>
                     <Button
                       variant='outline'
                       size='sm'
@@ -335,7 +335,7 @@ export const ConfigModal: React.FC = () => {
                   <Label className='text-sm font-medium'>Exportar calendario</Label>
                   <div className='border-border/70 bg-muted/20 text-muted-foreground flex flex-col gap-3 rounded-lg border border-dashed p-4 text-sm'>
                     <p>
-                      Descarga un .ics para añadir tus entregas a cualquier calendario compatible.
+                      Descarga un .ics para aÃ±adir tus entregas a cualquier calendario compatible.
                     </p>
                     <Button
                       variant='outline'
@@ -360,7 +360,7 @@ export const ConfigModal: React.FC = () => {
           accept='.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
           className='hidden'
           onChange={handleFileChange}
-          aria-label='Archivo de importación'
+          aria-label='Archivo de importaciÃ³n'
         />
 
         <DialogFooter className='gap-2 sm:justify-end sm:gap-3'>
@@ -368,7 +368,7 @@ export const ConfigModal: React.FC = () => {
             Restaurar valores por defecto
           </Button>
           <Button onClick={handleSave} className='w-full sm:w-auto'>
-            Guardar configuración
+            Guardar configuraciÃ³n
           </Button>
         </DialogFooter>
       </DialogContent>

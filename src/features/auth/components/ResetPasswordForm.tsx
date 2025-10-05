@@ -7,8 +7,10 @@ import { useAuthContext } from '@/contexts/auth/AuthContext';
 
 type AuthMode = 'login' | 'register' | 'reset';
 
+type FormElement = globalThis.HTMLFormElement;
+
 interface ResetPasswordFormProps {
-  readonly onSwitchMode: (mode: AuthMode) => void;
+  readonly onSwitchMode: (_authMode: AuthMode) => void;
 }
 
 export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSwitchMode }) => {
@@ -20,7 +22,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSwitchMo
 
   const isBusy = submitting || authLoading;
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<FormElement>) => {
     event.preventDefault();
     setError(null);
     setFeedback(null);

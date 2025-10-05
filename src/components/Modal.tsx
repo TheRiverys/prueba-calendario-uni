@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -18,8 +18,8 @@ interface ModalProps {
   readonly onClose: () => void;
   readonly editingDelivery: Delivery | null;
   readonly formData: FormData;
-  readonly onSubmit: (event: React.FormEvent) => void;
-  readonly onInputChange: (field: keyof FormData, value: string) => void;
+  readonly onSubmit: (_event: React.FormEvent) => void;
+  readonly onInputChange: (_field: keyof FormData, _value: string) => void;
   readonly subjectOptions: string[];
   readonly priorities: Priority[];
 }

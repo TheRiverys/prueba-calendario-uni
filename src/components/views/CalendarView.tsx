@@ -28,12 +28,12 @@ import { buildColorLegend } from '@/utils';
 
 interface CalendarViewProps {
   readonly schedule: StudySchedule[];
-  readonly onEdit: (delivery: StudySchedule) => void;
-  readonly onDelete: (id: StudySchedule['id']) => void;
-  readonly onToggleComplete: (id: StudySchedule['id']) => void;
+  readonly onEdit: (_delivery: StudySchedule) => void;
+  readonly onDelete: (_id: StudySchedule['id']) => void;
+  readonly onToggleComplete: (_id: StudySchedule['id']) => void;
   readonly selectedSubject?: string;
   readonly subjects?: string[];
-  readonly onSubjectChange?: (subject: string) => void;
+  readonly onSubjectChange?: (_subject: string) => void;
 }
 
 const CalendarView: React.FC<CalendarViewProps> = ({

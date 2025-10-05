@@ -4,7 +4,7 @@ import { Input } from './ui/input';
 
 interface ControlsProps {
   readonly semesterStart: string;
-  readonly onSemesterStartChange: (date: string) => void;
+  readonly onSemesterStartChange: (_value: string) => void;
 }
 
 // Sin controles de vista aquí; se gestionan desde `DeliveryList` y encabezados de cada vista

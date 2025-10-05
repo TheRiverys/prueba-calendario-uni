@@ -13,7 +13,7 @@ import { useSemesterStart as useLocalSemesterStart } from '@/hooks/useSemesterSt
 
 interface SemesterContextValue {
   semesterStart: string;
-  setSemesterStart: (value: string) => void;
+  setSemesterStart: (_value: string) => void;
   semesterStartVersion: number;
 }
 

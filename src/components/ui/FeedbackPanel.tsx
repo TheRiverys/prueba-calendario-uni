@@ -1,4 +1,12 @@
-import { MessageSquare, X, Send, Lightbulb, Bug, MessageCircle } from 'lucide-react';
+﻿import {
+  MessageSquare,
+  X,
+  Send,
+  Lightbulb,
+  Bug,
+  MessageCircle,
+  type LucideIcon,
+} from 'lucide-react';
 import React, { useState } from 'react';
 
 import { BuyMeACoffee } from '@/components/ui/BuyMeACoffee';
@@ -10,8 +18,6 @@ import { Input } from './input';
 import { Label } from './label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 import { Textarea } from './textarea';
-
-import type { LucideIcon } from 'lucide-react';
 
 type FeedbackType = 'sugerencia' | 'error' | 'comentario';
 
@@ -50,9 +56,9 @@ export const FeedbackPanel: React.FC = () => {
       setFeedbackType('comentario');
       setIsOpen(false);
 
-      alert('¡Gracias por tu feedback! Lo hemos recibido correctamente.');
+      window.alert('¡Gracias por tu feedback! Lo hemos recibido correctamente.');
     } else {
-      alert(`Error al enviar el feedback: ${result.error}`);
+      window.alert(`Error al enviar el feedback: ${result.error}`);
     }
   };
 

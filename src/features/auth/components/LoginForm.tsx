@@ -8,9 +8,11 @@ import { useAuthContext } from '@/contexts/auth/AuthContext';
 
 type AuthMode = 'login' | 'register' | 'reset';
 
+type FormElement = globalThis.HTMLFormElement;
+
 interface LoginFormProps {
   readonly onSuccess: () => void;
-  readonly onSwitchMode: (mode: AuthMode) => void;
+  readonly onSwitchMode: (_authMode: AuthMode) => void;
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchMode }) => {
@@ -30,7 +32,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchMode })
 
   const isBusy = submitting || authLoading || googleSubmitting || resendingConfirmation;
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<FormElement>) => {
     event.preventDefault();
     setError(null);
     setShowResendConfirmation(false);

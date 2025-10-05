@@ -1,4 +1,12 @@
-import { createContext, useContext, useMemo, useState, useCallback, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useCallback,
+  type ReactNode,
+  type FC,
+} from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
 
@@ -10,24 +18,24 @@ interface AuthContextValue {
   authModalOpen: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
-  signIn: (email: string, password: string) => Promise<string | null>;
-  signUp: (email: string, password: string) => Promise<string | null>;
-  resetPassword: (email: string) => Promise<string | null>;
-  signInWithGoogle: (redirectTo?: string) => Promise<string | null>;
-  resendEmailConfirmation: (email: string) => Promise<string | null>;
-  checkEmailConfirmation: (user: User | null) => boolean;
+  signIn: (_email: string, _password: string) => Promise<string | null>;
+  signUp: (_email: string, _password: string) => Promise<string | null>;
+  resetPassword: (_email: string) => Promise<string | null>;
+  signInWithGoogle: (_redirectTo?: string) => Promise<string | null>;
+  resendEmailConfirmation: (_email: string) => Promise<string | null>;
+  checkEmailConfirmation: (_user: User | null) => boolean;
   signOut: () => Promise<string | null>;
-  updateProfile: (email?: string, password?: string) => Promise<string | null>;
-  deleteAccount: (password: string) => Promise<string | null>;
+  updateProfile: (_email?: string, _password?: string) => Promise<string | null>;
+  deleteAccount: (_password: string) => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 interface AuthProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const auth = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 

@@ -15,7 +15,7 @@ import { createDefaultConfig } from '@/utils';
 
 interface ConfigContextValue {
   config: ConfigSettings;
-  updateConfig: (partial: Partial<ConfigSettings>) => void;
+  updateConfig: (_partial: Partial<ConfigSettings>) => void;
   resetConfig: () => void;
   configModalOpen: boolean;
   openConfigModal: () => void;

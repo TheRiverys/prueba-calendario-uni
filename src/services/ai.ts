@@ -1,4 +1,4 @@
-﻿import { createOpenAI } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 
 // Configuración del modelo gpt-5-nano
@@ -104,15 +104,15 @@ export class AIService {
 
         Responde en JSON válido exactamente con este formato:
         {
-          \"studyPlan\": [
+          "studyPlan": [
             {
-              \"subject\": \"materia\",
-              \"name\": \"nombre de la entrega\",
-              \"deliveryDate\": \"YYYY-MM-DD\",
-              \"startDate\": \"YYYY-MM-DD\",
-              \"endDate\": \"YYYY-MM-DD\",
-              \"priority\": \"normal\",
-              \"estimatedHours\": 3
+              "subject": "materia",
+              "name": "nombre de la entrega",
+              "deliveryDate": "YYYY-MM-DD",
+              "startDate": "YYYY-MM-DD",
+              "endDate": "YYYY-MM-DD",
+              "priority": "normal",
+              "estimatedHours": 3
             }
           ]
         }

@@ -6,6 +6,7 @@ import {
   useState,
   useCallback,
   type ReactNode,
+  type FC,
 } from 'react';
 
 type ViewMode = 'list' | 'calendar' | 'gantt';
@@ -15,13 +16,13 @@ type ThemeMode = 'light' | 'dark';
 
 interface PreferencesContextValue {
   activeView: ViewMode;
-  setActiveView: (view: ViewMode) => void;
+  setActiveView: (_view: ViewMode) => void;
   currentPage: Page;
-  setCurrentPage: (page: Page) => void;
+  setCurrentPage: (_page: Page) => void;
   selectedSubject: string;
-  setSelectedSubject: (subject: string) => void;
+  setSelectedSubject: (_subject: string) => void;
   sortBy: SortOption;
-  setSortBy: (option: SortOption) => void;
+  setSortBy: (_option: SortOption) => void;
   theme: ThemeMode;
   toggleTheme: () => void;
 }
@@ -29,10 +30,10 @@ interface PreferencesContextValue {
 const PreferencesContext = createContext<PreferencesContextValue | undefined>(undefined);
 
 interface PreferencesProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
-export const PreferencesProvider: React.FC<PreferencesProviderProps> = ({ children }) => {
+export const PreferencesProvider: FC<PreferencesProviderProps> = ({ children }) => {
   const [activeView, setActiveView] = useState<ViewMode>('list');
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
   const [selectedSubject, setSelectedSubject] = useState<string>('all');

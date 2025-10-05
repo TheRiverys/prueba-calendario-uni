@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 
 // Declarar la función global para que esté disponible en la consola
 declare global {
@@ -24,7 +24,7 @@ export const useConsoleClear = () => {
         console.log('🔄 La aplicación se recargará para aplicar los cambios...');
 
         // Recargar la página para que se apliquen los cambios
-        setTimeout(() => {
+        globalThis.setTimeout(() => {
           window.location.reload();
         }, 1000);
       } catch (error) {

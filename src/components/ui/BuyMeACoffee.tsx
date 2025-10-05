@@ -1,8 +1,6 @@
-import { useEffect } from 'react';
+﻿import { type FC, useEffect } from 'react';
 
-import type React from 'react';
-
-export const BuyMeACoffee: React.FC = () => {
+export const BuyMeACoffee: FC = () => {
   useEffect(() => {
     // Verificar si el script ya está cargado
     const existingScript = document.querySelector('script[data-name="BMC-Widget"]');
@@ -17,7 +15,7 @@ export const BuyMeACoffee: React.FC = () => {
     script.setAttribute('data-description', 'Ayúdame en Buy me a coffee!');
     script.setAttribute(
       'data-message',
-      'Gracias por visitar! Si esta aplicación te ha ayudado de alguna manera, considera comprarnos un café. ☕✨'
+      'Gracias por visitar! Si esta aplicación te ha ayudado de alguna manera, considera comprarnos un café. ☕'
     );
     script.setAttribute('data-color', '#FFDD00');
     script.setAttribute('data-position', 'Right');
