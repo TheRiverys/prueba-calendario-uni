@@ -1,6 +1,8 @@
 ﻿import { useState, useCallback } from 'react';
-import type { ConfigSettings } from '../types';
+
 import { createDefaultConfig, persistConfig, sanitizeConfig } from '../utils';
+
+import type { ConfigSettings } from '../types';
 
 export const useConfig = () => {
   const [config, setConfig] = useState<ConfigSettings>(() => {
@@ -25,7 +27,7 @@ export const useConfig = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const updateConfig = useCallback((partial: Partial<ConfigSettings>) => {
-    setConfig((previous) => {
+    setConfig(previous => {
       const candidate = {
         ...previous,
         ...partial,

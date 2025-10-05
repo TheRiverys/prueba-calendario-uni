@@ -1,9 +1,17 @@
-import { createContext, useContext, useMemo, useState, useCallback, type ReactNode } from 'react';
-import { useConfig as useLocalConfig } from '@/hooks/useConfig';
-import { useSupabaseConfig } from '@/hooks/supabase/useSupabaseConfig';
-import { createDefaultConfig } from '@/utils';
-import type { ConfigSettings } from '@/types';
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useCallback,
+  type ReactNode,
+} from 'react';
+
 import { useAuthContext } from '@/contexts/auth/AuthContext';
+import { useSupabaseConfig } from '@/hooks/supabase/useSupabaseConfig';
+import { useConfig as useLocalConfig } from '@/hooks/useConfig';
+import type { ConfigSettings } from '@/types';
+import { createDefaultConfig } from '@/utils';
 
 interface ConfigContextValue {
   config: ConfigSettings;
@@ -17,7 +25,7 @@ interface ConfigContextValue {
 const ConfigContext = createContext<ConfigContextValue | undefined>(undefined);
 
 interface ConfigProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {

@@ -1,6 +1,7 @@
 # Integración de IA en el Calendario de Entregas
 
-Esta aplicación ahora incluye integración con IA para mejorar la planificación y gestión de entregas universitarias.
+Esta aplicación ahora incluye integración con IA para mejorar la planificación y
+gestión de entregas universitarias.
 
 ## Configuración
 
@@ -16,6 +17,7 @@ OPENAI_API_KEY=tu_clave_api_de_openai_aqui
 ### 2. Instalación de Dependencias
 
 Las dependencias necesarias ya están instaladas:
+
 - `ai` - Vercel AI SDK 5
 - `@ai-sdk/openai` - Provider para OpenAI
 - `zod` - Validación de esquemas
@@ -23,16 +25,21 @@ Las dependencias necesarias ya están instaladas:
 ## Funcionalidades de IA
 
 ### 1. Recomendación de Prioridades
+
 - **Modelo**: gpt-5-nano
-- **Función**: Analiza entregas y sugiere niveles de prioridad (low, normal, high)
+- **Función**: Analiza entregas y sugiere niveles de prioridad (low, normal,
+  high)
 - **Ubicación**: `src/services/ai.ts` - `generatePriorityRecommendation`
 
 ### 2. Generación de Horarios de Estudio
+
 - **Modelo**: gpt-5-nano
-- **Función**: Crea horarios de estudio optimizados basados en deadlines y prioridades
+- **Función**: Crea horarios de estudio optimizados basados en deadlines y
+  prioridades
 - **Ubicación**: `src/services/ai.ts` - `generateStudySchedule`
 
 ### 3. Análisis de Progreso
+
 - **Modelo**: gpt-5-nano
 - **Función**: Proporciona consejos personalizados para mejorar la productividad
 - **Ubicación**: `src/services/ai.ts` - `analyzeProgress`
@@ -40,8 +47,10 @@ Las dependencias necesarias ya están instaladas:
 ## Arquitectura
 
 ### Orden de Preferencia
+
 1. **Primero IA**: Se intenta usar el modelo de IA para generar recomendaciones
-2. **Fallback al algoritmo**: Si la IA no devuelve resultados, se usa el algoritmo tradicional
+2. **Fallback al algoritmo**: Si la IA no devuelve resultados, se usa el
+   algoritmo tradicional
 
 ### Archivos Principales
 
@@ -61,16 +70,19 @@ src/
 ## Hooks y Servicios
 
 ### useAI Hook
+
 - Maneja el estado de loading y errores de IA
 - Proporciona funciones wrapper para los servicios de IA
 
 ### AIService
+
 - Clase estática con métodos para diferentes funcionalidades de IA
 - Configurado específicamente para usar gpt-5-nano
 
 ## Componentes UI
 
 ### AIControls
+
 - Interfaz para interactuar con las funcionalidades de IA
 - Muestra resultados de análisis y recomendaciones
 - Maneja estados de loading y errores
@@ -86,7 +98,8 @@ const AI_MODEL = 'gpt-5-nano';
 ## Uso
 
 1. **Configurar clave API**: Agregar `OPENAI_API_KEY` en `.env.local`
-2. **Usar la interfaz**: El componente `AIControls` aparece en la sección de controles
+2. **Usar la interfaz**: El componente `AIControls` aparece en la sección de
+   controles
 3. **Generar recomendaciones**: Hacer clic en "Generar Recomendaciones IA"
 4. **Ver resultados**: La IA mostrará prioridades sugeridas, horarios y consejos
 

@@ -1,11 +1,15 @@
-import { type JSX, useState } from 'react';
 import { Edit3, Trash2, Eye, EyeOff, AlertTriangle, ArrowLeft } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { type JSX, useState } from 'react';
+
 import { useAuthContext } from '@/contexts/auth/AuthContext';
 import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
+import { getProviderDisplayInfo } from '@/lib/oauthUtils';
+
+import { UserAvatar } from './ui/avatar';
+import { Button } from './ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 
 const Profile = (): JSX.Element => {
   const { user, updateProfile, deleteAccount } = useAuthContext();
@@ -26,7 +30,7 @@ const Profile = (): JSX.Element => {
   });
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
     setError(null);
     setSuccess(null);
   };
@@ -65,7 +69,7 @@ const Profile = (): JSX.Element => {
         setError(message);
       } else {
         setSuccess('Perfil actualizado exitosamente');
-        setFormData((prev) => ({
+        setFormData(prev => ({
           ...prev,
           currentPassword: '',
           newPassword: '',
@@ -108,12 +112,7 @@ const Profile = (): JSX.Element => {
     }
   };
 
-  const getUserInitials = (email?: string): string => {
-    if (!email) {
-      return '??';
-    }
-    return email.substring(0, 2).toUpperCase();
-  };
+  const providerInfo = getProviderDisplayInfo(user);
 
   return (
     <div className='app-shell mt-6 pb-12'>
@@ -127,8 +126,8 @@ const Profile = (): JSX.Element => {
             </div>
           </div>
           <div className='flex flex-col gap-2'>
-            <h1 className='text-3xl font-bold text-foreground'>Perfil de Usuario</h1>
-            <p className='text-base text-muted-foreground'>
+            <h1 className='text-foreground text-3xl font-bold'>Perfil de Usuario</h1>
+            <p className='text-muted-foreground text-base'>
               Gestiona tus credenciales y controla la seguridad de tu cuenta.
             </p>
           </div>
@@ -138,18 +137,16 @@ const Profile = (): JSX.Element => {
           <Card className='h-fit'>
             <CardHeader className='space-y-2'>
               <CardTitle className='flex items-center gap-3 text-base'>
-                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-lg font-medium text-primary'>
-                  {getUserInitials(user?.email)}
-                </div>
+                <UserAvatar user={user} size='lg' className='bg-primary/10 text-primary' />
                 <div className='flex flex-col gap-1'>
-                  <span className='text-base font-semibold text-foreground'>{user?.email}</span>
-                  <span className='text-xs text-muted-foreground'>
+                  <span className='text-foreground text-base font-semibold'>{user?.email}</span>
+                  <span className='text-muted-foreground text-xs'>
                     Cuenta sincronizada con Supabase
                   </span>
                 </div>
               </CardTitle>
             </CardHeader>
-            <CardContent className='space-y-4 text-sm text-muted-foreground'>
+            <CardContent className='text-muted-foreground space-y-4 text-sm'>
               <div className='flex items-center justify-between'>
                 <span>Estado</span>
                 <span className='flex items-center gap-2 font-medium text-green-600 dark:text-green-400'>
@@ -159,11 +156,17 @@ const Profile = (): JSX.Element => {
               </div>
               <div className='flex items-center justify-between'>
                 <span>Proveedor</span>
-                <span className='font-medium text-foreground'>Correo y contraseña</span>
+                <span className={`font-medium ${providerInfo.color}`}>{providerInfo.name}</span>
+              </div>
+              <div className='flex items-center justify-between'>
+                <span>Email confirmado</span>
+                <span className='text-foreground font-medium'>
+                  {user?.email_confirmed_at || user?.confirmed_at ? 'Sí' : 'No'}
+                </span>
               </div>
               <div className='flex items-center justify-between'>
                 <span>Última actualización</span>
-                <span className='font-medium text-foreground'>Sesión actual</span>
+                <span className='text-foreground font-medium'>Sesión actual</span>
               </div>
             </CardContent>
           </Card>
@@ -182,7 +185,7 @@ const Profile = (): JSX.Element => {
                   id='email'
                   type='email'
                   value={formData.email}
-                  onChange={(event) => handleInputChange('email', event.target.value)}
+                  onChange={event => handleInputChange('email', event.target.value)}
                   disabled={!isEditing || loading}
                 />
               </div>
@@ -195,7 +198,7 @@ const Profile = (): JSX.Element => {
                       id='newPassword'
                       type={showNewPassword ? 'text' : 'password'}
                       value={formData.newPassword}
-                      onChange={(event) => handleInputChange('newPassword', event.target.value)}
+                      onChange={event => handleInputChange('newPassword', event.target.value)}
                       placeholder='••••••'
                       disabled={!isEditing || loading}
                     />
@@ -203,8 +206,8 @@ const Profile = (): JSX.Element => {
                       type='button'
                       variant='ghost'
                       size='icon'
-                      className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
-                      onClick={() => setShowNewPassword((prev) => !prev)}
+                      className='absolute top-0 right-0 h-full px-3 hover:bg-transparent'
+                      onClick={() => setShowNewPassword(prev => !prev)}
                     >
                       {showNewPassword ? (
                         <EyeOff className='h-4 w-4' />
@@ -213,7 +216,7 @@ const Profile = (): JSX.Element => {
                       )}
                     </Button>
                   </div>
-                  <p className='text-xs text-muted-foreground'>Mínimo 6 caracteres.</p>
+                  <p className='text-muted-foreground text-xs'>Mínimo 6 caracteres.</p>
                 </div>
 
                 <div className='space-y-2'>
@@ -223,7 +226,7 @@ const Profile = (): JSX.Element => {
                       id='confirmPassword'
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={formData.confirmPassword}
-                      onChange={(event) => handleInputChange('confirmPassword', event.target.value)}
+                      onChange={event => handleInputChange('confirmPassword', event.target.value)}
                       placeholder='••••••'
                       disabled={!isEditing || loading}
                     />
@@ -231,8 +234,8 @@ const Profile = (): JSX.Element => {
                       type='button'
                       variant='ghost'
                       size='icon'
-                      className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
-                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                      className='absolute top-0 right-0 h-full px-3 hover:bg-transparent'
+                      onClick={() => setShowConfirmPassword(prev => !prev)}
                     >
                       {showConfirmPassword ? (
                         <EyeOff className='h-4 w-4' />
@@ -251,7 +254,7 @@ const Profile = (): JSX.Element => {
                     id='currentPassword'
                     type={showCurrentPassword ? 'text' : 'password'}
                     value={formData.currentPassword}
-                    onChange={(event) => handleInputChange('currentPassword', event.target.value)}
+                    onChange={event => handleInputChange('currentPassword', event.target.value)}
                     placeholder='Necesaria para confirmar cambios sensibles'
                     disabled={!isEditing || loading}
                     className='pr-10'
@@ -260,8 +263,8 @@ const Profile = (): JSX.Element => {
                     type='button'
                     variant='ghost'
                     size='icon'
-                    className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
-                    onClick={() => setShowCurrentPassword((prev) => !prev)}
+                    className='absolute top-0 right-0 h-full px-3 hover:bg-transparent'
+                    onClick={() => setShowCurrentPassword(prev => !prev)}
                   >
                     {showCurrentPassword ? (
                       <EyeOff className='h-4 w-4' />
@@ -279,8 +282,8 @@ const Profile = (): JSX.Element => {
               )}
 
               {isEditing && (
-                <div className='space-y-4 rounded-md border border-border p-4'>
-                  <p className='text-sm text-muted-foreground'>
+                <div className='border-border space-y-4 rounded-md border p-4'>
+                  <p className='text-muted-foreground text-sm'>
                     Guarda los cambios para aplicar las nuevas credenciales.
                   </p>
                   <div className='flex flex-col-reverse gap-2 pt-4 sm:flex-row sm:justify-end sm:gap-3'>
@@ -289,7 +292,7 @@ const Profile = (): JSX.Element => {
                       variant='outline'
                       onClick={() => {
                         setIsEditing(false);
-                        setFormData((prev) => ({
+                        setFormData(prev => ({
                           ...prev,
                           currentPassword: '',
                           newPassword: '',
@@ -322,21 +325,21 @@ const Profile = (): JSX.Element => {
 
           <Card className='border-destructive/50 bg-destructive/5'>
             <CardHeader className='pb-4'>
-              <CardTitle className='flex items-center gap-2 text-base text-destructive'>
+              <CardTitle className='text-destructive flex items-center gap-2 text-base'>
                 <Trash2 className='h-4 w-4' />
                 Eliminar cuenta permanentemente
               </CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
-              <div className='rounded-lg border border-destructive/20 bg-destructive/10 p-4'>
+              <div className='border-destructive/20 bg-destructive/10 rounded-lg border p-4'>
                 <div className='flex items-start gap-3'>
-                  <AlertTriangle className='mt-0.5 h-5 w-5 flex-shrink-0 text-destructive' />
+                  <AlertTriangle className='text-destructive mt-0.5 h-5 w-5 flex-shrink-0' />
                   <div className='space-y-2'>
-                    <p className='text-sm font-medium text-destructive'>Acción irreversible</p>
-                    <p className='text-sm text-destructive/80'>
+                    <p className='text-destructive text-sm font-medium'>Acción irreversible</p>
+                    <p className='text-destructive/80 text-sm'>
                       Al eliminar tu cuenta perderás permanentemente:
                     </p>
-                    <ul className='ml-4 space-y-1 text-sm text-destructive/80'>
+                    <ul className='text-destructive/80 ml-4 space-y-1 text-sm'>
                       <li> Todas tus entregas y horarios de estudio</li>
                       <li> Tu configuración personalizada</li>
                       <li> Tu historial y estadísticas</li>
@@ -355,7 +358,7 @@ const Profile = (): JSX.Element => {
                     id='delete-current-password'
                     type={showCurrentPassword ? 'text' : 'password'}
                     value={formData.currentPassword}
-                    onChange={(event) => handleInputChange('currentPassword', event.target.value)}
+                    onChange={event => handleInputChange('currentPassword', event.target.value)}
                     placeholder='Ingresa tu contraseña para confirmar'
                     className='pr-10'
                   />
@@ -363,8 +366,8 @@ const Profile = (): JSX.Element => {
                     type='button'
                     variant='ghost'
                     size='icon'
-                    className='absolute right-0 top-0 h-full px-3 hover:bg-transparent'
-                    onClick={() => setShowCurrentPassword((prev) => !prev)}
+                    className='absolute top-0 right-0 h-full px-3 hover:bg-transparent'
+                    onClick={() => setShowCurrentPassword(prev => !prev)}
                   >
                     {showCurrentPassword ? (
                       <EyeOff className='h-4 w-4' />
@@ -392,8 +395,8 @@ const Profile = (): JSX.Element => {
       </div>
 
       {error && (
-        <div className='mt-6 rounded-md border border-destructive/50 bg-destructive/5 p-4'>
-          <div className='flex items-center gap-2 text-destructive'>
+        <div className='border-destructive/50 bg-destructive/5 mt-6 rounded-md border p-4'>
+          <div className='text-destructive flex items-center gap-2'>
             <AlertTriangle className='h-4 w-4' />
             <span className='text-sm font-medium'>{error}</span>
           </div>

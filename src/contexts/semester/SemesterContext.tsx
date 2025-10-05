@@ -1,7 +1,15 @@
-import { createContext, useContext, useMemo, useState, useCallback, type ReactNode } from 'react';
-import { useSemesterStart as useLocalSemesterStart } from '@/hooks/useSemesterStart';
-import { useSupabaseSemesterStart } from '@/hooks/supabase/useSupabaseSemesterStart';
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useCallback,
+  type ReactNode,
+} from 'react';
+
 import { useAuthContext } from '@/contexts/auth/AuthContext';
+import { useSupabaseSemesterStart } from '@/hooks/supabase/useSupabaseSemesterStart';
+import { useSemesterStart as useLocalSemesterStart } from '@/hooks/useSemesterStart';
 
 interface SemesterContextValue {
   semesterStart: string;
@@ -12,7 +20,7 @@ interface SemesterContextValue {
 const SemesterContext = createContext<SemesterContextValue | undefined>(undefined);
 
 interface SemesterProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 export const SemesterProvider: React.FC<SemesterProviderProps> = ({ children }) => {
@@ -52,7 +60,7 @@ export const SemesterProvider: React.FC<SemesterProviderProps> = ({ children }) 
           }
         })();
       }
-      setSemesterStartVersion((previous) => previous + 1);
+      setSemesterStartVersion(previous => previous + 1);
     },
     [isAuthenticated, updateRemoteSemesterStart, setLocalSemesterStart]
   );

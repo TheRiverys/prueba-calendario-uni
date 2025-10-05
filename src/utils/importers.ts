@@ -1,5 +1,6 @@
-﻿import ExcelJS from 'exceljs';
-import { format, parse, parseISO, isValid } from 'date-fns';
+﻿import { format, parse, parseISO, isValid } from 'date-fns';
+import ExcelJS from 'exceljs';
+
 import type { ImportResult, ImportValidationError, ImportedDelivery } from '../types';
 
 type RawCell = string | number | Date | null | undefined;
@@ -139,7 +140,7 @@ const normalizeDate = (value: RawCell): DateNormalizationResult => {
 };
 
 const isRowEmpty = (row: RawCell[]): boolean =>
-  row.every((value) => {
+  row.every(value => {
     if (value === null || value === undefined) {
       return true;
     }
@@ -163,10 +164,10 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
     if (isCSV) {
       const csvContent = new TextDecoder('utf-8').decode(buffer);
       const worksheet = workbook.addWorksheet('Sheet1');
-      const lines = csvContent.split(/\r?\n/).filter((line) => line.trim().length > 0);
+      const lines = csvContent.split(/\r?\n/).filter(line => line.trim().length > 0);
 
       lines.forEach((line, index) => {
-        const values = line.split(',').map((cell) => cell.trim().replace(/\"/g, ''));
+        const values = line.split(',').map(cell => cell.trim().replace(/\"/g, ''));
         const row = worksheet.getRow(index + 1);
         values.forEach((value, columnIndex) => {
           row.getCell(columnIndex + 1).value = value;
@@ -223,11 +224,9 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
     if (Object.keys(headerMapping).length > 0) {
       dataRows = rows.slice(1);
 
-      const missingColumns = REQUIRED_COLUMNS.filter(
-        (column) => headerMapping[column] === undefined
-      );
+      const missingColumns = REQUIRED_COLUMNS.filter(column => headerMapping[column] === undefined);
       if (missingColumns.length > 0) {
-        const missingLabels = missingColumns.map((column) => COLUMN_LABELS[column]).join(', ');
+        const missingLabels = missingColumns.map(column => COLUMN_LABELS[column]).join(', ');
         errors.push({
           row: firstRow.rowNumber,
           column: 'header',

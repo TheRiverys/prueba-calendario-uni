@@ -1,20 +1,21 @@
 import React from 'react';
-import { AppProvider } from './contexts/AppContext';
+
+import { ConfigModal } from './components/ConfigModal';
+import { Controls } from './components/Controls';
 import { Header } from './components/Header';
+import { Modal } from './components/Modal';
 import { Profile } from './components/Profile';
 import { StatsOverview } from './components/StatsOverview';
-import { Controls } from './components/Controls';
-import { Views } from './components/Views';
-import { Modal } from './components/Modal';
-import { ConfigModal } from './components/ConfigModal';
-import { AuthDialog } from './features/auth/components/AuthDialog';
 import { FeedbackPanel } from './components/ui/FeedbackPanel';
+import { Views } from './components/Views';
+import { AppProvider } from './contexts/AppContext';
+import { useDeliveriesContext } from './contexts/deliveries/DeliveriesContext';
+import { usePreferencesContext } from './contexts/preferences/PreferencesContext';
+import { useScheduleContext } from './contexts/schedule/ScheduleContext';
+import { useSemesterContext } from './contexts/semester/SemesterContext';
+import { AuthDialog } from './features/auth/components/AuthDialog';
 import { useConsoleClear } from './hooks/useConsoleClear';
 import { pickColorForSubject } from './utils';
-import { usePreferencesContext } from './contexts/preferences/PreferencesContext';
-import { useSemesterContext } from './contexts/semester/SemesterContext';
-import { useScheduleContext } from './contexts/schedule/ScheduleContext';
-import { useDeliveriesContext } from './contexts/deliveries/DeliveriesContext';
 
 const priorities: Array<{ value: 'low' | 'normal' | 'high'; label: string; color: string }> = [
   { value: 'low', label: 'Baja', color: 'bg-muted' },
@@ -69,7 +70,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className='bg-background min-h-screen'>
       <Header />
 
       {currentPage === 'profile' ? (

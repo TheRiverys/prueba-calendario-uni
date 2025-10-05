@@ -1,8 +1,7 @@
 import React from 'react';
 
-import type { Delivery, FormData, Priority } from '@/types';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -12,16 +11,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import type { Delivery, FormData, Priority } from '@/types';
 
 interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  editingDelivery: Delivery | null;
-  formData: FormData;
-  onSubmit: (event: React.FormEvent) => void;
-  onInputChange: (field: keyof FormData, value: string) => void;
-  subjectOptions: string[];
-  priorities: Priority[];
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly editingDelivery: Delivery | null;
+  readonly formData: FormData;
+  readonly onSubmit: (event: React.FormEvent) => void;
+  readonly onInputChange: (field: keyof FormData, value: string) => void;
+  readonly subjectOptions: string[];
+  readonly priorities: Priority[];
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -48,13 +48,13 @@ export const Modal: React.FC<ModalProps> = ({
               id='subject'
               type='text'
               value={formData.subject}
-              onChange={(event) => onInputChange('subject', event.target.value)}
+              onChange={event => onInputChange('subject', event.target.value)}
               list='subject-suggestions'
               placeholder='Ej: Derecho civil'
               required
             />
             <datalist id='subject-suggestions'>
-              {subjectOptions.map((subject) => (
+              {subjectOptions.map(subject => (
                 <option key={subject} value={subject} />
               ))}
             </datalist>
@@ -66,7 +66,7 @@ export const Modal: React.FC<ModalProps> = ({
               id='name'
               type='text'
               value={formData.name}
-              onChange={(event) => onInputChange('name', event.target.value)}
+              onChange={event => onInputChange('name', event.target.value)}
               placeholder='Ej: Trabajo final, Examen parcial'
               required
             />
@@ -78,7 +78,7 @@ export const Modal: React.FC<ModalProps> = ({
               id='date'
               type='date'
               value={formData.date}
-              onChange={(event) => onInputChange('date', event.target.value)}
+              onChange={event => onInputChange('date', event.target.value)}
               required
               min={formData.studyStart}
             />
@@ -88,13 +88,13 @@ export const Modal: React.FC<ModalProps> = ({
             <Label htmlFor='priority'>Prioridad</Label>
             <Select
               value={formData.priority}
-              onValueChange={(value) => onInputChange('priority', value)}
+              onValueChange={value => onInputChange('priority', value)}
             >
               <SelectTrigger id='priority'>
                 <SelectValue placeholder='Seleccionar prioridad' />
               </SelectTrigger>
               <SelectContent>
-                {priorities.map((priority) => (
+                {priorities.map(priority => (
                   <SelectItem key={priority.value} value={priority.value}>
                     {priority.label}
                   </SelectItem>

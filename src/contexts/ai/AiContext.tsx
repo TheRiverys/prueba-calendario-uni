@@ -1,4 +1,5 @@
-import {
+import { parseISO, isValid, format } from 'date-fns';
+import React, {
   createContext,
   useContext,
   useMemo,
@@ -7,10 +8,10 @@ import {
   useEffect,
   type ReactNode,
 } from 'react';
-import { parseISO, isValid, format } from 'date-fns';
-import { useAI } from '@/hooks/useAI';
+
 import { useDeliveriesContext } from '@/contexts/deliveries/DeliveriesContext';
 import { useSemesterContext } from '@/contexts/semester/SemesterContext';
+import { useAI } from '@/hooks/useAI';
 import type { Delivery, AiDetailedEntry, AiScheduleResult, AiScheduleOverride } from '@/types';
 
 const normalizeIsoDate = (value: unknown): string | null => {
@@ -45,7 +46,7 @@ interface AiContextValue {
 const AiContext = createContext<AiContextValue | undefined>(undefined);
 
 interface AiProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 export const AiProvider: React.FC<AiProviderProps> = ({ children }) => {
@@ -65,7 +66,7 @@ export const AiProvider: React.FC<AiProviderProps> = ({ children }) => {
   } = useAI();
 
   useEffect(() => {
-    setAiOverrides((previous) => {
+    setAiOverrides(previous => {
       if (previous.size === 0) {
         return previous;
       }
@@ -74,7 +75,7 @@ export const AiProvider: React.FC<AiProviderProps> = ({ children }) => {
   }, [semesterStartVersion]);
 
   const clearAiSchedule = useCallback(() => {
-    setAiOverrides((previous) => (previous.size === 0 ? previous : new Map()));
+    setAiOverrides(previous => (previous.size === 0 ? previous : new Map()));
   }, []);
 
   const generateStudySchedule = useCallback(async (): Promise<AiScheduleResult> => {
@@ -87,7 +88,7 @@ export const AiProvider: React.FC<AiProviderProps> = ({ children }) => {
       }
 
       const deliveryKeyIndex = new Map<string, Delivery['id']>();
-      deliveries.forEach((delivery) => {
+      deliveries.forEach(delivery => {
         const normalizedDate = normalizeIsoDate(delivery.date);
         if (!normalizedDate) {
           return;
@@ -99,7 +100,7 @@ export const AiProvider: React.FC<AiProviderProps> = ({ children }) => {
       });
 
       const overrides = new Map<Delivery['id'], AiScheduleOverride>();
-      studyPlan.forEach((planEntry) => {
+      studyPlan.forEach(planEntry => {
         const deliveryDate = normalizeIsoDate(planEntry.deliveryDate);
         const startDate = normalizeIsoDate(planEntry.startDate);
         const endDate = normalizeIsoDate(planEntry.endDate);
@@ -119,7 +120,7 @@ export const AiProvider: React.FC<AiProviderProps> = ({ children }) => {
         overrides.set(deliveryId, { startDate, endDate });
       });
 
-      setAiOverrides((previous) => {
+      setAiOverrides(previous => {
         if (overrides.size === 0 && previous.size === 0) {
           return previous;
         }
@@ -139,8 +140,8 @@ export const AiProvider: React.FC<AiProviderProps> = ({ children }) => {
   }, [generateStudyPlan, generateDetailedSchedule, deliveries, semesterStart, clearAiSchedule]);
 
   const analyzeProgressWrapper = useCallback(async () => {
-    const completed = deliveries.filter((delivery) => delivery.completed);
-    const upcoming = deliveries.filter((delivery) => !delivery.completed);
+    const completed = deliveries.filter(delivery => delivery.completed);
+    const upcoming = deliveries.filter(delivery => !delivery.completed);
     return analyzeProgress(completed, upcoming);
   }, [analyzeProgress, deliveries]);
 

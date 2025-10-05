@@ -1,5 +1,6 @@
-﻿import { useEffect, useMemo, useState } from 'react';
 import { format, parseISO } from 'date-fns';
+import { useEffect, useMemo, useState } from 'react';
+
 import type { Delivery, FormData } from '../types';
 
 const toIsoDate = (value: string): string => {
@@ -68,7 +69,7 @@ export const useModal = (defaultStudyStart: string): ModalState => {
   };
 
   const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [field]: value,
     }));

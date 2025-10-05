@@ -1,10 +1,14 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
+
+import type React from 'react';
 
 export const BuyMeACoffee: React.FC = () => {
   useEffect(() => {
     // Verificar si el script ya está cargado
     const existingScript = document.querySelector('script[data-name="BMC-Widget"]');
-    if (existingScript) return;
+    if (existingScript) {
+      return;
+    }
 
     const script = document.createElement('script');
     script.setAttribute('data-name', 'BMC-Widget');

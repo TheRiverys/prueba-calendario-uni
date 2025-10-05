@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
-import type { User } from '@supabase/supabase-js';
+
 import { supabase } from '@/lib/supabase';
 import type { ConfigSettings, UserConfigRow } from '@/types';
 import { createDefaultConfig, sanitizeConfig } from '@/utils';
+
+import type { User } from '@supabase/supabase-js';
 
 const parseConfig = (row: UserConfigRow | null): ConfigSettings => {
   if (!row) {

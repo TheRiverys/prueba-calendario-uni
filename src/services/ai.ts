@@ -152,7 +152,7 @@ export class AIService {
   ): Array<{ date: string; hours: number; subject: string; task: string }> {
     const schedule: Array<{ date: string; hours: number; subject: string; task: string }> = [];
 
-    studyPlan.forEach((plan) => {
+    studyPlan.forEach(plan => {
       const startDate = new Date(plan.startDate);
       const endDate = new Date(plan.endDate);
       const totalDays = Math.ceil(
@@ -162,7 +162,7 @@ export class AIService {
       // Distribuir las horas estimadas en los días disponibles
       const dailyHours = Math.min(plan.estimatedHours / totalDays, 6); // Máximo 6 horas por día
 
-      let currentDate = new Date(startDate);
+      const currentDate = new Date(startDate);
       let remainingHours = plan.estimatedHours;
 
       while (currentDate <= endDate && remainingHours > 0) {
@@ -199,10 +199,10 @@ export class AIService {
         Entregas pendientes: ${upcomingDeliveries.length}
 
         Detalles de completadas:
-        ${completedDeliveries.map((d) => `- ${d.subject} (${d.date})`).join('\n')}
+        ${completedDeliveries.map(d => `- ${d.subject} (${d.date})`).join('\n')}
 
         Detalles de pendientes:
-        ${upcomingDeliveries.map((d) => `- ${d.subject}: ${d.priority} (${d.date})`).join('\n')}
+        ${upcomingDeliveries.map(d => `- ${d.subject}: ${d.priority} (${d.date})`).join('\n')}
 
         Proporciona consejos específicos para mejorar la productividad y gestión del tiempo.
         Responde en español, de forma concisa pero útil.

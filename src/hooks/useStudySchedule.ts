@@ -1,7 +1,9 @@
-import { useMemo } from 'react';
 import { addDays, differenceInCalendarDays, format, parseISO, startOfDay } from 'date-fns';
-import type { Delivery, StudySchedule, ConfigSettings } from '../types';
+import { useMemo } from 'react';
+
 import { DEFAULT_CONFIG, DEFAULT_PRIORITY_VARIATIONS } from '../utils';
+
+import type { Delivery, StudySchedule, ConfigSettings } from '../types';
 
 type Priority = Delivery['priority'];
 
@@ -52,9 +54,9 @@ const computeSequentialDurations = (
   achievedExtras: number[];
 } => {
   const n = planned.length;
-  const durations = planned.map((p) => Math.max(1, p.minDays));
+  const durations = planned.map(p => Math.max(1, p.minDays));
   const warnings = new Array<boolean>(n).fill(false);
-  const desiredExtras = planned.map((p) => getPriorityValue(p.delivery.priority, config));
+  const desiredExtras = planned.map(p => getPriorityValue(p.delivery.priority, config));
   const achievedExtras = new Array<number>(n).fill(0);
 
   if (n === 0) {
@@ -63,7 +65,7 @@ const computeSequentialDurations = (
 
   const countInclusive = (start: Date, end: Date): number =>
     Math.max(1, differenceInCalendarDays(end, start) + 1);
-  const capacity = planned.map((p) => countInclusive(semesterStart, p.dueDate));
+  const capacity = planned.map(p => countInclusive(semesterStart, p.dueDate));
 
   const prefixSumAt = (idx: number): number => {
     let sum = 0;
@@ -109,7 +111,9 @@ const computeSequentialDurations = (
         if (daysUntilDue < 0 || daysUntilDue > windowDays) {
           // Si la tarea ya venció o está muy lejos en el futuro, la ignoramos
           // (La condición daysUntilDue < 0 no debería ocurrir si k >= groupStart, pero es una buena salvaguarda)
-          if (daysUntilDue > windowDays) break; // Optimización: como el array está ordenado, no hace falta seguir
+          if (daysUntilDue > windowDays) {
+            break;
+          } // Optimización: como el array está ordenado, no hace falta seguir
           continue;
         }
 
@@ -251,8 +255,8 @@ export const useStudySchedule = (
     const MIN_DIAS = Math.max(1, Math.round(config?.baseStudyDays ?? DEFAULT_BASE_STUDY_DAYS));
 
     const plannedAll: PlannedDelivery[] = deliveries
-      .filter((d) => !d.completed)
-      .map((d) => {
+      .filter(d => !d.completed)
+      .map(d => {
         const dueDate = toNormalizedDate(d.date);
         if (!dueDate) {
           return null;
@@ -262,7 +266,7 @@ export const useStudySchedule = (
       .filter((value): value is PlannedDelivery => value !== null);
 
     const plannedEligible = plannedAll
-      .filter((p) => p.dueDate.getTime() >= semesterStart.getTime())
+      .filter(p => p.dueDate.getTime() >= semesterStart.getTime())
       .sort(comparePlanned);
 
     const {
@@ -304,7 +308,7 @@ export const useStudySchedule = (
 
     const schedule: StudySchedule[] = [];
 
-    deliveries.forEach((delivery) => {
+    deliveries.forEach(delivery => {
       const dueDate = toNormalizedDate(delivery.date);
       if (!dueDate) {
         return;

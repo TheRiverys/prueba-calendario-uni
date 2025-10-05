@@ -1,6 +1,6 @@
-import React, { Suspense, lazy } from 'react';
 import { Calendar as CalendarIcon, BarChart3, Edit2 } from 'lucide-react';
-import type { StudySchedule } from '@/types';
+import React, { Suspense, lazy } from 'react';
+
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -11,18 +11,19 @@ import {
 } from '@/components/ui/select';
 import { useDeliveriesContext } from '@/contexts/deliveries/DeliveriesContext';
 import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
+import type { StudySchedule } from '@/types';
 
 const DeliveryList = lazy(() => import('./views/DeliveryList'));
 const CalendarView = lazy(() => import('./views/CalendarView'));
 const GanttView = lazy(() => import('./views/GanttView'));
 
 interface ViewsProps {
-  activeView: 'list' | 'calendar' | 'gantt';
-  schedule: StudySchedule[];
+  readonly activeView: 'list' | 'calendar' | 'gantt';
+  readonly schedule: StudySchedule[];
 }
 
 const LoadingFallback: React.FC = () => (
-  <div className='flex h-64 items-center justify-center text-sm text-muted-foreground'>
+  <div className='text-muted-foreground flex h-64 items-center justify-center text-sm'>
     Cargando...
   </div>
 );
@@ -78,9 +79,9 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
       case 'calendar':
         return (
           <div className='w-full'>
-            <div className='flex flex-col gap-6 border-b border-border/60 pb-5 sm:gap-4'>
+            <div className='border-border/60 flex flex-col gap-6 border-b pb-5 sm:gap-4'>
               <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-                <h2 className='flex items-center gap-2 text-xl font-semibold text-foreground'>
+                <h2 className='text-foreground flex items-center gap-2 text-xl font-semibold'>
                   <CalendarIcon className='h-5 w-5' />
                   Calendario
                 </h2>
@@ -88,12 +89,12 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
                 <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4'>
                   <div className='flex items-center gap-3'>
                     <div className='flex min-w-0 items-center gap-2'>
-                      <span className='hidden text-xs uppercase tracking-wide text-muted-foreground md:inline lg:inline whitespace-nowrap'>
+                      <span className='text-muted-foreground hidden text-xs tracking-wide whitespace-nowrap uppercase md:inline lg:inline'>
                         Vista
                       </span>
                       <Select
                         value={activeView}
-                        onValueChange={(value) =>
+                        onValueChange={value =>
                           setActiveView(value as 'list' | 'calendar' | 'gantt')
                         }
                       >
@@ -129,9 +130,9 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
       case 'gantt':
         return (
           <div className='w-full'>
-            <div className='flex flex-col gap-6 border-b border-border/60 pb-5 sm:gap-4'>
+            <div className='border-border/60 flex flex-col gap-6 border-b pb-5 sm:gap-4'>
               <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-                <h2 className='flex items-center gap-2 text-xl font-semibold text-foreground'>
+                <h2 className='text-foreground flex items-center gap-2 text-xl font-semibold'>
                   <BarChart3 className='h-5 w-5' />
                   Gantt
                 </h2>
@@ -139,12 +140,12 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
                 <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4'>
                   <div className='flex items-center gap-3'>
                     <div className='flex min-w-0 items-center gap-2'>
-                      <span className='hidden text-xs uppercase tracking-wide text-muted-foreground md:inline lg:inline whitespace-nowrap'>
+                      <span className='text-muted-foreground hidden text-xs tracking-wide whitespace-nowrap uppercase md:inline lg:inline'>
                         Vista
                       </span>
                       <Select
                         value={activeView}
-                        onValueChange={(value) =>
+                        onValueChange={value =>
                           setActiveView(value as 'list' | 'calendar' | 'gantt')
                         }
                       >

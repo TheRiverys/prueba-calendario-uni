@@ -1,9 +1,18 @@
-import { createContext, useContext, useMemo, useState, useCallback, useEffect, type ReactNode } from 'react';
-import { useDeliveries as useLocalDeliveries } from '@/hooks/useDeliveries';
-import { useSupabaseDeliveries } from '@/hooks/supabase/useSupabaseDeliveries';
-import { useModal } from '@/hooks/useModal';
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  type ReactNode,
+} from 'react';
+
 import { useAuthContext } from '@/contexts/auth/AuthContext';
 import { useSemesterContext } from '@/contexts/semester/SemesterContext';
+import { useSupabaseDeliveries } from '@/hooks/supabase/useSupabaseDeliveries';
+import { useDeliveries as useLocalDeliveries } from '@/hooks/useDeliveries';
+import { useModal } from '@/hooks/useModal';
 import type { Delivery, FormData } from '@/types';
 
 interface DeliveriesContextValue {
@@ -62,7 +71,7 @@ export const DeliveriesProvider: React.FC<DeliveriesProviderProps> = ({ children
   const modal = useModal(semesterStart);
 
   const incrementVersion = useCallback(() => {
-    setDeliveriesVersion((previous) => previous + 1);
+    setDeliveriesVersion(previous => previous + 1);
   }, []);
 
   // Escuchar cambios en semesterStart para forzar recálculo del algoritmo
@@ -166,7 +175,7 @@ export const DeliveriesProvider: React.FC<DeliveriesProviderProps> = ({ children
   );
 
   const subjects = useMemo(() => {
-    return [...new Set(deliveries.map((delivery) => delivery.subject))];
+    return [...new Set(deliveries.map(delivery => delivery.subject))];
   }, [deliveries]);
 
   const value = useMemo<DeliveriesContextValue>(

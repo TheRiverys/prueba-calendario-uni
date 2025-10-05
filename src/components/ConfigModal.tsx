@@ -1,10 +1,7 @@
-import React from 'react';
 import { Upload, Download } from 'lucide-react';
-import type { ImportValidationError } from '@/types';
-import { useConfigContext } from '@/contexts/config/ConfigContext';
-import { useDeliveriesContext } from '@/contexts/deliveries/DeliveriesContext';
-import { useScheduleContext } from '@/contexts/schedule/ScheduleContext';
-import { pickColorForSubject, parseDeliveriesFile, createIcsCalendar } from '@/utils';
+import React from 'react';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -13,9 +10,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useConfigContext } from '@/contexts/config/ConfigContext';
+import { useDeliveriesContext } from '@/contexts/deliveries/DeliveriesContext';
+import { useScheduleContext } from '@/contexts/schedule/ScheduleContext';
+import type { ImportValidationError } from '@/types';
+import { pickColorForSubject, parseDeliveriesFile, createIcsCalendar } from '@/utils';
 
 const COLUMN_DISPLAY_NAMES: Record<ImportValidationError['column'], string> = {
   subject: 'Materia',
@@ -32,7 +33,7 @@ const formatImportErrors = (importErrors: ImportValidationError[]): string => {
     return '';
   }
 
-  const lines = importErrors.slice(0, MAX_ERRORS_IN_ALERT).map((error) => {
+  const lines = importErrors.slice(0, MAX_ERRORS_IN_ALERT).map(error => {
     const label = COLUMN_DISPLAY_NAMES[error.column];
     const location = error.row > 0 ? `Fila ${error.row}` : 'General';
     const suffix = label ? ` (${label})` : '';
@@ -96,7 +97,7 @@ export const ConfigModal: React.FC = () => {
         return;
       }
 
-      const newDeliveries = importedRows.map((row) => ({
+      const newDeliveries = importedRows.map(row => ({
         subject: row.subject,
         name: row.name,
         date: row.dueDate,
@@ -157,8 +158,8 @@ export const ConfigModal: React.FC = () => {
         <div className='space-y-8'>
           <section className='space-y-4'>
             <div className='flex flex-col gap-1'>
-              <h3 className='text-base font-semibold text-foreground'>Planificación base</h3>
-              <p className='text-sm text-muted-foreground'>
+              <h3 className='text-foreground text-base font-semibold'>Planificación base</h3>
+              <p className='text-muted-foreground text-sm'>
                 Configura los días de estudio predeterminados.
               </p>
             </div>
@@ -169,11 +170,11 @@ export const ConfigModal: React.FC = () => {
                   id='baseStudyDays'
                   type='number'
                   value={config.baseStudyDays}
-                  onChange={(event) =>
+                  onChange={event =>
                     updateConfig({ baseStudyDays: parseInt(event.target.value, 10) || 0 })
                   }
                 />
-                <p className='text-xs text-muted-foreground'>
+                <p className='text-muted-foreground text-xs'>
                   Días mínimos que se asignarán a cada entrega.
                 </p>
               </div>
@@ -184,11 +185,11 @@ export const ConfigModal: React.FC = () => {
                   id='minStudyTime'
                   type='number'
                   value={config.minStudyTime}
-                  onChange={(event) =>
+                  onChange={event =>
                     updateConfig({ minStudyTime: parseInt(event.target.value, 10) || 0 })
                   }
                 />
-                <p className='text-xs text-muted-foreground'>
+                <p className='text-muted-foreground text-xs'>
                   Duración mínima recomendada de cada sesión.
                 </p>
               </div>
@@ -200,20 +201,20 @@ export const ConfigModal: React.FC = () => {
                 id='allocationWindowDays'
                 type='number'
                 value={config.allocationWindowDays}
-                onChange={(event) =>
+                onChange={event =>
                   updateConfig({ allocationWindowDays: parseInt(event.target.value, 10) || 0 })
                 }
               />
-              <p className='text-xs text-muted-foreground'>
+              <p className='text-muted-foreground text-xs'>
                 Define cuántos días alrededor de una entrega puede extenderse el plan.
               </p>
             </div>
           </section>
 
-          <section className='space-y-4 border-t border-border pt-6'>
+          <section className='border-border space-y-4 border-t pt-6'>
             <div className='flex flex-col gap-1'>
-              <h3 className='text-base font-semibold text-foreground'>Prioridades</h3>
-              <p className='text-sm text-muted-foreground'>
+              <h3 className='text-foreground text-base font-semibold'>Prioridades</h3>
+              <p className='text-muted-foreground text-sm'>
                 Ajusta variaciones de tiempo según la prioridad.
               </p>
             </div>
@@ -225,7 +226,7 @@ export const ConfigModal: React.FC = () => {
                   id='highPriority'
                   type='number'
                   value={config.priorityVariations.high}
-                  onChange={(event) =>
+                  onChange={event =>
                     updateConfig({
                       priorityVariations: {
                         ...config.priorityVariations,
@@ -234,7 +235,7 @@ export const ConfigModal: React.FC = () => {
                     })
                   }
                 />
-                <p className='text-xs text-muted-foreground'>días extra respecto al valor base</p>
+                <p className='text-muted-foreground text-xs'>días extra respecto al valor base</p>
               </div>
 
               <div className='space-y-2'>
@@ -243,7 +244,7 @@ export const ConfigModal: React.FC = () => {
                   id='normalPriority'
                   type='number'
                   value={config.priorityVariations.normal}
-                  onChange={(event) =>
+                  onChange={event =>
                     updateConfig({
                       priorityVariations: {
                         ...config.priorityVariations,
@@ -252,7 +253,7 @@ export const ConfigModal: React.FC = () => {
                     })
                   }
                 />
-                <p className='text-xs text-muted-foreground'>días respecto al valor base</p>
+                <p className='text-muted-foreground text-xs'>días respecto al valor base</p>
               </div>
 
               <div className='space-y-2'>
@@ -261,7 +262,7 @@ export const ConfigModal: React.FC = () => {
                   id='lowPriority'
                   type='number'
                   value={config.priorityVariations.low}
-                  onChange={(event) =>
+                  onChange={event =>
                     updateConfig({
                       priorityVariations: {
                         ...config.priorityVariations,
@@ -270,23 +271,23 @@ export const ConfigModal: React.FC = () => {
                     })
                   }
                 />
-                <p className='text-xs text-muted-foreground'>días menos</p>
+                <p className='text-muted-foreground text-xs'>días menos</p>
               </div>
             </div>
 
-            <div className='rounded-md bg-muted p-3'>
-              <p className='text-sm font-medium mb-2'>Ejemplo</p>
-              <p className='text-sm text-muted-foreground'>
+            <div className='bg-muted rounded-md p-3'>
+              <p className='mb-2 text-sm font-medium'>Ejemplo</p>
+              <p className='text-muted-foreground text-sm'>
                 Con {config.baseStudyDays} días base, prioridad alta reservar{' '}
                 {totalDaysByPriority.high} días, normal {totalDaysByPriority.normal} y baja{' '}
                 {totalDaysByPriority.low}.
               </p>
             </div>
           </section>
-          <section className='space-y-4 border-t border-border pt-6'>
+          <section className='border-border space-y-4 border-t pt-6'>
             <div className='flex flex-col gap-1'>
-              <h3 className='text-base font-semibold text-foreground'>Configuración de IA</h3>
-              <p className='text-sm text-muted-foreground'>Clave API para funciones de IA.</p>
+              <h3 className='text-foreground text-base font-semibold'>Configuración de IA</h3>
+              <p className='text-muted-foreground text-sm'>Clave API para funciones de IA.</p>
             </div>
             <div className='space-y-2'>
               <Label htmlFor='openaiApiKey'>Clave API de OpenAI</Label>
@@ -295,18 +296,18 @@ export const ConfigModal: React.FC = () => {
                 type='password'
                 placeholder='sk-...'
                 value={config.openaiApiKey}
-                onChange={(event) => updateConfig({ openaiApiKey: event.target.value })}
+                onChange={event => updateConfig({ openaiApiKey: event.target.value })}
               />
-              <p className='text-xs text-muted-foreground'>
+              <p className='text-muted-foreground text-xs'>
                 Necesaria para generación de planes y análisis. Se almacena localmente.
               </p>
             </div>
           </section>
 
-          <section className='space-y-6 border-t border-border pt-6'>
+          <section className='border-border space-y-6 border-t pt-6'>
             <div className='flex flex-col gap-1'>
-              <h3 className='text-base font-semibold text-foreground'>Importar y exportar datos</h3>
-              <p className='text-sm text-muted-foreground'>
+              <h3 className='text-foreground text-base font-semibold'>Importar y exportar datos</h3>
+              <p className='text-muted-foreground text-sm'>
                 Gestiona tus entregas desde/ hacia archivos.
               </p>
             </div>
@@ -314,7 +315,7 @@ export const ConfigModal: React.FC = () => {
               <div className='space-y-4'>
                 <div className='space-y-2'>
                   <Label className='text-sm font-medium'>Importar entregas</Label>
-                  <div className='flex flex-col gap-3 rounded-lg border border-dashed border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground'>
+                  <div className='border-border/70 bg-muted/20 text-muted-foreground flex flex-col gap-3 rounded-lg border border-dashed p-4 text-sm'>
                     <p>Sube un CSV o Excel con columnas: materia, título y fecha (AAAA-MM-DD).</p>
                     <Button
                       variant='outline'
@@ -332,7 +333,7 @@ export const ConfigModal: React.FC = () => {
               <div className='space-y-4'>
                 <div className='space-y-2'>
                   <Label className='text-sm font-medium'>Exportar calendario</Label>
-                  <div className='flex flex-col gap-3 rounded-lg border border-dashed border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground'>
+                  <div className='border-border/70 bg-muted/20 text-muted-foreground flex flex-col gap-3 rounded-lg border border-dashed p-4 text-sm'>
                     <p>
                       Descarga un .ics para añadir tus entregas a cualquier calendario compatible.
                     </p>
@@ -362,7 +363,7 @@ export const ConfigModal: React.FC = () => {
           aria-label='Archivo de importación'
         />
 
-        <DialogFooter className='gap-2 sm:gap-3 sm:justify-end'>
+        <DialogFooter className='gap-2 sm:justify-end sm:gap-3'>
           <Button variant='outline' onClick={handleReset} className='w-full sm:w-auto'>
             Restaurar valores por defecto
           </Button>

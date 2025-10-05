@@ -164,7 +164,7 @@ body {
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50;
     background-color: var(--primary);
     color: var(--primary-foreground);
   }
@@ -173,7 +173,7 @@ body {
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50;
     background-color: var(--secondary);
     color: var(--secondary-foreground);
   }
@@ -182,7 +182,7 @@ body {
   }
 
   .btn-accent {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50;
     background-color: var(--accent);
     color: var(--accent-foreground);
   }
@@ -191,7 +191,7 @@ body {
   }
 
   .btn-destructive {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50;
     background-color: var(--destructive);
     color: var(--destructive-foreground);
   }
@@ -315,6 +315,6 @@ body {
 
   /* Mejorar la visibilidad del texto en controles */
   .controls-label {
-    @apply text-sm font-medium text-foreground whitespace-nowrap;
+    @apply text-foreground text-sm font-medium whitespace-nowrap;
   }
 }

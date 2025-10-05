@@ -1,4 +1,5 @@
-import React from 'react';
+import { format, differenceInDays, differenceInCalendarDays, isBefore, parseISO } from 'date-fns';
+import { es } from 'date-fns/locale';
 import {
   Calendar,
   Clock,
@@ -11,28 +12,29 @@ import {
   Plus,
   Circle,
 } from 'lucide-react';
-import { format, differenceInDays, differenceInCalendarDays, isBefore, parseISO } from 'date-fns';
-import { es } from 'date-fns/locale';
+import React from 'react';
+
 // Se elimina Card para un layout menos "encajonado"
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { AIControls } from '../AIControls';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+
 import type { StudySchedule } from '../../types';
 
 interface DeliveryListProps {
-  schedule: StudySchedule[];
-  onEdit: (delivery: StudySchedule) => void;
-  onDelete: (id: StudySchedule['id']) => void;
-  onToggleComplete: (id: StudySchedule['id']) => void;
-  selectedSubject: string;
-  subjects: string[];
-  onSubjectChange: (subject: string) => void;
-  sortBy: 'algorithm' | 'subject' | 'date';
-  onSortChange: (sort: 'algorithm' | 'subject' | 'date') => void;
-  activeView: 'list' | 'calendar' | 'gantt';
-  onViewChange: (view: 'list' | 'calendar' | 'gantt') => void;
-  onAdd: () => void;
+  readonly schedule: StudySchedule[];
+  readonly onEdit: (delivery: StudySchedule) => void;
+  readonly onDelete: (id: StudySchedule['id']) => void;
+  readonly onToggleComplete: (id: StudySchedule['id']) => void;
+  readonly selectedSubject: string;
+  readonly subjects: string[];
+  readonly onSubjectChange: (subject: string) => void;
+  readonly sortBy: 'algorithm' | 'subject' | 'date';
+  readonly onSortChange: (sort: 'algorithm' | 'subject' | 'date') => void;
+  readonly activeView: 'list' | 'calendar' | 'gantt';
+  readonly onViewChange: (view: 'list' | 'calendar' | 'gantt') => void;
+  readonly onAdd: () => void;
 }
 
 const buildStatusBadge = (date: string, completed: boolean) => {
@@ -42,8 +44,8 @@ const buildStatusBadge = (date: string, completed: boolean) => {
 
   if (completed) {
     return (
-      <Badge variant='secondary' className='bg-green-100 text-green-800 hover:bg-green-100 text-xs'>
-        <CheckCircle className='w-3 h-3 mr-1' />
+      <Badge variant='secondary' className='bg-green-100 text-xs text-green-800 hover:bg-green-100'>
+        <CheckCircle className='mr-1 h-3 w-3' />
         Completada
       </Badge>
     );
@@ -52,7 +54,7 @@ const buildStatusBadge = (date: string, completed: boolean) => {
   if (isBefore(dueDate, today)) {
     return (
       <Badge variant='destructive' className='flex items-center'>
-        <XCircle className='w-3 h-3 mr-1' />
+        <XCircle className='mr-1 h-3 w-3' />
         Vencida
       </Badge>
     );
@@ -68,7 +70,7 @@ const buildStatusBadge = (date: string, completed: boolean) => {
         variant='secondary'
         className='flex items-center bg-red-100 text-red-800 hover:bg-red-100'
       >
-        <AlertTriangle className='w-3 h-3 mr-1' />
+        <AlertTriangle className='mr-1 h-3 w-3' />
         Mañana
       </Badge>
     );
@@ -77,7 +79,7 @@ const buildStatusBadge = (date: string, completed: boolean) => {
   if (daysUntil === 0) {
     return (
       <Badge variant='destructive' className='flex items-center'>
-        <Clock className='w-3 h-3 mr-1' />
+        <Clock className='mr-1 h-3 w-3' />
         Hoy
       </Badge>
     );
@@ -89,7 +91,7 @@ const buildStatusBadge = (date: string, completed: boolean) => {
         variant='secondary'
         className='flex items-center bg-orange-100 text-orange-800 hover:bg-orange-100'
       >
-        <Clock className='w-3 h-3 mr-1' />
+        <Clock className='mr-1 h-3 w-3' />
         Esta semana
       </Badge>
     );
@@ -105,7 +107,7 @@ const buildStatusBadge = (date: string, completed: boolean) => {
         variant='secondary'
         className='flex items-center bg-blue-100 text-blue-800 hover:bg-blue-100'
       >
-        <Clock className='w-3 h-3 mr-1' />
+        <Clock className='mr-1 h-3 w-3' />
         Próxima semana
       </Badge>
     );
@@ -117,7 +119,7 @@ const buildStatusBadge = (date: string, completed: boolean) => {
         variant='secondary'
         className='flex items-center bg-indigo-100 text-indigo-800 hover:bg-indigo-100'
       >
-        <Calendar className='w-3 h-3 mr-1' />
+        <Calendar className='mr-1 h-3 w-3' />
         Este mes
       </Badge>
     );
@@ -128,7 +130,7 @@ const buildStatusBadge = (date: string, completed: boolean) => {
       variant='secondary'
       className='flex items-center bg-slate-100 text-slate-700 hover:bg-slate-100'
     >
-      <Circle className='w-3 h-3 mr-1' />
+      <Circle className='mr-1 h-3 w-3' />
       Pendiente
     </Badge>
   );
@@ -223,9 +225,9 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
   };
 
   const renderDesktopTable = () => (
-    <div className='hidden 2xl:block overflow-hidden'>
+    <div className='hidden overflow-hidden 2xl:block'>
       <table className='w-full text-sm'>
-        <thead className='bg-muted/60 text-xs uppercase tracking-wide text-muted-foreground'>
+        <thead className='bg-muted/60 text-muted-foreground text-xs tracking-wide uppercase'>
           <tr>
             <th className='px-5 py-3 text-left font-semibold'>Entrega</th>
             <th className='px-5 py-3 text-left font-semibold'>Fecha límite</th>
@@ -240,28 +242,28 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                   className='h-8 w-8 p-0'
                   title='Añadir nueva entrega'
                 >
-                  <Plus className='w-4 h-4' />
+                  <Plus className='h-4 w-4' />
                 </Button>
               </div>
             </th>
           </tr>
         </thead>
-        <tbody className='divide-y divide-border/70'>
-          {schedule.map((item) => {
+        <tbody className='divide-border/70 divide-y'>
+          {schedule.map(item => {
             const progressValue = getProgressValue(item);
             return (
               <tr key={item.id} className={item.completed ? 'bg-muted/20 opacity-80' : 'bg-card'}>
                 <td className='px-5 py-4 align-top'>
                   <div className='flex items-start gap-3'>
-                    <div className={`w-2.5 h-12 rounded-full ${item.color}`} />
-                    <div className='space-y-1 min-w-0'>
+                    <div className={`h-12 w-2.5 rounded-full ${item.color}`} />
+                    <div className='min-w-0 space-y-1'>
                       <div className='flex flex-wrap items-center gap-2'>
                         <span
-                          className={`font-semibold text-foreground truncate ${item.completed ? 'line-through text-muted-foreground' : ''}`}
+                          className={`text-foreground truncate font-semibold ${item.completed ? 'text-muted-foreground line-through' : ''}`}
                         >
                           {item.subject} · {item.name}
                         </span>
-                        <span className='text-xs uppercase tracking-wide text-muted-foreground bg-muted/40 rounded px-2 py-0.5'>
+                        <span className='text-muted-foreground bg-muted/40 rounded px-2 py-0.5 text-xs tracking-wide uppercase'>
                           {item.priority === 'high'
                             ? 'Alta'
                             : item.priority === 'normal'
@@ -269,11 +271,11 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                               : 'Baja'}
                         </span>
                       </div>
-                      <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
+                      <div className='text-muted-foreground flex flex-wrap items-center gap-2 text-xs'>
                         {buildStatusBadge(item.date, item.completed)}
                         {getDaysUntilText(item.date) && (
                           <span className='flex items-center gap-1'>
-                            <Clock className='w-3 h-3' />
+                            <Clock className='h-3 w-3' />
                             {getDaysUntilText(item.date)}
                           </span>
                         )}
@@ -281,25 +283,25 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                     </div>
                   </div>
                 </td>
-                <td className='px-5 py-4 align-top text-sm text-muted-foreground'>
+                <td className='text-muted-foreground px-5 py-4 align-top text-sm'>
                   <div className='flex items-center gap-2'>
-                    <Calendar className='w-3.5 h-3.5' />
+                    <Calendar className='h-3.5 w-3.5' />
                     <span>{format(parseISO(item.date), "d 'de' MMM yyyy", { locale: es })}</span>
                   </div>
                 </td>
-                <td className='px-5 py-4 align-top text-sm text-muted-foreground space-y-1'>
+                <td className='text-muted-foreground space-y-1 px-5 py-4 align-top text-sm'>
                   <div className='flex items-center gap-2'>
-                    <span className='font-medium text-foreground'>Inicio:</span>
+                    <span className='text-foreground font-medium'>Inicio:</span>
                     <span>{format(item.startDate, "d 'de' MMM", { locale: es })}</span>
                   </div>
                   <div className='flex items-center gap-2'>
-                    <span className='font-medium text-foreground'>Fin:</span>
+                    <span className='text-foreground font-medium'>Fin:</span>
                     <span>{format(item.endDate, "d 'de' MMM", { locale: es })}</span>
                   </div>
                 </td>
                 <td className='px-5 py-4 align-top'>
                   <div className='space-y-2'>
-                    <div className='relative h-2 w-full overflow-hidden rounded-full bg-secondary'>
+                    <div className='bg-secondary relative h-2 w-full overflow-hidden rounded-full'>
                       <div
                         className='h-full w-full flex-1 transition-all duration-300 ease-in-out'
                         style={{
@@ -308,8 +310,8 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                         }}
                       />
                     </div>
-                    <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-                      <Check className='w-3 h-3' />
+                    <div className='text-muted-foreground flex items-center gap-2 text-xs'>
+                      <Check className='h-3 w-3' />
                       <span>
                         {item.completed
                           ? 'Completada'
@@ -321,7 +323,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                       </span>
                       {item.warning && (
                         <Badge variant='outline' className='text-chart-3 border-chart-3'>
-                          <AlertTriangle className='w-3 h-3 mr-1' /> Poco tiempo
+                          <AlertTriangle className='mr-1 h-3 w-3' /> Poco tiempo
                         </Badge>
                       )}
                     </div>
@@ -340,7 +342,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                       }
                       title={item.completed ? 'Marcar como pendiente' : 'Marcar como completada'}
                     >
-                      <Check className='w-4 h-4' />
+                      <Check className='h-4 w-4' />
                     </Button>
                     <Button
                       variant='ghost'
@@ -349,7 +351,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                       className='text-blue-600 hover:bg-blue-50'
                       title='Editar entrega'
                     >
-                      <Edit2 className='w-4 h-4' />
+                      <Edit2 className='h-4 w-4' />
                     </Button>
                     <Button
                       variant='ghost'
@@ -358,7 +360,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                       className='text-destructive hover:bg-destructive/10'
                       title='Eliminar entrega'
                     >
-                      <Trash2 className='w-4 h-4' />
+                      <Trash2 className='h-4 w-4' />
                     </Button>
                   </div>
                 </td>
@@ -371,21 +373,21 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
   );
 
   const renderMobileCards = () => (
-    <div className='2xl:hidden divide-y divide-border/70'>
-      {schedule.map((item) => {
+    <div className='divide-border/70 divide-y 2xl:hidden'>
+      {schedule.map(item => {
         const progressValue = getProgressValue(item);
         return (
           <div key={item.id} className={`space-y-4 p-4 ${item.completed ? 'opacity-80' : ''}`}>
             <div className='flex items-start gap-3'>
-              <div className={`w-2 h-12 rounded-full ${item.color}`} />
-              <div className='space-y-1 min-w-0'>
+              <div className={`h-12 w-2 rounded-full ${item.color}`} />
+              <div className='min-w-0 space-y-1'>
                 <div className='flex flex-wrap items-center gap-2'>
                   <h3
-                    className={`font-semibold text-foreground truncate ${item.completed ? 'line-through text-muted-foreground' : ''}`}
+                    className={`text-foreground truncate font-semibold ${item.completed ? 'text-muted-foreground line-through' : ''}`}
                   >
                     {item.subject} · {item.name}
                   </h3>
-                  <span className='text-xs uppercase tracking-wide text-muted-foreground bg-muted/40 rounded px-2 py-0.5'>
+                  <span className='text-muted-foreground bg-muted/40 rounded px-2 py-0.5 text-xs tracking-wide uppercase'>
                     {item.priority === 'high'
                       ? 'Alta'
                       : item.priority === 'normal'
@@ -393,11 +395,11 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                         : 'Baja'}
                   </span>
                 </div>
-                <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
+                <div className='text-muted-foreground flex flex-wrap items-center gap-2 text-xs'>
                   {buildStatusBadge(item.date, item.completed)}
                   {getDaysUntilText(item.date) && (
                     <span className='flex items-center gap-1'>
-                      <Clock className='w-3 h-3' />
+                      <Clock className='h-3 w-3' />
                       {getDaysUntilText(item.date)}
                     </span>
                   )}
@@ -406,7 +408,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
             </div>
 
             <div className='space-y-2'>
-              <div className='relative h-2 w-full overflow-hidden rounded-full bg-secondary'>
+              <div className='bg-secondary relative h-2 w-full overflow-hidden rounded-full'>
                 <div
                   className='h-full w-full flex-1 transition-all duration-300 ease-in-out'
                   style={{
@@ -415,8 +417,8 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                   }}
                 />
               </div>
-              <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-                <Check className='w-3 h-3' />
+              <div className='text-muted-foreground flex items-center gap-2 text-xs'>
+                <Check className='h-3 w-3' />
                 <span>
                   {item.completed
                     ? 'Completada'
@@ -428,7 +430,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                 </span>
                 {item.warning && (
                   <Badge variant='outline' className='text-chart-3 border-chart-3'>
-                    <AlertTriangle className='w-3 h-3 mr-1' /> Poco tiempo
+                    <AlertTriangle className='mr-1 h-3 w-3' /> Poco tiempo
                   </Badge>
                 )}
               </div>
@@ -446,7 +448,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                 }
                 title={item.completed ? 'Marcar como pendiente' : 'Marcar como completada'}
               >
-                <Check className='w-4 h-4' />
+                <Check className='h-4 w-4' />
               </Button>
               <Button
                 variant='ghost'
@@ -455,7 +457,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                 className='text-blue-600 hover:bg-blue-50'
                 title='Editar entrega'
               >
-                <Edit2 className='w-4 h-4' />
+                <Edit2 className='h-4 w-4' />
               </Button>
               <Button
                 variant='ghost'
@@ -464,7 +466,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                 className='text-destructive hover:bg-destructive/10'
                 title='Eliminar entrega'
               >
-                <Trash2 className='w-4 h-4' />
+                <Trash2 className='h-4 w-4' />
               </Button>
             </div>
           </div>
@@ -476,11 +478,11 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
   return (
     <section className='w-full'>
       {/* Header fino sin caja */}
-      <div className='flex flex-col gap-6 sm:gap-4 border-b border-border/60 pb-5'>
+      <div className='border-border/60 flex flex-col gap-6 border-b pb-5 sm:gap-4'>
         {/* Título y controles principales */}
         <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-          <h2 className='flex items-center gap-2 text-xl font-semibold text-foreground'>
-            <Calendar className='w-5 h-5' />
+          <h2 className='text-foreground flex items-center gap-2 text-xl font-semibold'>
+            <Calendar className='h-5 w-5' />
             Entregas
           </h2>
 
@@ -489,13 +491,13 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
             {/* Controles principales en una línea */}
             <div className='flex flex-wrap items-center gap-3 sm:gap-4'>
               {/* Vista */}
-              <div className='flex items-center gap-2 min-w-0'>
-                <span className='hidden lg:inline text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap'>
+              <div className='flex min-w-0 items-center gap-2'>
+                <span className='text-muted-foreground hidden text-xs tracking-wide whitespace-nowrap uppercase lg:inline'>
                   Vista
                 </span>
                 <Select
                   value={activeView}
-                  onValueChange={(v) => onViewChange(v as 'list' | 'calendar' | 'gantt')}
+                  onValueChange={v => onViewChange(v as 'list' | 'calendar' | 'gantt')}
                 >
                   <SelectTrigger className='w-[110px] sm:w-[130px] lg:w-[150px]'>
                     <SelectValue placeholder='Vista' />
@@ -509,8 +511,8 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
               </div>
 
               {/* Materia */}
-              <div className='flex items-center gap-2 min-w-0'>
-                <span className='hidden lg:inline text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap'>
+              <div className='flex min-w-0 items-center gap-2'>
+                <span className='text-muted-foreground hidden text-xs tracking-wide whitespace-nowrap uppercase lg:inline'>
                   Materia
                 </span>
                 <Select value={selectedSubject} onValueChange={onSubjectChange}>
@@ -519,7 +521,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='all'>Todas las materias</SelectItem>
-                    {subjects.map((subject) => (
+                    {subjects.map(subject => (
                       <SelectItem key={subject} value={subject}>
                         {subject}
                       </SelectItem>
@@ -529,8 +531,8 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
               </div>
 
               {/* Ordenar por */}
-              <div className='flex items-center gap-2 min-w-0'>
-                <span className='hidden lg:inline text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap'>
+              <div className='flex min-w-0 items-center gap-2'>
+                <span className='text-muted-foreground hidden text-xs tracking-wide whitespace-nowrap uppercase lg:inline'>
                   Ordenar
                 </span>
                 <Select value={sortBy} onValueChange={onSortChange}>
@@ -562,11 +564,11 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
             {renderMobileCards()}
           </div>
         ) : (
-          <div className='rounded-xl border border-dashed border-border bg-muted/20 p-10 text-center text-muted-foreground'>
+          <div className='border-border bg-muted/20 text-muted-foreground rounded-xl border border-dashed p-10 text-center'>
             <div className='space-y-4'>
               <p>No hay entregas registradas.</p>
               <p className='text-sm'>Añade la primera para comenzar a planificar tu calendario.</p>
-              <Button onClick={onAdd} className='flex items-center gap-2 mx-auto'>
+              <Button onClick={onAdd} className='mx-auto flex items-center gap-2'>
                 <Edit2 className='h-4 w-4' />
                 <span className='hidden sm:inline'>Nueva entrega</span>
                 <span className='sm:hidden'>Nueva</span>

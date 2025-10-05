@@ -1,14 +1,17 @@
+import { MessageSquare, X, Send, Lightbulb, Bug, MessageCircle } from 'lucide-react';
 import React, { useState } from 'react';
+
+import { BuyMeACoffee } from '@/components/ui/BuyMeACoffee';
+import { useSupabaseFeedback } from '@/hooks/supabase/useSupabaseFeedback';
+
 import { Button } from './button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
 import { Input } from './input';
 import { Label } from './label';
-import { Textarea } from './textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
-import { MessageSquare, X, Send, Lightbulb, Bug, MessageCircle } from 'lucide-react';
+import { Textarea } from './textarea';
+
 import type { LucideIcon } from 'lucide-react';
-import { BuyMeACoffee } from '@/components/ui/BuyMeACoffee';
-import { useSupabaseFeedback } from '@/hooks/supabase/useSupabaseFeedback';
 
 type FeedbackType = 'sugerencia' | 'error' | 'comentario';
 
@@ -28,7 +31,9 @@ export const FeedbackPanel: React.FC = () => {
   const { submitFeedback, isSubmitting } = useSupabaseFeedback();
 
   const handleSubmit = async () => {
-    if (!title.trim() || !description.trim()) return;
+    if (!title.trim() || !description.trim()) {
+      return;
+    }
 
     const result = await submitFeedback({
       type: feedbackType,
@@ -60,7 +65,7 @@ export const FeedbackPanel: React.FC = () => {
             <CardHeader className='pb-3'>
               <div className='flex items-center justify-between'>
                 <CardTitle className='flex items-center gap-2 text-base'>
-                  <MessageSquare className='w-4 h-4' />
+                  <MessageSquare className='h-4 w-4' />
                   Enviar Feedback
                 </CardTitle>
                 <Button
@@ -69,7 +74,7 @@ export const FeedbackPanel: React.FC = () => {
                   onClick={() => setIsOpen(false)}
                   className='h-6 w-6 p-0'
                 >
-                  <X className='w-3 h-3' />
+                  <X className='h-3 w-3' />
                 </Button>
               </div>
               <CardDescription className='text-sm'>
@@ -91,7 +96,7 @@ export const FeedbackPanel: React.FC = () => {
                   <SelectContent>
                     {feedbackOptions.map(({ value, label, icon: Icon }) => (
                       <SelectItem key={value} value={value} className='flex items-center gap-2'>
-                        <Icon className='w-3 h-3 text-muted-foreground' />
+                        <Icon className='text-muted-foreground h-3 w-3' />
                         <span>{label}</span>
                       </SelectItem>
                     ))}
@@ -107,7 +112,7 @@ export const FeedbackPanel: React.FC = () => {
                   id='title'
                   placeholder='Breve descripción del feedback'
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={e => setTitle(e.target.value)}
                   className='h-8'
                 />
               </div>
@@ -120,7 +125,7 @@ export const FeedbackPanel: React.FC = () => {
                   id='description'
                   placeholder='Describe tu feedback en detalle...'
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={e => setDescription(e.target.value)}
                   rows={2}
                   className='resize-none'
                 />
@@ -135,7 +140,7 @@ export const FeedbackPanel: React.FC = () => {
                   type='email'
                   placeholder='tu@email.com'
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   className='h-8'
                 />
               </div>
@@ -143,14 +148,14 @@ export const FeedbackPanel: React.FC = () => {
               <Button
                 onClick={handleSubmit}
                 disabled={!title.trim() || !description.trim() || isSubmitting}
-                className='w-full h-8'
+                className='h-8 w-full'
                 size='sm'
               >
                 {isSubmitting ? (
                   <>Enviando...</>
                 ) : (
                   <>
-                    <Send className='w-3 h-3 mr-1' />
+                    <Send className='mr-1 h-3 w-3' />
                     Enviar
                   </>
                 )}
@@ -161,14 +166,14 @@ export const FeedbackPanel: React.FC = () => {
       )}
 
       {/* Botones flotantes */}
-      <div className='fixed bottom-4 left-4 flex flex-col gap-2 z-40'>
+      <div className='fixed bottom-4 left-4 z-40 flex flex-col gap-2'>
         <Button
           variant='outline'
           size='sm'
           onClick={() => setIsOpen(true)}
-          className='bg-background/80 backdrop-blur-sm border shadow-lg hover:bg-background/90'
+          className='bg-background/80 hover:bg-background/90 border shadow-lg backdrop-blur-sm'
         >
-          <MessageSquare className='w-4 h-4 mr-2' />
+          <MessageSquare className='mr-2 h-4 w-4' />
           Feedback
         </Button>
 

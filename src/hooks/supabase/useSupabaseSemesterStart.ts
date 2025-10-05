@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import type { User } from '@supabase/supabase-js';
+
 import { supabase } from '@/lib/supabase';
+
+import type { User } from '@supabase/supabase-js';
 
 export const useSupabaseSemesterStart = (user: User | null) => {
   const [semesterStart, setSemesterStart] = useState<string>('');
@@ -51,7 +53,9 @@ export const useSupabaseSemesterStart = (user: User | null) => {
 
   // Actualizar fecha de inicio del semestre
   const updateSemesterStart = async (newSemesterStart: string) => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     try {
       const { error } = await supabase.from('semester_starts').upsert(
@@ -64,7 +68,9 @@ export const useSupabaseSemesterStart = (user: User | null) => {
         }
       );
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       // Actualizar inmediatamente el estado local para evitar problemas de sincronización
       setSemesterStart(newSemesterStart);

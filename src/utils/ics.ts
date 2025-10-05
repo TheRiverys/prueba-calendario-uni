@@ -1,4 +1,5 @@
 ﻿import { format, addDays } from 'date-fns';
+
 import type { StudySchedule } from '../types';
 
 const escapeText = (value: string): string => {
@@ -17,7 +18,7 @@ export const createIcsCalendar = (schedule: StudySchedule[]): string => {
   const generatedAt = new Date();
   const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Calendario de Entregas//ES'];
 
-  schedule.forEach((item) => {
+  schedule.forEach(item => {
     const eventStart = formatDate(item.endDate);
     const eventEnd = formatDate(addDays(item.endDate, 1));
     const description = escapeText(

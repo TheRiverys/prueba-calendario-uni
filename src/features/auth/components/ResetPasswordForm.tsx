@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,7 +8,7 @@ import { useAuthContext } from '@/contexts/auth/AuthContext';
 type AuthMode = 'login' | 'register' | 'reset';
 
 interface ResetPasswordFormProps {
-  onSwitchMode: (mode: AuthMode) => void;
+  readonly onSwitchMode: (mode: AuthMode) => void;
 }
 
 export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSwitchMode }) => {
@@ -51,28 +52,28 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSwitchMo
           type='email'
           autoComplete='email'
           value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={event => setEmail(event.target.value)}
           required
           disabled={isBusy}
         />
       </div>
 
       {error && (
-        <p className='text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2'>{error}</p>
+        <p className='text-destructive bg-destructive/10 rounded-md px-3 py-2 text-sm'>{error}</p>
       )}
 
       {feedback && (
-        <p className='text-sm text-primary bg-primary/10 rounded-md px-3 py-2'>{feedback}</p>
+        <p className='text-primary bg-primary/10 rounded-md px-3 py-2 text-sm'>{feedback}</p>
       )}
 
       <Button type='submit' className='w-full' disabled={isBusy}>
         {isBusy ? 'Procesando' : 'Enviar enlace'}
       </Button>
 
-      <div className='flex flex-col gap-2 text-sm text-muted-foreground'>
+      <div className='text-muted-foreground flex flex-col gap-2 text-sm'>
         <button
           type='button'
-          className='transition hover:text-foreground'
+          className='hover:text-foreground transition'
           onClick={() => onSwitchMode('login')}
           disabled={isBusy}
         >
@@ -80,7 +81,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSwitchMo
         </button>
         <button
           type='button'
-          className='transition hover:text-foreground'
+          className='hover:text-foreground transition'
           onClick={() => onSwitchMode('register')}
           disabled={isBusy}
         >

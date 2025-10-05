@@ -1,4 +1,5 @@
-import { supabase } from '../../../lib/supabase';
+import { getOAuthProviderInfo } from '@/lib/oauthUtils';
+import { supabase } from '@/lib/supabase';
 
 type AuthResponse = { error: string | null };
 
@@ -21,6 +22,12 @@ type DeleteAccountOptions = {
 type ResetPasswordOptions = {
   email: string;
   redirectTo?: string;
+};
+
+type OAuthOptions = {
+  redirectTo?: string;
+  scopes?: string;
+  queryParams?: Record<string, string>;
 };
 
 export const signInWithEmail = async ({
@@ -90,4 +97,40 @@ export const sendResetPasswordEmail = async ({
     redirectTo,
   });
   return { error: error?.message ?? null };
+};
+
+export const signInWithGoogle = async (options?: OAuthOptions): Promise<AuthResponse> => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: options?.redirectTo,
+      scopes: options?.scopes,
+      queryParams: options?.queryParams,
+    },
+  });
+  return { error: error?.message ?? null };
+};
+
+export const resendConfirmationEmail = async (email: string): Promise<AuthResponse> => {
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email: email,
+  });
+  return { error: error?.message ?? null };
+};
+
+export const isEmailConfirmed = (user: any): boolean => {
+  if (!user) {
+    return false;
+  }
+
+  // Los usuarios que inician sesión con Google u otros proveedores OAuth
+  // típicamente tienen el email confirmado automáticamente
+  const providerInfo = getOAuthProviderInfo(user);
+  if (providerInfo.isGoogle || providerInfo.provider) {
+    return true; // Los proveedores OAuth verifican automáticamente el email
+  }
+
+  // Para usuarios de email/contraseña, verificar campos de confirmación
+  return !!(user.email_confirmed_at || user.confirmed_at);
 };

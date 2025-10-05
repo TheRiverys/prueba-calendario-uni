@@ -25,7 +25,7 @@ const hashSubject = (subject: string): number => {
 };
 
 export const pickColorForSubject = (subject: string, deliveries: Delivery[]): string => {
-  const existing = deliveries.find((delivery) => delivery.subject === subject)?.color;
+  const existing = deliveries.find(delivery => delivery.subject === subject)?.color;
   if (existing) {
     return existing;
   }
@@ -40,7 +40,7 @@ export const buildColorLegend = (
   schedule: StudySchedule[]
 ): Array<{ subject: string; color: string }> => {
   const legend = new Map<string, string>();
-  schedule.forEach((item) => {
+  schedule.forEach(item => {
     if (!legend.has(item.subject)) {
       legend.set(item.subject, item.color);
     }

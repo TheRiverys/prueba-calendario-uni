@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
-import type { User } from '@supabase/supabase-js';
+
 import { supabase } from '@/lib/supabase';
 import type { Delivery, DeliveryRow } from '@/types';
+
+import type { User } from '@supabase/supabase-js';
 
 type DeliveryInput = Omit<Delivery, 'id' | 'completed'>;
 type DeliveryUpdate = Partial<Omit<Delivery, 'id'>>;
@@ -30,13 +32,27 @@ const mapInputToRow = (input: DeliveryInput, userId: string) => ({
 
 const mapUpdateToRow = (updates: DeliveryUpdate) => {
   const payload: Record<string, unknown> = {};
-  if (updates.subject !== undefined) payload.subject = updates.subject;
-  if (updates.name !== undefined) payload.name = updates.name;
-  if (updates.date !== undefined) payload.date = updates.date;
-  if (updates.priority !== undefined) payload.priority = updates.priority;
-  if (updates.color !== undefined) payload.color = updates.color;
-  if (updates.completed !== undefined) payload.completed = updates.completed;
-  if (updates.studyStart !== undefined) payload.study_start = updates.studyStart ?? null;
+  if (updates.subject !== undefined) {
+    payload.subject = updates.subject;
+  }
+  if (updates.name !== undefined) {
+    payload.name = updates.name;
+  }
+  if (updates.date !== undefined) {
+    payload.date = updates.date;
+  }
+  if (updates.priority !== undefined) {
+    payload.priority = updates.priority;
+  }
+  if (updates.color !== undefined) {
+    payload.color = updates.color;
+  }
+  if (updates.completed !== undefined) {
+    payload.completed = updates.completed;
+  }
+  if (updates.studyStart !== undefined) {
+    payload.study_start = updates.studyStart ?? null;
+  }
   return payload;
 };
 
@@ -98,7 +114,7 @@ export const useSupabaseDeliveries = (user: User | null) => {
         }
 
         const created = mapRowToDelivery(data);
-        setDeliveries((prev) => [...prev, created]);
+        setDeliveries(prev => [...prev, created]);
         return created;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error adding delivery');
@@ -128,7 +144,7 @@ export const useSupabaseDeliveries = (user: User | null) => {
         }
 
         const updated = mapRowToDelivery(data);
-        setDeliveries((prev) => prev.map((delivery) => (delivery.id === id ? updated : delivery)));
+        setDeliveries(prev => prev.map(delivery => (delivery.id === id ? updated : delivery)));
         return updated;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error updating delivery');
@@ -155,7 +171,7 @@ export const useSupabaseDeliveries = (user: User | null) => {
           throw mutationError;
         }
 
-        setDeliveries((prev) => prev.filter((delivery) => delivery.id !== id));
+        setDeliveries(prev => prev.filter(delivery => delivery.id !== id));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error deleting delivery');
         throw err;
@@ -166,7 +182,7 @@ export const useSupabaseDeliveries = (user: User | null) => {
 
   const toggleCompleted = useCallback(
     async (id: Delivery['id']) => {
-      const current = deliveries.find((delivery) => delivery.id === id);
+      const current = deliveries.find(delivery => delivery.id === id);
       if (!current) {
         return null;
       }
@@ -182,7 +198,7 @@ export const useSupabaseDeliveries = (user: User | null) => {
       }
 
       try {
-        const payload = entries.map((entry) => mapInputToRow(entry, user.id));
+        const payload = entries.map(entry => mapInputToRow(entry, user.id));
         const { data, error: mutationError } = await supabase
           .from('deliveries')
           .insert(payload)
@@ -193,7 +209,7 @@ export const useSupabaseDeliveries = (user: User | null) => {
         }
 
         const created = (data ?? []).map(mapRowToDelivery);
-        setDeliveries((prev) => [...prev, ...created]);
+        setDeliveries(prev => [...prev, ...created]);
         return created;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error adding deliveries');

@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
+
 import { supabase } from '@/lib/supabase';
+
 import { useAuth } from '../useAuth';
 
 type FeedbackType = 'sugerencia' | 'error' | 'comentario';
@@ -28,7 +30,9 @@ export const useSupabaseFeedback = () => {
         p_email: feedbackData.email || null,
       });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       return { success: true, data };
     } catch (err) {
@@ -41,12 +45,16 @@ export const useSupabaseFeedback = () => {
   }, []);
 
   const getUserFeedback = useCallback(async () => {
-    if (!user) return [];
+    if (!user) {
+      return [];
+    }
 
     try {
       const { data, error } = await supabase.rpc('get_user_feedback');
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       return data || [];
     } catch (err) {

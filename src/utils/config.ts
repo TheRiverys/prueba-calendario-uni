@@ -35,7 +35,7 @@ const extractLegacyBaseStudyDays = (value: unknown): number | null => {
   if (isNumber(normal)) {
     return Math.max(1, Math.round(normal));
   }
-  const candidates = ['high', 'low'].map((key) => record[key]).filter(isNumber) as number[];
+  const candidates = ['high', 'low'].map(key => record[key]).filter(isNumber) as number[];
   if (candidates.length === 0) {
     return null;
   }

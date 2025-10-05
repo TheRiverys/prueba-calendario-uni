@@ -1,5 +1,3 @@
-import React, { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, Check, Trash2, Edit2, Filter } from 'lucide-react';
 import {
   format,
   startOfMonth,
@@ -15,9 +13,9 @@ import {
   isWithinInterval,
 } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { ChevronLeft, ChevronRight, Check, Trash2, Edit2, Filter } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
 
-import type { StudySchedule } from '@/types';
-import { buildColorLegend } from '@/utils';
 import {
   Select,
   SelectContent,
@@ -25,15 +23,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import type { StudySchedule } from '@/types';
+import { buildColorLegend } from '@/utils';
 
 interface CalendarViewProps {
-  schedule: StudySchedule[];
-  onEdit: (delivery: StudySchedule) => void;
-  onDelete: (id: StudySchedule['id']) => void;
-  onToggleComplete: (id: StudySchedule['id']) => void;
-  selectedSubject?: string;
-  subjects?: string[];
-  onSubjectChange?: (subject: string) => void;
+  readonly schedule: StudySchedule[];
+  readonly onEdit: (delivery: StudySchedule) => void;
+  readonly onDelete: (id: StudySchedule['id']) => void;
+  readonly onToggleComplete: (id: StudySchedule['id']) => void;
+  readonly selectedSubject?: string;
+  readonly subjects?: string[];
+  readonly onSubjectChange?: (subject: string) => void;
 }
 
 const CalendarView: React.FC<CalendarViewProps> = ({
@@ -51,7 +51,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     const filteredSchedule =
       selectedSubject === 'all'
         ? schedule
-        : schedule.filter((item) => item.subject === selectedSubject);
+        : schedule.filter(item => item.subject === selectedSubject);
     return buildColorLegend(filteredSchedule);
   }, [schedule, selectedSubject]);
 
@@ -65,14 +65,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   const getDeliveriesForDay = (day: Date): StudySchedule[] => {
     return schedule.filter(
-      (item) =>
+      item =>
         isSameDay(parseISO(item.date), day) &&
         (selectedSubject === 'all' || item.subject === selectedSubject)
     );
   };
 
   const getStudyPeriodsForDay = (day: Date): StudySchedule[] => {
-    return schedule.filter((item) =>
+    return schedule.filter(item =>
       isWithinInterval(day, { start: item.startDate, end: item.endDate })
     );
   };
@@ -86,7 +86,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       days.push(
         <div
           key={i}
-          className='text-xs font-medium text-muted-foreground uppercase tracking-wider text-center py-2'
+          className='text-muted-foreground py-2 text-center text-xs font-medium tracking-wider uppercase'
         >
           {format(addDays(startDateCopy, i), dateFormat, { locale: es })}
         </div>
@@ -113,14 +113,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         days.push(
           <div
             key={day.getTime()}
-            className={`min-h-[100px] border border-border p-2 ${
+            className={`border-border min-h-[100px] border p-2 ${
               !isCurrentMonth ? 'bg-muted/30 text-muted-foreground' : 'bg-background'
-            } ${isToday ? 'bg-primary/10 ring-1 ring-primary/30' : ''}`}
+            } ${isToday ? 'bg-primary/10 ring-primary/30 ring-1' : ''}`}
           >
             <div
-              className={`text-sm font-medium mb-1 ${
+              className={`mb-1 text-sm font-medium ${
                 isToday
-                  ? 'bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center'
+                  ? 'bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-full'
                   : ''
               }`}
             >
@@ -129,11 +129,11 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
             {studyPeriodsForDay.length > 0 && (
               <div className='mb-2'>
-                <div className='text-xs text-muted-foreground mb-1'>Períodos de estudio:</div>
+                <div className='text-muted-foreground mb-1 text-xs'>Períodos de estudio:</div>
                 {studyPeriodsForDay.map((period, idx) => (
                   <div
                     key={`study-${period.id}-${idx}`}
-                    className={`h-2 ${period.color} opacity-40 rounded-sm mb-1 border border-white/20`}
+                    className={`h-2 ${period.color} mb-1 rounded-sm border border-white/20 opacity-40`}
                     title={`${period.subject} - ${period.name}: ${format(period.startDate, 'd/M', { locale: es })} - ${format(period.endDate, 'd/M', { locale: es })}`}
                   />
                 ))}
@@ -141,28 +141,28 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             )}
 
             <div className='space-y-1'>
-              {deliveriesForDay.map((delivery) => (
+              {deliveriesForDay.map(delivery => (
                 <div
                   key={delivery.id}
-                  className={`text-xs p-1 rounded ${delivery.color} ${
+                  className={`rounded p-1 text-xs ${delivery.color} ${
                     delivery.completed ? 'opacity-60' : 'text-white'
-                  } truncate cursor-pointer hover:opacity-90 transition-opacity relative group`}
+                  } group relative cursor-pointer truncate transition-opacity hover:opacity-90`}
                   title={`${delivery.subject} - ${delivery.name}${delivery.completed ? ' (Completada)' : ''}`}
                 >
-                  <div className='font-medium truncate flex items-center'>
-                    {delivery.completed && <Check className='w-3 h-3 mr-1' />}
+                  <div className='flex items-center truncate font-medium'>
+                    {delivery.completed && <Check className='mr-1 h-3 w-3' />}
                     {delivery.name}
                   </div>
                   <div className='truncate opacity-90'>{delivery.subject}</div>
 
-                  <div className='absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1'>
+                  <div className='absolute top-0 right-0 flex space-x-1 opacity-0 transition-opacity group-hover:opacity-100'>
                     <button
                       type='button'
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         onToggleComplete(delivery.id);
                       }}
-                      className='bg-chart-1 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:opacity-80'
+                      className='bg-chart-1 flex h-5 w-5 items-center justify-center rounded-full text-xs text-white hover:opacity-80'
                       title={
                         delivery.completed ? 'Marcar como pendiente' : 'Marcar como completada'
                       }
@@ -170,31 +170,31 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                         delivery.completed ? 'Marcar como pendiente' : 'Marcar como completada'
                       }
                     >
-                      <Check className='w-3 h-3' />
+                      <Check className='h-3 w-3' />
                     </button>
                     <button
                       type='button'
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         onEdit(delivery);
                       }}
-                      className='bg-chart-2 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:opacity-80'
+                      className='bg-chart-2 flex h-5 w-5 items-center justify-center rounded-full text-xs text-white hover:opacity-80'
                       title='Editar entrega'
                       aria-label='Editar entrega'
                     >
-                      <Edit2 className='w-3 h-3' />
+                      <Edit2 className='h-3 w-3' />
                     </button>
                     <button
                       type='button'
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         onDelete(delivery.id);
                       }}
-                      className='bg-destructive text-destructive-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs hover:opacity-80'
+                      className='bg-destructive text-destructive-foreground flex h-5 w-5 items-center justify-center rounded-full text-xs hover:opacity-80'
                       title='Eliminar entrega'
                       aria-label='Eliminar entrega'
                     >
-                      <Trash2 className='w-3 h-3' />
+                      <Trash2 className='h-3 w-3' />
                     </button>
                   </div>
                 </div>
@@ -222,37 +222,37 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             <button
               type='button'
               onClick={prevMonth}
-              className='flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors'
+              className='hover:bg-muted flex h-10 w-10 items-center justify-center rounded-lg transition-colors'
               aria-label='Mes anterior'
             >
-              <ChevronLeft className='w-5 h-5' />
+              <ChevronLeft className='h-5 w-5' />
             </button>
-            <div className='px-4 py-2 bg-muted/50 rounded-lg'>
-              <h3 className='text-lg font-semibold text-foreground min-w-[200px] text-center'>
+            <div className='bg-muted/50 rounded-lg px-4 py-2'>
+              <h3 className='text-foreground min-w-[200px] text-center text-lg font-semibold'>
                 {format(currentMonth, 'MMMM yyyy', { locale: es })}
               </h3>
             </div>
             <button
               type='button'
               onClick={nextMonth}
-              className='flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors'
+              className='hover:bg-muted flex h-10 w-10 items-center justify-center rounded-lg transition-colors'
               aria-label='Mes siguiente'
             >
-              <ChevronRight className='w-5 h-5' />
+              <ChevronRight className='h-5 w-5' />
             </button>
           </div>
 
           <div className='flex items-center gap-3'>
             {subjects.length > 0 && (
               <div className='flex items-center gap-2'>
-                <Filter className='w-4 h-4 text-muted-foreground' />
+                <Filter className='text-muted-foreground h-4 w-4' />
                 <Select value={selectedSubject} onValueChange={onSubjectChange}>
                   <SelectTrigger className='w-[140px]'>
                     <SelectValue placeholder='Todas' />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='all'>Todas</SelectItem>
-                    {subjects.map((subject) => (
+                    {subjects.map(subject => (
                       <SelectItem key={subject} value={subject}>
                         {subject}
                       </SelectItem>
@@ -266,24 +266,24 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       </div>
 
       {legendItems.length > 0 && (
-        <div className='flex flex-wrap gap-4 text-sm px-4 py-3 bg-muted/30 rounded-lg'>
-          {legendItems.map((item) => (
+        <div className='bg-muted/30 flex flex-wrap gap-4 rounded-lg px-4 py-3 text-sm'>
+          {legendItems.map(item => (
             <div key={item.subject} className='flex items-center space-x-2'>
-              <div className={`w-4 h-4 rounded ${item.color}`} />
+              <div className={`h-4 w-4 rounded ${item.color}`} />
               <span className='text-muted-foreground font-medium'>{item.subject}</span>
             </div>
           ))}
           {legendItems.length > 0 && (
-            <div className='flex items-center space-x-2 ml-4 border-l border-border pl-4'>
-              <div className='w-8 h-1 bg-muted-foreground/30 rounded' />
+            <div className='border-border ml-4 flex items-center space-x-2 border-l pl-4'>
+              <div className='bg-muted-foreground/30 h-1 w-8 rounded' />
               <span className='text-muted-foreground font-medium'>Período de estudio</span>
             </div>
           )}
         </div>
       )}
 
-      <div className='border border-border rounded-lg overflow-hidden'>
-        <div className='grid grid-cols-7 bg-muted/50'>{renderDays()}</div>
+      <div className='border-border overflow-hidden rounded-lg border'>
+        <div className='bg-muted/50 grid grid-cols-7'>{renderDays()}</div>
         {renderCells()}
       </div>
     </div>

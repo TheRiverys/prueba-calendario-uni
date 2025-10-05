@@ -1,12 +1,13 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { parseISO, isValid, format, differenceInCalendarDays } from 'date-fns';
-import { useStudySchedule } from '@/hooks/useStudySchedule';
-import { useStats } from '@/hooks/useStats';
-import { useDeliveriesContext } from '@/contexts/deliveries/DeliveriesContext';
-import { useSemesterContext } from '@/contexts/semester/SemesterContext';
-import { useConfigContext } from '@/contexts/config/ConfigContext';
+import React, { createContext, useContext, useMemo, type ReactNode } from 'react';
+
 import { useAiContext } from '@/contexts/ai/AiContext';
+import { useConfigContext } from '@/contexts/config/ConfigContext';
+import { useDeliveriesContext } from '@/contexts/deliveries/DeliveriesContext';
 import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
+import { useSemesterContext } from '@/contexts/semester/SemesterContext';
+import { useStats } from '@/hooks/useStats';
+import { useStudySchedule } from '@/hooks/useStudySchedule';
 import type { StudySchedule, StudyStats } from '@/types';
 
 interface ScheduleContextValue {
@@ -18,7 +19,7 @@ interface ScheduleContextValue {
 const ScheduleContext = createContext<ScheduleContextValue | undefined>(undefined);
 
 interface ScheduleProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 export const ScheduleProvider: React.FC<ScheduleProviderProps> = ({ children }) => {
@@ -43,7 +44,7 @@ export const ScheduleProvider: React.FC<ScheduleProviderProps> = ({ children }) 
       return baseSchedule;
     }
 
-    return baseSchedule.map((item) => {
+    return baseSchedule.map(item => {
       const override = aiOverrides.get(item.id);
       if (!override) {
         return item;
@@ -75,7 +76,7 @@ export const ScheduleProvider: React.FC<ScheduleProviderProps> = ({ children }) 
     let source =
       selectedSubject === 'all'
         ? scheduleWithAiOverrides
-        : scheduleWithAiOverrides.filter((item) => item.subject === selectedSubject);
+        : scheduleWithAiOverrides.filter(item => item.subject === selectedSubject);
 
     if (sortBy === 'algorithm' || sortBy === 'date') {
       source = [...source].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());

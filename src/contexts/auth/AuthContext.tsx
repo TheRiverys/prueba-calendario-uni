@@ -1,6 +1,8 @@
 import { createContext, useContext, useMemo, useState, useCallback, type ReactNode } from 'react';
-import type { User } from '@supabase/supabase-js';
+
 import { useAuth } from '@/hooks/useAuth';
+
+import type { User } from '@supabase/supabase-js';
 
 interface AuthContextValue {
   user: User | null;
@@ -11,6 +13,9 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<string | null>;
   signUp: (email: string, password: string) => Promise<string | null>;
   resetPassword: (email: string) => Promise<string | null>;
+  signInWithGoogle: (redirectTo?: string) => Promise<string | null>;
+  resendEmailConfirmation: (email: string) => Promise<string | null>;
+  checkEmailConfirmation: (user: User | null) => boolean;
   signOut: () => Promise<string | null>;
   updateProfile: (email?: string, password?: string) => Promise<string | null>;
   deleteAccount: (password: string) => Promise<string | null>;
@@ -69,6 +74,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [auth]
   );
 
+  const signInWithGoogle = useCallback(
+    async (redirectTo?: string) => {
+      const { error } = await auth.signInWithGoogle(redirectTo);
+      if (error) {
+        return error.message;
+      }
+      setAuthModalOpen(false);
+      return null;
+    },
+    [auth]
+  );
+
+  const resendEmailConfirmation = useCallback(
+    async (email: string) => {
+      const { error } = await auth.resendEmailConfirmation(email);
+      if (error) {
+        return error.message;
+      }
+      return null;
+    },
+    [auth]
+  );
+
+  const checkEmailConfirmation = useCallback(
+    (user: User | null) => {
+      return auth.checkEmailConfirmation(user);
+    },
+    [auth]
+  );
+
   const signOut = useCallback(async () => {
     const { error } = await auth.signOut();
     if (error) {
@@ -109,6 +144,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       signIn,
       signUp,
       resetPassword,
+      signInWithGoogle,
+      resendEmailConfirmation,
+      checkEmailConfirmation,
       signOut,
       updateProfile,
       deleteAccount,
@@ -122,6 +160,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       signIn,
       signUp,
       resetPassword,
+      signInWithGoogle,
+      resendEmailConfirmation,
+      checkEmailConfirmation,
       signOut,
       updateProfile,
       deleteAccount,

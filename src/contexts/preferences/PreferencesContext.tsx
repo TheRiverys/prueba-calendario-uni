@@ -44,7 +44,7 @@ export const PreferencesProvider: React.FC<PreferencesProviderProps> = ({ childr
   }, [theme]);
 
   const toggleTheme = useCallback(() => {
-    setTheme((previous) => (previous === 'light' ? 'dark' : 'light'));
+    setTheme(previous => (previous === 'light' ? 'dark' : 'light'));
   }, []);
 
   const value = useMemo<PreferencesContextValue>(

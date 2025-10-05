@@ -1,9 +1,12 @@
-import React from 'react';
 import { Sparkles, MessageSquare, Undo2 } from 'lucide-react';
-import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import React from 'react';
+
 import { useAiContext } from '@/contexts/ai/AiContext';
 import { useDeliveriesContext } from '@/contexts/deliveries/DeliveriesContext';
+
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+
 import type { AiDetailedEntry } from '../types';
 
 interface AiSchedulePreview {
@@ -102,7 +105,7 @@ export const AIControls: React.FC = () => {
           className='flex items-center gap-2 text-xs'
           title='Generar horario con IA'
         >
-          <Sparkles className='w-4 h-4' />
+          <Sparkles className='h-4 w-4' />
           <span className='hidden sm:inline'>Horario IA</span>
           <span className='sm:hidden'>IA</span>
         </Button>
@@ -115,7 +118,7 @@ export const AIControls: React.FC = () => {
           className='flex items-center gap-2 text-xs'
           title='Analizar progreso con IA'
         >
-          <MessageSquare className='w-4 h-4' />
+          <MessageSquare className='h-4 w-4' />
           <span className='hidden sm:inline'>Análisis</span>
           <span className='sm:hidden'>Análisis</span>
         </Button>
@@ -128,28 +131,28 @@ export const AIControls: React.FC = () => {
           className='flex items-center gap-2 text-xs'
           title='Restaurar algoritmo por defecto'
         >
-          <Undo2 className='w-4 h-4' />
+          <Undo2 className='h-4 w-4' />
           <span className='hidden sm:inline'>Reset</span>
           <span className='sm:hidden'>Reset</span>
         </Button>
       </div>
 
       {!hasDeliveries && (
-        <p className='text-xs text-muted-foreground'>Agrega entregas para usar IA.</p>
+        <p className='text-muted-foreground text-xs'>Agrega entregas para usar IA.</p>
       )}
 
       {infoMessage && (
-        <p className='text-xs text-muted-foreground bg-muted/40 rounded-md px-2 py-1'>
+        <p className='text-muted-foreground bg-muted/40 rounded-md px-2 py-1 text-xs'>
           {infoMessage}
         </p>
       )}
 
       {aiError && (
-        <p className='text-xs text-destructive bg-destructive/10 rounded-md px-2 py-1'>{aiError}</p>
+        <p className='text-destructive bg-destructive/10 rounded-md px-2 py-1 text-xs'>{aiError}</p>
       )}
 
       {schedulePreview.length > 0 && (
-        <div className='text-xs text-muted-foreground bg-muted/20 rounded-md px-2 py-1'>
+        <div className='text-muted-foreground bg-muted/20 rounded-md px-2 py-1 text-xs'>
           Horario IA: {schedulePreview.length} sesiones generadas
         </div>
       )}
@@ -162,13 +165,13 @@ export const AIControls: React.FC = () => {
           <div className='max-h-[60vh] overflow-auto'>
             {analysis ? (
               <div className='space-y-3'>
-                <div className='text-xs text-muted-foreground'>Resumen generado por IA:</div>
-                <div className='text-sm whitespace-pre-wrap bg-muted/40 rounded-md px-3 py-2'>
+                <div className='text-muted-foreground text-xs'>Resumen generado por IA:</div>
+                <div className='bg-muted/40 rounded-md px-3 py-2 text-sm whitespace-pre-wrap'>
                   {analysis}
                 </div>
               </div>
             ) : (
-              <div className='text-sm text-muted-foreground'>
+              <div className='text-muted-foreground text-sm'>
                 No hay análisis disponible todavía.
               </div>
             )}
