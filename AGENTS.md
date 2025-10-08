@@ -1,16 +1,17 @@
-﻿# Repository Guidelines
+# Repository Guidelines
 
 ## Project Structure & File Layout
 
-- `src/main.jsx` mounts `<App />` into `index.html` and keeps the Vite entry
+- `src/main.tsx` mounts `<App />` into `index.html` and keeps the Vite entry
   lean.
-- `src/App.jsx` coordinates view state, the CRUD modal, and `localStorage` sync
+- `src/App.tsx` coordinates view state, the CRUD modal, and `localStorage` sync
   for `deliveries`.
-- `src/components/` stores `CalendarView.jsx`, `GanttView.jsx`,
-  `DeliveryList.jsx`; move shared helpers into `src/utils/` and re-export via
-  `src/utils/index.js`.
+- `src/components/` stores `CalendarView.tsx`, `GanttView.tsx`,
+  `DeliveryList.tsx`; move shared helpers into `src/utils/` and re-export via
+  `src/utils/index.ts`.
+- **TODOS los archivos React deben usar extensión `.tsx`** (no `.jsx`)
 - New initiatives live in `src/features/<feature>/` with `components/`,
-  `hooks/`, `services/`, and a local `index.js` barrel to standardise imports.
+  `hooks/`, `services/`, and a local `index.ts` barrel to standardise imports.
 
 ## Build & Development
 
@@ -47,6 +48,77 @@
   o tipos explícitos, y comparte los contratos de dominio (p.ej. `Delivery`,
   `StudyPeriod`) desde `src/types/`.
 
+## Code Quality & Formatting Tools
+
+### ESLint Configuration
+
+- **Configuración estricta habilitada**: Ejecuta `npm run lint` antes de cada commit
+- **Errores críticos**: `no-console`, `no-debugger`, `no-unused-vars`, `react-hooks/exhaustive-deps`
+- **Reglas personalizadas**:
+  - Máximo 100 líneas por función (arrow functions)
+  - Complejidad máxima de 15 por función
+  - Límites de líneas por archivo (500 líneas máximo)
+- **Auto-fix disponible**: Usa `npm run lint:fix` para correcciones automáticas
+- **Pre-commit hooks**: Configurados con Husky para ejecutar linting automático
+
+### Prettier Configuration
+
+- **Formateo automático**: Integrado con ESLint en `npm run lint:fix`
+- **Reglas estándar**:
+  - Comillas simples obligatorias
+  - Punto y coma obligatorio
+  - Indentación de 2 espacios
+  - Líneas máximas de 120 caracteres (más apropiado para código moderno)
+  - Saltos de línea en operadores TSX complejos
+- **Pre-commit integration**: Ejecuta automáticamente antes de cada commit
+- **Editor integration**: Configura tu editor para formateo en guardado
+
+### Tailwind CSS 4 Standards
+
+- **Arquitectura recomendada**:
+  ```css
+  /* src/index.css */
+  @import "tailwindcss";
+  @layer base, components, utilities;
+  ```
+- **Tokens personalizados** en cada feature:
+  ```css
+  /* Documentar colores, espaciado y tipografía específicos */
+  @layer components {
+    .custom-card {
+      @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm;
+    }
+  }
+  ```
+- **Responsive design primero**: Usa clases móviles primero (`sm:`, `md:`, `lg:`)
+- **Colores semánticos**: Define colores por propósito, no por apariencia
+- **Consistencia visual**: Documenta decisiones de diseño en cada componente
+
+### Development Workflow
+
+1. **Antes de desarrollar**:
+   ```bash
+   npm run lint  # Verificar estado actual
+   npm run lint:fix  # Corregir problemas automáticos
+   ```
+
+2. **Durante desarrollo**:
+   - Formateo automático en guardado (editor config)
+   - Linting en tiempo real (ESLint extensión)
+   - Preview de cambios con `npm run dev`
+
+3. **Antes de commit**:
+   ```bash
+   npm run lint        # Verificar todos los problemas
+   npm run lint:fix    # Corregir lo posible automáticamente
+   npm run build       # Verificar que el build funciona
+   ```
+
+4. **Pre-commit automático**:
+   - ESLint y Prettier se ejecutan automáticamente
+   - Los commits son rechazados si hay problemas críticos
+   - Solo se permiten commits con código formateado correctamente
+
 ## Testing Practices
 
 - When tests arrive, place Vitest + React Testing Library suites in
@@ -60,7 +132,7 @@
 
 - Split bundles by view: keep `CalendarView`, `GanttView`, `DeliveryList` in
   dedicated modules and optionally re-export them through
-  `src/components/index.js`.
+  `src/components/index.ts`.
 - Use dynamic `import()` for heavy admin panels or analytics pages; lazy loading
   is optional now but prepare modules for future chunking.
 - Centralise shared stores and helpers in `src/utils/` to avoid duplicating

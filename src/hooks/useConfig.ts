@@ -1,6 +1,6 @@
-﻿import { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
-import { createDefaultConfig, persistConfig, sanitizeConfig } from '../utils';
+import { createDefaultConfig, persistConfig, sanitizeConfig } from '../utils/config';
 
 import type { ConfigSettings } from '../types';
 

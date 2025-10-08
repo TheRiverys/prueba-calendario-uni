@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React, { useCallback, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,43 +7,53 @@ import { useAuthContext } from '@/contexts/auth/AuthContext';
 
 type AuthMode = 'login' | 'register' | 'reset';
 
-type FormElement = globalThis.HTMLFormElement;
-
 interface ResetPasswordFormProps {
   readonly onSwitchMode: (_authMode: AuthMode) => void;
 }
 
+export const RESET_PASSWORD_MESSAGES = {
+  emailRequired: 'Introduce un correo electrónico válido.',
+  success: 'Te hemos enviado un enlace para restablecer tu contraseña. Revisa tu correo.',
+};
+
 export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSwitchMode }) => {
   const { resetPassword, loading: authLoading } = useAuthContext();
-  const [email, setEmail] = React.useState('');
-  const [error, setError] = React.useState<string | null>(null);
-  const [feedback, setFeedback] = React.useState<string | null>(null);
-  const [submitting, setSubmitting] = React.useState(false);
 
-  const isBusy = submitting || authLoading;
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<FormElement>) => {
-    event.preventDefault();
-    setError(null);
-    setFeedback(null);
+  const isBusy = authLoading || submitting;
+  const isSubmitDisabled = isBusy || email.trim().length === 0;
 
-    if (!email.trim()) {
-      setError('Introduce un correo electrónico válido.');
-      return;
-    }
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent) => {
+      event.preventDefault();
+      setError(null);
+      setFeedback(null);
 
-    setSubmitting(true);
-    try {
-      const message = await resetPassword(email.trim());
-      if (message) {
-        setError(message);
+      const trimmedEmail = email.trim();
+      if (!trimmedEmail) {
+        setError(RESET_PASSWORD_MESSAGES.emailRequired);
         return;
       }
-      setFeedback('Te hemos enviado un enlace para restablecer tu contraseña. Revisa tu correo.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+
+      setSubmitting(true);
+      try {
+        const message = await resetPassword(trimmedEmail);
+        if (message) {
+          setError(message);
+          return;
+        }
+
+        setFeedback(RESET_PASSWORD_MESSAGES.success);
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [email, resetPassword]
+  );
 
   return (
     <form className='space-y-4' onSubmit={handleSubmit}>
@@ -60,16 +70,16 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSwitchMo
         />
       </div>
 
-      {error && (
+      {error ? (
         <p className='text-destructive bg-destructive/10 rounded-md px-3 py-2 text-sm'>{error}</p>
-      )}
+      ) : null}
 
-      {feedback && (
+      {feedback ? (
         <p className='text-primary bg-primary/10 rounded-md px-3 py-2 text-sm'>{feedback}</p>
-      )}
+      ) : null}
 
-      <Button type='submit' className='w-full' disabled={isBusy}>
-        {isBusy ? 'Procesando' : 'Enviar enlace'}
+      <Button type='submit' className='w-full' disabled={isSubmitDisabled}>
+        {submitting ? 'Procesando' : 'Enviar enlace'}
       </Button>
 
       <div className='text-muted-foreground flex flex-col gap-2 text-sm'>

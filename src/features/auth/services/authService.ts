@@ -1,6 +1,8 @@
 import { getOAuthProviderInfo } from '@/lib/oauthUtils';
 import { supabase } from '@/lib/supabase';
 
+import type { User } from '@supabase/supabase-js';
+
 type AuthResponse = { error: string | null };
 
 type SignUpOptions = {
@@ -13,6 +15,12 @@ type SignInOptions = SignUpOptions;
 type UpdateProfileOptions = {
   email?: string;
   password?: string;
+};
+
+type UserUpdateData = {
+  email?: string;
+  password?: string;
+  data?: Record<string, unknown>;
 };
 
 type DeleteAccountOptions = {
@@ -55,7 +63,7 @@ export const updateProfile = async ({
   email,
   password,
 }: UpdateProfileOptions): Promise<AuthResponse> => {
-  const updates: any = {};
+  const updates: UserUpdateData = {};
 
   if (email) {
     updates.email = email;
@@ -74,9 +82,29 @@ export const updateProfile = async ({
 };
 
 export const deleteAccount = async ({ password }: DeleteAccountOptions): Promise<AuthResponse> => {
-  // Primero verificar la contraseña actual
+  const currentUser = (await supabase.auth.getUser()).data.user;
+
+  if (!currentUser) {
+    return { error: 'Usuario no autenticado' };
+  }
+
+  // Obtener información del proveedor OAuth
+  const providerInfo = getOAuthProviderInfo(currentUser);
+
+  // Para usuarios OAuth (como Google), no necesitamos verificar contraseña
+  if (providerInfo.isGoogle || providerInfo.provider) {
+    // Proceder directamente con la eliminación para usuarios OAuth
+    const { error } = await supabase.rpc('delete_user_account');
+    return { error: error?.message ?? null };
+  }
+
+  // Para usuarios de email/contraseña, verificar la contraseña primero
+  if (!password) {
+    return { error: 'Contraseña requerida para usuarios de email/contraseña' };
+  }
+
   const { error: signInError } = await supabase.auth.signInWithPassword({
-    email: (await supabase.auth.getUser()).data.user?.email || '',
+    email: currentUser.email || '',
     password,
   });
 
@@ -119,7 +147,7 @@ export const resendConfirmationEmail = async (email: string): Promise<AuthRespon
   return { error: error?.message ?? null };
 };
 
-export const isEmailConfirmed = (user: any): boolean => {
+export const isEmailConfirmed = (user: User | null | undefined): boolean => {
   if (!user) {
     return false;
   }

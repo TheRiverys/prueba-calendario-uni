@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 
 import { supabase } from '@/lib/supabase';
 import type { ConfigSettings, UserConfigRow } from '@/types';
-import { createDefaultConfig, sanitizeConfig } from '@/utils';
+import { createDefaultConfig, sanitizeConfig } from '@/utils/config';
 
 import type { User } from '@supabase/supabase-js';
 

@@ -1,7 +1,8 @@
+// ! ARCHIVO MUY IMPORTANTE, NO TOCAR SALVO CONFIRMACIÓN EXPRESA
 import { addDays, differenceInCalendarDays, format, parseISO, startOfDay } from 'date-fns';
 import { useMemo } from 'react';
 
-import { DEFAULT_CONFIG, DEFAULT_PRIORITY_VARIATIONS } from '../utils';
+import { DEFAULT_CONFIG, DEFAULT_PRIORITY_VARIATIONS } from '../utils/config';
 
 import type { Delivery, StudySchedule, ConfigSettings } from '../types';
 

@@ -16,7 +16,7 @@ import { useScheduleContext } from './contexts/schedule/ScheduleContext';
 import { useSemesterContext } from './contexts/semester/SemesterContext';
 import { AuthDialog } from './features/auth/components/AuthDialog';
 import { useConsoleClear } from './hooks/useConsoleClear';
-import { pickColorForSubject } from './utils';
+import { pickColorForSubject } from './utils/colors';
 
 const priorities: Array<{ value: 'low' | 'normal' | 'high'; label: string; color: string }> = [
   { value: 'low', label: 'Baja', color: 'bg-muted' },

@@ -7,6 +7,7 @@ import { toast } from '@/components/ui/sonner';
 import { useAuthContext } from '@/contexts/auth/AuthContext';
 import { useConfigContext } from '@/contexts/config/ConfigContext';
 import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
+import { clearLocalUserData } from '@/utils/storage';
 
 import { UserAvatar } from './ui/avatar';
 import { Button } from './ui/button';
@@ -42,11 +43,20 @@ const Header = (): JSX.Element => {
         toast.error('No se pudo cerrar la sesión.', {
           description: message,
         });
+      } else {
+        // Limpiar datos locales y redirigir al inicio después del cierre de sesión exitoso
+        clearLocalUserData();
+        setCurrentPage('dashboard');
+        toast.success('Sesión cerrada correctamente.');
       }
+    } catch (error) {
+      toast.error('Error inesperado al cerrar sesión.', {
+        description: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setSigningOut(false);
     }
-  }, [signOut]);
+  }, [signOut, setCurrentPage]);
 
   useEffect(() => {
     if (!dropdownOpen) {

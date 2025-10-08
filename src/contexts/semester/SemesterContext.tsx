@@ -8,9 +8,10 @@ import React, {
 } from 'react';
 
 import { toast } from '@/components/ui/sonner';
-import { useAuthContext } from '@/contexts/auth/AuthContext';
 import { useSupabaseSemesterStart } from '@/hooks/supabase/useSupabaseSemesterStart';
 import { useSemesterStart as useLocalSemesterStart } from '@/hooks/useSemesterStart';
+
+import type { User } from '@supabase/supabase-js';
 
 interface SemesterContextValue {
   semesterStart: string;
@@ -22,10 +23,10 @@ const SemesterContext = createContext<SemesterContextValue | undefined>(undefine
 
 interface SemesterProviderProps {
   readonly children: ReactNode;
+  readonly user: User | null;
 }
 
-export const SemesterProvider: React.FC<SemesterProviderProps> = ({ children }) => {
-  const { user } = useAuthContext();
+export const SemesterProvider: React.FC<SemesterProviderProps> = ({ children, user }) => {
   const isAuthenticated = Boolean(user);
 
   const { semesterStart: localSemesterStart, setSemesterStart: setLocalSemesterStart } =

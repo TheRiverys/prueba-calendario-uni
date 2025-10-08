@@ -142,10 +142,10 @@ export default [
       ],
 
       // Límites de complejidad para mantener código mantenible
-      'complexity': ['warn', 15],
+      'complexity': ['warn', 10], // !No tocar
       'max-depth': ['warn', 4],
-      'max-lines': ['warn', 500],
-      'max-lines-per-function': ['warn', 100],
+      'max-lines': ['warn', 350],
+      'max-lines-per-function': ['warn', 120], // !No tocar
     },
     settings: {
       react: {

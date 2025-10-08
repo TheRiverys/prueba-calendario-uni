@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { supabase } from '@/lib/supabase';
 
@@ -10,7 +10,8 @@ export const useSupabaseSemesterStart = (user: User | null) => {
   const [error, setError] = useState<string | null>(null);
 
   // Cargar fecha de inicio del semestre
-  const loadSemesterStart = async () => {
+
+  const loadSemesterStart = useCallback(async () => {
     if (!user) {
       setSemesterStart('');
       setLoading(false);
@@ -45,11 +46,11 @@ export const useSupabaseSemesterStart = (user: User | null) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
-    loadSemesterStart();
-  }, [user]);
+    void loadSemesterStart();
+  }, [loadSemesterStart]);
 
   // Actualizar fecha de inicio del semestre
   const updateSemesterStart = async (newSemesterStart: string) => {

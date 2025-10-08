@@ -1,5 +1,4 @@
-import { format, parse, parseISO, isValid } from 'date-fns';
-import ExcelJS from 'exceljs';
+﻿import { format, parse, parseISO, isValid } from 'date-fns';
 
 import type { ImportResult, ImportValidationError, ImportedDelivery } from '../types';
 
@@ -156,7 +155,9 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
   const errors: ImportValidationError[] = [];
 
   try {
-    const workbook = new ExcelJS.Workbook();
+    // Lazy load ExcelJS solo cuando sea necesario
+    const ExcelJS = await import('exceljs');
+    const workbook = new ExcelJS.default.Workbook();
 
     const isCSV =
       fileName.endsWith('.csv') || file.type === 'text/csv' || file.type === 'application/csv';
@@ -167,7 +168,7 @@ export const parseDeliveriesFile = async (file: File): Promise<ImportResult> => 
       const lines = csvContent.split(/\r?\n/).filter(line => line.trim().length > 0);
 
       lines.forEach((line, index) => {
-        const values = line.split(',').map(cell => cell.trim().replace(/\"/g, ''));
+        const values = line.split(',').map(cell => cell.trim().replace(/"/g, ''));
         const row = worksheet.getRow(index + 1);
         values.forEach((value, columnIndex) => {
           row.getCell(columnIndex + 1).value = value;

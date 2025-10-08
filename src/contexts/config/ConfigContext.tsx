@@ -8,11 +8,12 @@ import React, {
 } from 'react';
 
 import { toast } from '@/components/ui/sonner';
-import { useAuthContext } from '@/contexts/auth/AuthContext';
 import { useSupabaseConfig } from '@/hooks/supabase/useSupabaseConfig';
 import { useConfig as useLocalConfig } from '@/hooks/useConfig';
 import type { ConfigSettings } from '@/types';
-import { createDefaultConfig } from '@/utils';
+import { createDefaultConfig } from '@/utils/config';
+
+import type { User } from '@supabase/supabase-js';
 
 interface ConfigContextValue {
   config: ConfigSettings;
@@ -27,10 +28,10 @@ const ConfigContext = createContext<ConfigContextValue | undefined>(undefined);
 
 interface ConfigProviderProps {
   readonly children: ReactNode;
+  readonly user: User | null;
 }
 
-export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
-  const { user } = useAuthContext();
+export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children, user }) => {
   const isAuthenticated = Boolean(user);
 
   const [configModalOpen, setConfigModalOpen] = useState(false);

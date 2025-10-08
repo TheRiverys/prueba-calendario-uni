@@ -25,12 +25,6 @@ export const AuthDialog: React.FC = () => {
   const { authModalOpen, openAuthModal, closeAuthModal } = useAuthContext();
   const [mode, setMode] = React.useState<AuthMode>('login');
 
-  React.useEffect(() => {
-    if (!authModalOpen) {
-      setMode('login');
-    }
-  }, [authModalOpen]);
-
   const handleSuccess = React.useCallback(() => {
     closeAuthModal();
     setMode('login');

@@ -156,9 +156,9 @@ export const useDeliveries = () => {
   };
 
   const deleteDelivery = (id: string) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta entrega?')) {
-      setDeliveries(prev => prev.filter(delivery => delivery.id !== id));
-    }
+    // Eliminar directamente sin confirmación adicional
+    setDeliveries(prev => prev.filter(delivery => delivery.id !== id));
+    toast.success('Entrega eliminada correctamente');
   };
 
   const toggleCompleted = (id: string) => {

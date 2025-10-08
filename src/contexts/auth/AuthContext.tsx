@@ -8,7 +8,10 @@ import {
   type FC,
 } from 'react';
 
+import { toast } from '@/components/ui/sonner';
+import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
 import { useAuth } from '@/hooks/useAuth';
+import { clearLocalUserData } from '@/utils/storage';
 
 import type { User } from '@supabase/supabase-js';
 
@@ -38,6 +41,7 @@ interface AuthProviderProps {
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const auth = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const { setCurrentPage } = usePreferencesContext();
 
   const openAuthModal = useCallback(() => {
     setAuthModalOpen(true);
@@ -115,10 +119,18 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const signOut = useCallback(async () => {
     const { error } = await auth.signOut();
     if (error) {
+      toast.error('No se pudo cerrar la sesión.', {
+        description: error.message,
+      });
       return error.message;
     }
+
+    // Limpiar datos locales y redirigir al inicio después del cierre de sesión exitoso
+    clearLocalUserData();
+    setCurrentPage('dashboard');
+    toast.success('Sesión cerrada correctamente.');
     return null;
-  }, [auth]);
+  }, [auth, setCurrentPage]);
 
   const updateProfile = useCallback(
     async (email?: string, password?: string) => {

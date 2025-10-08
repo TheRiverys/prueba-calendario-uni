@@ -13,9 +13,9 @@ import { useDeliveriesContext } from '@/contexts/deliveries/DeliveriesContext';
 import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
 import type { StudySchedule } from '@/types';
 
-const DeliveryList = lazy(() => import('./views/DeliveryList'));
-const CalendarView = lazy(() => import('./views/CalendarView'));
-const GanttView = lazy(() => import('./views/GanttView'));
+const DeliveryList = lazy(() => import('./views/DeliveryList/DeliveryList'));
+const CalendarView = lazy(() => import('./views/CalendarView/CalendarView'));
+const GanttView = lazy(() => import('./views/GanttView/GanttView'));
 
 interface ViewsProps {
   readonly activeView: 'list' | 'calendar' | 'gantt';

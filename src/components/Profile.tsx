@@ -1,417 +1,90 @@
-import { Edit3, Trash2, Eye, EyeOff, AlertTriangle, ArrowLeft } from 'lucide-react';
-import { type JSX, useState } from 'react';
-
 import { useAuthContext } from '@/contexts/auth/AuthContext';
 import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
-import { getProviderDisplayInfo } from '@/lib/oauthUtils';
 
-import { UserAvatar } from './ui/avatar';
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
+import { AccountDeletionSection } from './views/Profile/components/AccountDeletionSection';
+import { DeleteAccountModal } from './views/Profile/components/DeleteAccountModal';
+import { ProfileFeedback } from './views/Profile/components/ProfileFeedback';
+import { ProfileHeader } from './views/Profile/components/ProfileHeader';
+import { ProfileOverviewCard } from './views/Profile/components/ProfileOverviewCard';
+import { ProfileSecuritySection } from './views/Profile/components/ProfileSecuritySection';
+import { useProfileManager } from './views/Profile/hooks/useProfileManager';
+
+import type { JSX } from 'react';
 
 const Profile = (): JSX.Element => {
-  const { user, updateProfile, deleteAccount } = useAuthContext();
+  const { user, updateProfile, deleteAccount, signOut } = useAuthContext();
   const { setCurrentPage } = usePreferencesContext();
-  const [isEditing, setIsEditing] = useState(false);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
-    email: user?.email ?? '',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
+  const {
+    accountSummary,
+    formState,
+    status,
+    isEditing,
+    passwordVisibility,
+    showDeleteModal,
+    isOAuthAccount,
+    oauthInfo,
+    canSubmitProfile,
+    startEditing,
+    cancelEditing,
+    updateField,
+    togglePasswordVisibility,
+    saveProfile,
+    requestAccountDeletion,
+    confirmAccountDeletion,
+    closeDeleteModal,
+  } = useProfileManager({
+    user,
+    updateProfile,
+    deleteAccount,
+    signOut,
+    onNavigateDashboard: () => setCurrentPage('dashboard'),
   });
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    setError(null);
-    setSuccess(null);
-  };
-
-  const validateForm = () => {
-    if (!formData.email.trim()) {
-      setError('El correo electrónico es obligatorio');
-      return false;
-    }
-
-    if (formData.newPassword && formData.newPassword.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
-      return false;
-    }
-
-    if (formData.newPassword !== formData.confirmPassword) {
-      setError('Las contraseñas no coinciden');
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleUpdateProfile = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
-
-    try {
-      const message = await updateProfile(formData.email, formData.newPassword || undefined);
-      if (message) {
-        setError(message);
-      } else {
-        setSuccess('Perfil actualizado exitosamente');
-        setFormData(prev => ({
-          ...prev,
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: '',
-        }));
-        setIsEditing(false);
-      }
-    } catch {
-      setError('Error inesperado al actualizar el perfil');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    if (!formData.currentPassword) {
-      setError('Debes ingresar tu contraseña actual para confirmar la eliminación');
-      return;
-    }
-
-    if (
-      window.confirm(
-        '¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.'
-      )
-    ) {
-      setLoading(true);
-      setError(null);
-      setSuccess(null);
-
-      try {
-        const message = await deleteAccount(formData.currentPassword);
-        if (message) {
-          setError(message);
-        }
-      } catch {
-        setError('Error inesperado al eliminar la cuenta');
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  const providerInfo = getProviderDisplayInfo(user);
-
   return (
-    <div className='app-shell mt-6 pb-12'>
-      <div className='mx-auto max-w-4xl'>
-        <div className='mb-8'>
-          <div className='mb-6 flex items-center justify-between'>
-            <div className='flex items-center gap-4'>
-              <Button variant='ghost' size='sm' onClick={() => setCurrentPage('dashboard')}>
-                <ArrowLeft className='mr-2 h-4 w-4' /> Volver al Dashboard
-              </Button>
-            </div>
-          </div>
-          <div className='flex flex-col gap-2'>
-            <h1 className='text-foreground text-3xl font-bold'>Perfil de Usuario</h1>
-            <p className='text-muted-foreground text-base'>
-              Gestiona tus credenciales y controla la seguridad de tu cuenta.
-            </p>
-          </div>
-        </div>
+    <section className='mx-auto w-full max-w-5xl px-4 pt-8 pb-12 lg:px-0'>
+      <ProfileHeader onBack={() => setCurrentPage('dashboard')} />
 
-        <div className='grid gap-6 md:grid-cols-[2fr,3fr]'>
-          <Card className='h-fit'>
-            <CardHeader className='space-y-2'>
-              <CardTitle className='flex items-center gap-3 text-base'>
-                <UserAvatar user={user} size='lg' className='bg-primary/10 text-primary' />
-                <div className='flex flex-col gap-1'>
-                  <span className='text-foreground text-base font-semibold'>{user?.email}</span>
-                  <span className='text-muted-foreground text-xs'>
-                    Cuenta sincronizada con Supabase
-                  </span>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className='text-muted-foreground space-y-4 text-sm'>
-              <div className='flex items-center justify-between'>
-                <span>Estado</span>
-                <span className='flex items-center gap-2 font-medium text-green-600 dark:text-green-400'>
-                  <span className='h-2 w-2 rounded-full bg-green-500' />
-                  Activa
-                </span>
-              </div>
-              <div className='flex items-center justify-between'>
-                <span>Proveedor</span>
-                <span className={`font-medium ${providerInfo.color}`}>{providerInfo.name}</span>
-              </div>
-              <div className='flex items-center justify-between'>
-                <span>Email confirmado</span>
-                <span className='text-foreground font-medium'>
-                  {user?.email_confirmed_at || user?.confirmed_at ? 'Sí' : 'No'}
-                </span>
-              </div>
-              <div className='flex items-center justify-between'>
-                <span>Última actualización</span>
-                <span className='text-foreground font-medium'>Sesión actual</span>
-              </div>
-            </CardContent>
-          </Card>
+      <div className='mt-8 grid gap-6 lg:grid-cols-[280px,1fr]'>
+        <ProfileOverviewCard summary={accountSummary} />
 
-          <Card className='md:col-span-1'>
-            <CardHeader className='flex flex-col gap-1'>
-              <CardTitle className='flex items-center gap-2 text-base'>
-                <Edit3 className='h-4 w-4' />
-                Seguridad y credenciales
-              </CardTitle>
-            </CardHeader>
-            <CardContent className='space-y-6'>
-              <div className='space-y-2'>
-                <Label htmlFor='email'>Correo electrónico</Label>
-                <Input
-                  id='email'
-                  type='email'
-                  value={formData.email}
-                  onChange={event => handleInputChange('email', event.target.value)}
-                  disabled={!isEditing || loading}
-                />
-              </div>
+        <div className='space-y-6'>
+          <ProfileSecuritySection
+            formState={formState}
+            passwordVisibility={passwordVisibility}
+            isEditing={isEditing}
+            loading={status.loading}
+            canSubmit={canSubmitProfile}
+            onFieldChange={updateField}
+            onTogglePassword={togglePasswordVisibility}
+            onStartEditing={startEditing}
+            onCancelEditing={cancelEditing}
+            onSave={saveProfile}
+          />
 
-              <div className='grid gap-4 sm:grid-cols-2'>
-                <div className='space-y-2'>
-                  <Label htmlFor='newPassword'>Nueva contraseña</Label>
-                  <div className='relative'>
-                    <Input
-                      id='newPassword'
-                      type={showNewPassword ? 'text' : 'password'}
-                      value={formData.newPassword}
-                      onChange={event => handleInputChange('newPassword', event.target.value)}
-                      placeholder='••••••'
-                      disabled={!isEditing || loading}
-                    />
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='icon'
-                      className='absolute top-0 right-0 h-full px-3 hover:bg-transparent'
-                      onClick={() => setShowNewPassword(prev => !prev)}
-                    >
-                      {showNewPassword ? (
-                        <EyeOff className='h-4 w-4' />
-                      ) : (
-                        <Eye className='h-4 w-4' />
-                      )}
-                    </Button>
-                  </div>
-                  <p className='text-muted-foreground text-xs'>Mínimo 6 caracteres.</p>
-                </div>
-
-                <div className='space-y-2'>
-                  <Label htmlFor='confirmPassword'>Confirmar contraseña</Label>
-                  <div className='relative'>
-                    <Input
-                      id='confirmPassword'
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      value={formData.confirmPassword}
-                      onChange={event => handleInputChange('confirmPassword', event.target.value)}
-                      placeholder='••••••'
-                      disabled={!isEditing || loading}
-                    />
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='icon'
-                      className='absolute top-0 right-0 h-full px-3 hover:bg-transparent'
-                      onClick={() => setShowConfirmPassword(prev => !prev)}
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className='h-4 w-4' />
-                      ) : (
-                        <Eye className='h-4 w-4' />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <div className='space-y-2'>
-                <Label htmlFor='currentPassword'>Contraseña actual</Label>
-                <div className='relative'>
-                  <Input
-                    id='currentPassword'
-                    type={showCurrentPassword ? 'text' : 'password'}
-                    value={formData.currentPassword}
-                    onChange={event => handleInputChange('currentPassword', event.target.value)}
-                    placeholder='Necesaria para confirmar cambios sensibles'
-                    disabled={!isEditing || loading}
-                    className='pr-10'
-                  />
-                  <Button
-                    type='button'
-                    variant='ghost'
-                    size='icon'
-                    className='absolute top-0 right-0 h-full px-3 hover:bg-transparent'
-                    onClick={() => setShowCurrentPassword(prev => !prev)}
-                  >
-                    {showCurrentPassword ? (
-                      <EyeOff className='h-4 w-4' />
-                    ) : (
-                      <Eye className='h-4 w-4' />
-                    )}
-                  </Button>
-                </div>
-              </div>
-
-              {!isEditing && (
-                <Button variant='outline' onClick={() => setIsEditing(true)} className='w-full'>
-                  Editar credenciales
-                </Button>
-              )}
-
-              {isEditing && (
-                <div className='border-border space-y-4 rounded-md border p-4'>
-                  <p className='text-muted-foreground text-sm'>
-                    Guarda los cambios para aplicar las nuevas credenciales.
-                  </p>
-                  <div className='flex flex-col-reverse gap-2 pt-4 sm:flex-row sm:justify-end sm:gap-3'>
-                    <Button
-                      type='button'
-                      variant='outline'
-                      onClick={() => {
-                        setIsEditing(false);
-                        setFormData(prev => ({
-                          ...prev,
-                          currentPassword: '',
-                          newPassword: '',
-                          confirmPassword: '',
-                        }));
-                        setError(null);
-                        setSuccess(null);
-                      }}
-                      disabled={loading}
-                      className='w-full sm:w-auto'
-                    >
-                      Cancelar
-                    </Button>
-                    <Button
-                      onClick={handleUpdateProfile}
-                      disabled={
-                        loading ||
-                        !formData.newPassword ||
-                        formData.newPassword !== formData.confirmPassword
-                      }
-                      className='w-full sm:w-auto'
-                    >
-                      {loading ? 'Actualizando...' : 'Guardar contraseña'}
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className='border-destructive/50 bg-destructive/5'>
-            <CardHeader className='pb-4'>
-              <CardTitle className='text-destructive flex items-center gap-2 text-base'>
-                <Trash2 className='h-4 w-4' />
-                Eliminar cuenta permanentemente
-              </CardTitle>
-            </CardHeader>
-            <CardContent className='space-y-4'>
-              <div className='border-destructive/20 bg-destructive/10 rounded-lg border p-4'>
-                <div className='flex items-start gap-3'>
-                  <AlertTriangle className='text-destructive mt-0.5 h-5 w-5 flex-shrink-0' />
-                  <div className='space-y-2'>
-                    <p className='text-destructive text-sm font-medium'>Acción irreversible</p>
-                    <p className='text-destructive/80 text-sm'>
-                      Al eliminar tu cuenta perderás permanentemente:
-                    </p>
-                    <ul className='text-destructive/80 ml-4 space-y-1 text-sm'>
-                      <li> Todas tus entregas y horarios de estudio</li>
-                      <li> Tu configuración personalizada</li>
-                      <li> Tu historial y estadísticas</li>
-                      <li> Acceso a la aplicación con esta cuenta</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div className='space-y-2'>
-                <Label htmlFor='delete-current-password' className='text-sm font-medium'>
-                  Confirmar contraseña actual
-                </Label>
-                <div className='relative'>
-                  <Input
-                    id='delete-current-password'
-                    type={showCurrentPassword ? 'text' : 'password'}
-                    value={formData.currentPassword}
-                    onChange={event => handleInputChange('currentPassword', event.target.value)}
-                    placeholder='Ingresa tu contraseña para confirmar'
-                    className='pr-10'
-                  />
-                  <Button
-                    type='button'
-                    variant='ghost'
-                    size='icon'
-                    className='absolute top-0 right-0 h-full px-3 hover:bg-transparent'
-                    onClick={() => setShowCurrentPassword(prev => !prev)}
-                  >
-                    {showCurrentPassword ? (
-                      <EyeOff className='h-4 w-4' />
-                    ) : (
-                      <Eye className='h-4 w-4' />
-                    )}
-                  </Button>
-                </div>
-              </div>
-
-              <div className='pt-2'>
-                <Button
-                  variant='destructive'
-                  onClick={handleDeleteAccount}
-                  disabled={loading || !formData.currentPassword}
-                  className='w-full'
-                >
-                  <Trash2 className='mr-2 h-4 w-4' />
-                  {loading ? 'Eliminando cuenta...' : 'Eliminar cuenta permanentemente'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <AccountDeletionSection
+            currentPassword={formState.currentPassword}
+            passwordVisible={passwordVisibility.currentPassword}
+            loading={status.loading}
+            isOAuthAccount={isOAuthAccount}
+            oauthInfo={oauthInfo}
+            onFieldChange={updateField}
+            onTogglePassword={() => togglePasswordVisibility('currentPassword')}
+            onDelete={requestAccountDeletion}
+          />
         </div>
       </div>
 
-      {error && (
-        <div className='border-destructive/50 bg-destructive/5 mt-6 rounded-md border p-4'>
-          <div className='text-destructive flex items-center gap-2'>
-            <AlertTriangle className='h-4 w-4' />
-            <span className='text-sm font-medium'>{error}</span>
-          </div>
-        </div>
-      )}
+      <ProfileFeedback status={status} />
 
-      {success && (
-        <div className='mt-6 rounded-md border border-green-500/50 bg-green-50 p-4 dark:bg-green-950/50'>
-          <div className='flex items-center gap-2 text-green-700 dark:text-green-400'>
-            <div className='h-2 w-2 rounded-full bg-green-500' />
-            <span className='text-sm font-medium'>{success}</span>
-          </div>
-        </div>
-      )}
-    </div>
+      <DeleteAccountModal
+        open={showDeleteModal}
+        oauthInfo={oauthInfo}
+        loading={status.loading}
+        onCancel={closeDeleteModal}
+        onConfirm={confirmAccountDeletion}
+      />
+    </section>
   );
 };
 

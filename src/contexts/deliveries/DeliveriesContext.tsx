@@ -10,12 +10,12 @@ import {
 } from 'react';
 
 import { toast } from '@/components/ui/sonner';
-import { useAuthContext } from '@/contexts/auth/AuthContext';
-import { useSemesterContext } from '@/contexts/semester/SemesterContext';
 import { useSupabaseDeliveries } from '@/hooks/supabase/useSupabaseDeliveries';
 import { useDeliveries as useLocalDeliveries } from '@/hooks/useDeliveries';
 import { useModal } from '@/hooks/useModal';
 import type { Delivery, FormData } from '@/types';
+
+import type { User } from '@supabase/supabase-js';
 
 interface DeliveriesContextValue {
   deliveries: Delivery[];
@@ -39,12 +39,18 @@ const DeliveriesContext = createContext<DeliveriesContextValue | undefined>(unde
 
 interface DeliveriesProviderProps {
   readonly children: ReactNode;
+  readonly user: User | null;
+  readonly semesterStart: string;
+  readonly semesterStartVersion: number;
 }
 
-export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({ children }) => {
-  const { user } = useAuthContext();
+export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({
+  children,
+  user,
+  semesterStart,
+  semesterStartVersion,
+}) => {
   const isAuthenticated = Boolean(user);
-  const { semesterStart } = useSemesterContext();
 
   const {
     deliveries: localDeliveries,
@@ -81,7 +87,7 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({ children }) =>
     if (semesterStart) {
       incrementVersion();
     }
-  }, [semesterStart, incrementVersion]);
+  }, [semesterStart, semesterStartVersion, incrementVersion]);
 
   const addDelivery = useCallback(
     (delivery: Omit<Delivery, 'id' | 'completed'>) => {
