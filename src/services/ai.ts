@@ -132,10 +132,10 @@ export class AIService {
       } catch {
         return []; // fallback
       }
-    } catch (error) {
-      toast.error('Error al generar el plan de estudio con IA.', {
-        description: error instanceof Error ? error.message : String(error),
-      });
+    } catch {
+      toast.error(
+        'Error al generar el plan de estudio con IA. Introuce tu clave de API de OpenAI en el settings (puedes obtenerla en https://platform.openai.com/account/api-keys)'
+      );
       return []; // fallback
     }
   }
