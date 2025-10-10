@@ -1,0 +1,64 @@
+# =====================================================
+# Docker Compose para Calendario Entregas UNI
+# Simula despliegue de producción como Vercel
+# =====================================================
+
+services:
+  # Aplicación principal
+  calendario-entregas:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:80' # Mapea puerto 80 del contenedor al 3000 del host
+    environment:
+      # Variables de entorno que necesita la aplicación
+      - NODE_ENV=production
+    restart: unless-stopped
+
+    # Configuración de salud para monitoreo
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:80/']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # Límites de recursos (opcional, para producción)
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+# =====================================================
+# Comandos útiles para desarrollo
+# =====================================================
+#
+# Construir la imagen:
+#   docker-compose build
+#
+# Construir la imagen sin cache:
+#   docker-compose build --no-cache
+#
+# Ejecutar la aplicación:
+#   docker-compose up
+#
+# Ejecutar en background:
+#   docker-compose up -d
+#
+# Ver logs:
+#   docker-compose logs -f calendario-entregas
+#
+# Parar la aplicación:
+#   docker-compose down
+#
+# Parar y eliminar datos:
+#   docker-compose down -v
+#
+# Ejecutar comandos dentro del contenedor:
+#   docker-compose exec calendario-entregas sh
+#
+# =====================================================
