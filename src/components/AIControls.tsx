@@ -1,8 +1,12 @@
-import React from 'react';
 import { Sparkles, MessageSquare, Undo2 } from 'lucide-react';
+import React from 'react';
+
+import { useAiContext } from '@/contexts/ai/AiContext';
+import { useDeliveriesContext } from '@/contexts/deliveries/DeliveriesContext';
+
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import { useAppContext } from '../contexts/AppContext';
+
 import type { AiDetailedEntry } from '../types';
 
 interface AiSchedulePreview {
@@ -37,7 +41,7 @@ const normalizeScheduleEntry = (entry: AiDetailedEntry): AiSchedulePreview | nul
   return {
     date,
     subject,
-    summary: hours !== null ? `${hours.toFixed(1)} h · ${task}` : task
+    summary: hours !== null ? `${hours.toFixed(1)} h ${task}` : task,
   };
 };
 
@@ -49,8 +53,8 @@ export const AIControls: React.FC = () => {
     aiScheduleApplied,
     aiLoading,
     aiError,
-    deliveries
-  } = useAppContext();
+  } = useAiContext();
+  const { deliveries } = useDeliveriesContext();
 
   const [schedulePreview, setSchedulePreview] = React.useState<AiSchedulePreview[]>([]);
   const [analysis, setAnalysis] = React.useState<string>('');
@@ -72,7 +76,9 @@ export const AIControls: React.FC = () => {
     } else if (result.entries.length === 0) {
       setInfoMessage('No se pudo generar un plan con IA. Se mantiene el algoritmo original.');
     } else {
-      setInfoMessage('Se generó un horario, pero no se encontraron entregas coincidentes para aplicarlo.');
+      setInfoMessage(
+        'Se generó un horario, pero no se encontraron entregas coincidentes para aplicarlo.'
+      );
     }
   };
 
@@ -89,91 +95,91 @@ export const AIControls: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap gap-2">
+    <div className='flex flex-col gap-2'>
+      <div className='flex flex-wrap gap-2'>
         <Button
-          size="sm"
-          variant="outline"
+          size='sm'
+          variant='outline'
           onClick={handleGenerateSchedule}
           disabled={aiLoading || !hasDeliveries}
-          className="flex items-center gap-2 text-xs"
-          title="Generar horario con IA"
+          className='flex items-center gap-2 text-xs'
+          title='Generar horario con IA'
         >
-          <Sparkles className="w-4 h-4" />
-          <span className="hidden sm:inline">Horario IA</span>
-          <span className="sm:hidden">IA</span>
+          <Sparkles className='h-4 w-4' />
+          <span className='hidden sm:inline'>Horario IA</span>
+          <span className='sm:hidden'>IA</span>
         </Button>
 
         <Button
-          size="sm"
-          variant="outline"
+          size='sm'
+          variant='outline'
           onClick={handleAnalyzeProgress}
           disabled={aiLoading || !hasDeliveries}
-          className="flex items-center gap-2 text-xs"
-          title="Analizar progreso con IA"
+          className='flex items-center gap-2 text-xs'
+          title='Analizar progreso con IA'
         >
-          <MessageSquare className="w-4 h-4" />
-          <span className="hidden sm:inline">Análisis</span>
-          <span className="sm:hidden">Análisis</span>
+          <MessageSquare className='h-4 w-4' />
+          <span className='hidden sm:inline'>Análisis</span>
+          <span className='sm:hidden'>Análisis</span>
         </Button>
 
         <Button
-          size="sm"
-          variant="ghost"
+          size='sm'
+          variant='ghost'
           onClick={handleResetSchedule}
           disabled={aiLoading || !aiScheduleApplied}
-          className="flex items-center gap-2 text-xs"
-          title="Restaurar algoritmo por defecto"
+          className='flex items-center gap-2 text-xs'
+          title='Restaurar algoritmo por defecto'
         >
-          <Undo2 className="w-4 h-4" />
-          <span className="hidden sm:inline">Reset</span>
-          <span className="sm:hidden">Reset</span>
+          <Undo2 className='h-4 w-4' />
+          <span className='hidden sm:inline'>Reset</span>
+          <span className='sm:hidden'>Reset</span>
         </Button>
       </div>
 
       {!hasDeliveries && (
-        <p className="text-xs text-muted-foreground">
-          Agrega entregas para usar IA.
-        </p>
+        <p className='text-muted-foreground text-xs'>Agrega entregas para usar IA.</p>
       )}
 
       {infoMessage && (
-        <p className="text-xs text-muted-foreground bg-muted/40 rounded-md px-2 py-1">
+        <p className='text-muted-foreground bg-muted/40 rounded-md px-2 py-1 text-xs'>
           {infoMessage}
         </p>
       )}
 
       {aiError && (
-        <p className="text-xs text-destructive bg-destructive/10 rounded-md px-2 py-1">
-          {aiError}
-        </p>
+        <p className='text-destructive bg-destructive/10 rounded-md px-2 py-1 text-xs'>{aiError}</p>
       )}
 
       {schedulePreview.length > 0 && (
-        <div className="text-xs text-muted-foreground bg-muted/20 rounded-md px-2 py-1">
+        <div className='text-muted-foreground bg-muted/20 rounded-md px-2 py-1 text-xs'>
           Horario IA: {schedulePreview.length} sesiones generadas
         </div>
       )}
 
       <Dialog open={analysisOpen} onOpenChange={setAnalysisOpen}>
-        <DialogContent className="sm:max-w-xl">
+        <DialogContent className='sm:max-w-xl'>
           <DialogHeader>
             <DialogTitle>Análisis de progreso</DialogTitle>
           </DialogHeader>
-          <div className="max-h-[60vh] overflow-auto">
+          <div className='max-h-[60vh] overflow-auto'>
             {analysis ? (
-              <div className="space-y-3">
-                <div className="text-xs text-muted-foreground">Resumen generado por IA:</div>
-                <div className="text-sm whitespace-pre-wrap bg-muted/40 rounded-md px-3 py-2">
+              <div className='space-y-3'>
+                <div className='text-muted-foreground text-xs'>Resumen generado por IA:</div>
+                <div className='bg-muted/40 rounded-md px-3 py-2 text-sm whitespace-pre-wrap'>
                   {analysis}
                 </div>
               </div>
             ) : (
-              <div className="text-sm text-muted-foreground">No hay análisis disponible todavía.</div>
+              <div className='text-muted-foreground text-sm'>
+                No hay análisis disponible todavía.
+              </div>
             )}
           </div>
-          <div className="flex justify-end">
-            <Button variant="outline" onClick={() => setAnalysisOpen(false)}>Cerrar</Button>
+          <div className='flex justify-end'>
+            <Button variant='outline' onClick={() => setAnalysisOpen(false)}>
+              Cerrar
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

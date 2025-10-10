@@ -1,56 +1,68 @@
+﻿import React, { useCallback, useState } from 'react';
 
-import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAppContext } from '@/contexts/AppContext';
+import { useAuthContext } from '@/contexts/auth/AuthContext';
 
 type AuthMode = 'login' | 'register' | 'reset';
 
 interface ResetPasswordFormProps {
-  onSwitchMode: (mode: AuthMode) => void;
+  readonly onSwitchMode: (_authMode: AuthMode) => void;
 }
 
+export const RESET_PASSWORD_MESSAGES = {
+  emailRequired: 'Introduce un correo electrónico válido.',
+  success: 'Te hemos enviado un enlace para restablecer tu contraseña. Revisa tu correo.',
+};
+
 export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSwitchMode }) => {
-  const { resetPassword, authLoading } = useAppContext();
-  const [email, setEmail] = React.useState('');
-  const [error, setError] = React.useState<string | null>(null);
-  const [feedback, setFeedback] = React.useState<string | null>(null);
-  const [submitting, setSubmitting] = React.useState(false);
+  const { resetPassword, loading: authLoading } = useAuthContext();
 
-  const isBusy = submitting || authLoading;
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError(null);
-    setFeedback(null);
+  const isBusy = authLoading || submitting;
+  const isSubmitDisabled = isBusy || email.trim().length === 0;
 
-    if (!email.trim()) {
-      setError('Introduce un correo electrónico válido.');
-      return;
-    }
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent) => {
+      event.preventDefault();
+      setError(null);
+      setFeedback(null);
 
-    setSubmitting(true);
-    try {
-      const message = await resetPassword(email.trim());
-      if (message) {
-        setError(message);
+      const trimmedEmail = email.trim();
+      if (!trimmedEmail) {
+        setError(RESET_PASSWORD_MESSAGES.emailRequired);
         return;
       }
-      setFeedback('Te hemos enviado un enlace para restablecer tu contraseña. Revisa tu correo.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+
+      setSubmitting(true);
+      try {
+        const message = await resetPassword(trimmedEmail);
+        if (message) {
+          setError(message);
+          return;
+        }
+
+        setFeedback(RESET_PASSWORD_MESSAGES.success);
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [email, resetPassword]
+  );
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
-      <div className="space-y-2">
-        <Label htmlFor="reset-email">Correo electrónico</Label>
+    <form className='space-y-4' onSubmit={handleSubmit}>
+      <div className='space-y-2'>
+        <Label htmlFor='reset-email'>Correo electrónico</Label>
         <Input
-          id="reset-email"
-          type="email"
-          autoComplete="email"
+          id='reset-email'
+          type='email'
+          autoComplete='email'
           value={email}
           onChange={event => setEmail(event.target.value)}
           required
@@ -58,30 +70,30 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSwitchMo
         />
       </div>
 
-      {error && (
-        <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">{error}</p>
-      )}
+      {error ? (
+        <p className='text-destructive bg-destructive/10 rounded-md px-3 py-2 text-sm'>{error}</p>
+      ) : null}
 
-      {feedback && (
-        <p className="text-sm text-primary bg-primary/10 rounded-md px-3 py-2">{feedback}</p>
-      )}
+      {feedback ? (
+        <p className='text-primary bg-primary/10 rounded-md px-3 py-2 text-sm'>{feedback}</p>
+      ) : null}
 
-      <Button type="submit" className="w-full" disabled={isBusy}>
-        {isBusy ? 'Procesando…' : 'Enviar enlace'}
+      <Button type='submit' className='w-full' disabled={isSubmitDisabled}>
+        {submitting ? 'Procesando' : 'Enviar enlace'}
       </Button>
 
-      <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+      <div className='text-muted-foreground flex flex-col gap-2 text-sm'>
         <button
-          type="button"
-          className="hover:text-foreground transition"
+          type='button'
+          className='hover:text-foreground transition'
           onClick={() => onSwitchMode('login')}
           disabled={isBusy}
         >
           Volver a iniciar sesión
         </button>
         <button
-          type="button"
-          className="hover:text-foreground transition"
+          type='button'
+          className='hover:text-foreground transition'
           onClick={() => onSwitchMode('register')}
           disabled={isBusy}
         >

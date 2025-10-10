@@ -1,0 +1,5 @@
+# Ejecutar linting específico para pre-commit (permite warnings)
+npm run lint:pre-commit
+
+# Formatear código (siempre formatear, nunca fallar)
+npm run format || true

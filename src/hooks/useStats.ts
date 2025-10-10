@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
 import { parseISO, isAfter, isBefore, addDays } from 'date-fns';
+import { useMemo } from 'react';
+
 import type { StudySchedule, StudyStats } from '../types';
 
 export const useStats = (schedule: StudySchedule[]): StudyStats => {
@@ -17,7 +18,7 @@ export const useStats = (schedule: StudySchedule[]): StudyStats => {
       total: schedule.length,
       upcoming: upcoming.length,
       overdue: overdue.length,
-      thisWeek: thisWeek.length
+      thisWeek: thisWeek.length,
     };
   }, [schedule]);
 };

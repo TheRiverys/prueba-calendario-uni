@@ -1,20 +1,27 @@
 ﻿import React from 'react';
-import type { Delivery, FormData, Priority } from '../types';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import type { Delivery, FormData, Priority } from '@/types';
 
 interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  editingDelivery: Delivery | null;
-  formData: FormData;
-  onSubmit: (event: React.FormEvent) => void;
-  onInputChange: (field: keyof FormData, value: string) => void;
-  subjectOptions: string[];
-  priorities: Priority[];
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly editingDelivery: Delivery | null;
+  readonly formData: FormData;
+  readonly onSubmit: (_event: React.FormEvent) => void;
+  readonly onInputChange: (_field: keyof FormData, _value: string) => void;
+  readonly subjectOptions: string[];
+  readonly priorities: Priority[];
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -25,18 +32,16 @@ export const Modal: React.FC<ModalProps> = ({
   onSubmit,
   onInputChange,
   subjectOptions,
-  priorities
+  priorities,
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg md:max-w-xl">
+      <DialogContent className='sm:max-w-lg md:max-w-xl'>
         <DialogHeader>
-          <DialogTitle>
-            {editingDelivery ? 'Editar entrega' : 'Nueva entrega'}
-          </DialogTitle>
+          <DialogTitle>{editingDelivery ? 'Editar entrega' : 'Nueva entrega'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+        <form onSubmit={onSubmit} className='flex flex-col gap-4'>
           <div className='space-y-2'>
             <Label htmlFor='subject'>Materia</Label>
             <Input
@@ -75,14 +80,16 @@ export const Modal: React.FC<ModalProps> = ({
               value={formData.date}
               onChange={event => onInputChange('date', event.target.value)}
               required
-              min={formData.studyStart}
             />
           </div>
 
           <div className='space-y-2'>
             <Label htmlFor='priority'>Prioridad</Label>
-            <Select value={formData.priority} onValueChange={value => onInputChange('priority', value)}>
-              <SelectTrigger>
+            <Select
+              value={formData.priority}
+              onValueChange={value => onInputChange('priority', value)}
+            >
+              <SelectTrigger id='priority'>
                 <SelectValue placeholder='Seleccionar prioridad' />
               </SelectTrigger>
               <SelectContent>
@@ -95,11 +102,11 @@ export const Modal: React.FC<ModalProps> = ({
             </Select>
           </div>
 
-          <div className="flex flex-col-reverse gap-2 pt-4 sm:flex-row sm:justify-end sm:gap-3">
-            <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto">
+          <div className='flex flex-col-reverse gap-2 pt-4 sm:flex-row sm:justify-end sm:gap-3'>
+            <Button type='button' variant='outline' onClick={onClose} className='w-full sm:w-auto'>
               Cancelar
             </Button>
-            <Button type="submit" className="w-full sm:w-auto">
+            <Button type='submit' className='w-full sm:w-auto'>
               {editingDelivery ? 'Actualizar' : 'Crear'}
             </Button>
           </div>
@@ -108,4 +115,3 @@ export const Modal: React.FC<ModalProps> = ({
     </Dialog>
   );
 };
-

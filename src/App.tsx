@@ -1,42 +1,46 @@
 import React from 'react';
-import { AppProvider, useAppContext } from './contexts/AppContext';
-import { Header } from './components/Header';
-import { StatsOverview } from './components/StatsOverview';
-import { Controls } from './components/Controls';
-import { Views } from './components/Views';
-import { Modal } from './components/Modal';
+
 import { ConfigModal } from './components/ConfigModal';
+import { Controls } from './components/Controls';
+import { Header } from './components/Header';
+import { Modal } from './components/Modal';
+import { Profile } from './components/Profile';
+import { StatsOverview } from './components/StatsOverview';
+import { FeedbackPanel } from './components/ui/FeedbackPanel';
+import { Toaster } from './components/ui/sonner';
+import { Views } from './components/Views';
+import { AppProvider } from './contexts/AppContext';
+import { useDeliveriesContext } from './contexts/deliveries/DeliveriesContext';
+import { usePreferencesContext } from './contexts/preferences/PreferencesContext';
+import { useScheduleContext } from './contexts/schedule/ScheduleContext';
+import { useSemesterContext } from './contexts/semester/SemesterContext';
 import { AuthDialog } from './features/auth/components/AuthDialog';
-import { FeedbackPanel } from './components/FeedbackPanel';
 import { useConsoleClear } from './hooks/useConsoleClear';
-import { pickColorForSubject } from './utils';
+import { pickColorForSubject } from './utils/colors';
 
 const priorities: Array<{ value: 'low' | 'normal' | 'high'; label: string; color: string }> = [
   { value: 'low', label: 'Baja', color: 'bg-muted' },
   { value: 'normal', label: 'Normal', color: 'bg-chart-1' },
-  { value: 'high', label: 'Alta', color: 'bg-destructive' }
+  { value: 'high', label: 'Alta', color: 'bg-destructive' },
 ];
 
 const AppContent: React.FC = () => {
-  // Hook para limpiar datos con comando de consola
   useConsoleClear();
 
+  const { activeView, currentPage } = usePreferencesContext();
+  const { semesterStart, setSemesterStart } = useSemesterContext();
+  const { studySchedule, stats } = useScheduleContext();
   const {
-    activeView,
-    semesterStart,
-    setSemesterStart,
-    studySchedule,
-    stats,
-    subjects,
     deliveries,
+    subjects,
     modalOpen,
     editingDelivery,
     formData,
     closeModal,
     handleInputChange,
     addDelivery,
-    updateDelivery
-  } = useAppContext();
+    updateDelivery,
+  } = useDeliveriesContext();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -54,7 +58,7 @@ const AppContent: React.FC = () => {
       name,
       date: formData.date,
       priority: formData.priority,
-      color
+      color,
     };
 
     if (editingDelivery) {
@@ -67,26 +71,25 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className='bg-background min-h-screen'>
       <Header />
 
-      {/* Controles de planificación - antes de las métricas */}
-      <div className="app-shell mt-6">
-        <Controls
-          semesterStart={semesterStart}
-          onSemesterStartChange={setSemesterStart}
-        />
-      </div>
+      {currentPage === 'profile' ? (
+        <Profile />
+      ) : (
+        <>
+          <div className='app-shell mt-6'>
+            <Controls semesterStart={semesterStart} onSemesterStartChange={setSemesterStart} />
+          </div>
 
-      {/* Franja superior de métricas */}
-      <StatsOverview stats={stats} />
+          <StatsOverview stats={stats} />
 
-      {/* Área principal: vistas - ocupa todo el ancho */}
-      <main className="app-shell mt-6 pb-12">
-        <Views activeView={activeView} schedule={studySchedule} />
-      </main>
+          <main className='app-shell mt-6 pb-12'>
+            <Views activeView={activeView} schedule={studySchedule} />
+          </main>
+        </>
+      )}
 
-      {/* Modales y paneles */}
       <Modal
         isOpen={modalOpen}
         onClose={closeModal}
@@ -109,6 +112,7 @@ const App: React.FC = () => {
   return (
     <AppProvider>
       <AppContent />
+      <Toaster />
     </AppProvider>
   );
 };

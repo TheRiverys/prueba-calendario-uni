@@ -115,7 +115,21 @@ create trigger on_auth_user_created
   for each row execute function public.handle_new_user();
 
 -- =========================
--- Índices recomendados
+-- Función para eliminar cuenta de usuario
 -- =========================
-create index if not exists idx_deliveries_user_date on public.deliveries (user_id, date);
-create index if not exists idx_deliveries_completed on public.deliveries (user_id, completed);
+create or replace function public.delete_user_account()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  -- Eliminar al usuario actual de la tabla auth.users
+  -- Esto también eliminará automáticamente todos los datos relacionados
+  -- debido a las restricciones CASCADE en las claves foráneas
+  delete from auth.users where id = auth.uid();
+
+  -- Nota: No necesitamos eliminar manualmente de las tablas relacionadas
+  -- ya que las restricciones ON DELETE CASCADE se encargan de esto
+end;
+$$;

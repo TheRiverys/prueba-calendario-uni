@@ -1,5 +1,6 @@
-﻿import { useEffect, useMemo, useState } from 'react';
 import { format, parseISO } from 'date-fns';
+import { useEffect, useState } from 'react';
+
 import type { Delivery, FormData } from '../types';
 
 const toIsoDate = (value: string): string => {
@@ -14,49 +15,46 @@ const toIsoDate = (value: string): string => {
   return format(new Date(), 'yyyy-MM-dd');
 };
 
-const buildEmptyForm = (defaultStart: string): FormData => ({
+const buildEmptyForm = (): FormData => ({
   subject: '',
   name: '',
   date: '',
-  studyStart: defaultStart,
-  priority: 'normal'
+  priority: 'normal',
 });
 
 interface ModalState {
   modalOpen: boolean;
   editingDelivery: Delivery | null;
   formData: FormData;
-  openModal: (delivery?: Delivery | null) => void;
+  openModal: (_deliveryItem?: Delivery | null) => void;
   closeModal: () => void;
-  handleInputChange: (field: keyof FormData, value: string) => void;
-  setFormData: (data: FormData) => void;
+  handleInputChange: (_fieldName: keyof FormData, _inputValue: string) => void;
+  setFormData: (_formData: FormData) => void;
 }
 
-export const useModal = (defaultStudyStart: string): ModalState => {
-  const resolvedDefaultStart = useMemo(() => toIsoDate(defaultStudyStart), [defaultStudyStart]);
+export const useModal = (): ModalState => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [editingDelivery, setEditingDelivery] = useState<Delivery | null>(null);
-  const [formData, setFormData] = useState<FormData>(() => buildEmptyForm(resolvedDefaultStart));
+  const [formData, setFormData] = useState<FormData>(() => buildEmptyForm());
 
   useEffect(() => {
     if (!modalOpen && !editingDelivery) {
-      setFormData(buildEmptyForm(resolvedDefaultStart));
+      setFormData(buildEmptyForm());
     }
-  }, [modalOpen, editingDelivery, resolvedDefaultStart]);
+  }, [modalOpen, editingDelivery]);
 
-  const openModal = (delivery: Delivery | null = null) => {
-    if (delivery) {
-      setEditingDelivery(delivery);
+  const openModal = (deliveryItem: Delivery | null = null) => {
+    if (deliveryItem) {
+      setEditingDelivery(deliveryItem);
       setFormData({
-        subject: delivery.subject,
-        name: delivery.name,
-        date: toIsoDate(delivery.date),
-        studyStart: delivery.studyStart ? toIsoDate(delivery.studyStart) : resolvedDefaultStart,
-        priority: delivery.priority
+        subject: deliveryItem.subject,
+        name: deliveryItem.name,
+        date: toIsoDate(deliveryItem.date),
+        priority: deliveryItem.priority,
       });
     } else {
       setEditingDelivery(null);
-      setFormData(buildEmptyForm(resolvedDefaultStart));
+      setFormData(buildEmptyForm());
     }
     setModalOpen(true);
   };
@@ -64,13 +62,13 @@ export const useModal = (defaultStudyStart: string): ModalState => {
   const closeModal = () => {
     setModalOpen(false);
     setEditingDelivery(null);
-    setFormData(buildEmptyForm(resolvedDefaultStart));
+    setFormData(buildEmptyForm());
   };
 
-  const handleInputChange = (field: keyof FormData, value: string) => {
+  const handleInputChange = (fieldName: keyof FormData, inputValue: string) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [fieldName]: inputValue,
     }));
   };
 
@@ -81,6 +79,6 @@ export const useModal = (defaultStudyStart: string): ModalState => {
     openModal,
     closeModal,
     handleInputChange,
-    setFormData
+    setFormData,
   };
 };

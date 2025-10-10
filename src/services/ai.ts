@@ -1,5 +1,7 @@
-﻿import { createOpenAI } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
+
+import { toast } from '@/components/ui/sonner';
 
 // Configuración del modelo gpt-5-nano
 const AI_MODEL = 'gpt-5-nano';
@@ -51,21 +53,24 @@ export class AIService {
   static async generateStudyPlan(
     deliveries: Array<{ subject: string; name: string; date: string; priority: string }>,
     semesterStart: string
-  ): Promise<Array<{
-    subject: string;
-    name: string;
-    deliveryDate: string;
-    startDate: string;
-    endDate: string;
-    priority?: 'low' | 'normal' | 'high';
-    estimatedHours: number;
-  }>> {
+  ): Promise<
+    Array<{
+      subject: string;
+      name: string;
+      deliveryDate: string;
+      startDate: string;
+      endDate: string;
+      priority?: 'low' | 'normal' | 'high';
+      estimatedHours: number;
+    }>
+  > {
     try {
       const config = getConfig();
 
-      const baseStudyDaysValue = typeof config.baseStudyDays === 'number'
-        ? config.baseStudyDays
-        : DEFAULT_CONFIG.baseStudyDays ?? 4;
+      const baseStudyDaysValue =
+        typeof config.baseStudyDays === 'number'
+          ? config.baseStudyDays
+          : (DEFAULT_CONFIG.baseStudyDays ?? 4);
       const baseStudyDays = Math.max(1, Math.round(baseStudyDaysValue));
 
       const prompt = `
@@ -101,15 +106,15 @@ export class AIService {
 
         Responde en JSON válido exactamente con este formato:
         {
-          \"studyPlan\": [
+          "studyPlan": [
             {
-              \"subject\": \"materia\",
-              \"name\": \"nombre de la entrega\",
-              \"deliveryDate\": \"YYYY-MM-DD\",
-              \"startDate\": \"YYYY-MM-DD\",
-              \"endDate\": \"YYYY-MM-DD\",
-              \"priority\": \"normal\",
-              \"estimatedHours\": 3
+              "subject": "materia",
+              "name": "nombre de la entrega",
+              "deliveryDate": "YYYY-MM-DD",
+              "startDate": "YYYY-MM-DD",
+              "endDate": "YYYY-MM-DD",
+              "priority": "normal",
+              "estimatedHours": 3
             }
           ]
         }
@@ -128,7 +133,9 @@ export class AIService {
         return []; // fallback
       }
     } catch (error) {
-      console.error('Error en IA de plan de estudio:', error);
+      toast.error('Error al generar el plan de estudio con IA.', {
+        description: error instanceof Error ? error.message : String(error),
+      });
       return []; // fallback
     }
   }
@@ -152,12 +159,14 @@ export class AIService {
     studyPlan.forEach(plan => {
       const startDate = new Date(plan.startDate);
       const endDate = new Date(plan.endDate);
-      const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const totalDays = Math.ceil(
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
 
       // Distribuir las horas estimadas en los días disponibles
       const dailyHours = Math.min(plan.estimatedHours / totalDays, 6); // Máximo 6 horas por día
 
-      let currentDate = new Date(startDate);
+      const currentDate = new Date(startDate);
       let remainingHours = plan.estimatedHours;
 
       while (currentDate <= endDate && remainingHours > 0) {
@@ -167,7 +176,7 @@ export class AIService {
           date: currentDate.toISOString().split('T')[0],
           hours: Math.round(hoursToday * 10) / 10, // Redondear a 1 decimal
           subject: plan.subject,
-          task: `Trabajar en: ${plan.name}`
+          task: `Trabajar en: ${plan.name}`,
         });
 
         remainingHours -= hoursToday;
@@ -211,7 +220,9 @@ export class AIService {
 
       return result.text;
     } catch (error) {
-      console.error('Error en análisis de IA:', error);
+      toast.error('Error al analizar el progreso con IA.', {
+        description: error instanceof Error ? error.message : String(error),
+      });
       return 'Continúa trabajando sistemáticamente en tus entregas.'; // fallback
     }
   }

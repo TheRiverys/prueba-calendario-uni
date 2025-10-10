@@ -1,6 +1,8 @@
-﻿import { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+
+import { createDefaultConfig, persistConfig, sanitizeConfig } from '../utils/config';
+
 import type { ConfigSettings } from '../types';
-import { createDefaultConfig, persistConfig, sanitizeConfig } from '../utils';
 
 export const useConfig = () => {
   const [config, setConfig] = useState<ConfigSettings>(() => {
@@ -31,8 +33,8 @@ export const useConfig = () => {
         ...partial,
         priorityVariations: {
           ...previous.priorityVariations,
-          ...(partial.priorityVariations ?? {})
-        }
+          ...(partial.priorityVariations ?? {}),
+        },
       };
       const sanitized = sanitizeConfig(candidate);
       persistConfig(sanitized);
@@ -60,7 +62,7 @@ export const useConfig = () => {
     isModalOpen,
     openModal,
     closeModal,
-    resetConfig
+    resetConfig,
   };
 };
 

@@ -1,8 +1,19 @@
-
 import { useEffect, useState } from 'react';
-import type { User, Session } from '@supabase/supabase-js';
-import { signInWithEmail, signUpWithEmail, sendResetPasswordEmail, signOut as supabaseSignOut } from '../features/auth/services/authService';
+
+import {
+  signInWithEmail,
+  signUpWithEmail,
+  sendResetPasswordEmail,
+  signOut as supabaseSignOut,
+  updateProfile,
+  deleteAccount,
+  signInWithGoogle,
+  resendConfirmationEmail,
+  isEmailConfirmed,
+} from '../features/auth/services/authService';
 import { supabase } from '../lib/supabase';
+
+import type { User, Session } from '@supabase/supabase-js';
 
 export interface AuthState {
   user: User | null;
@@ -50,7 +61,30 @@ export const useAuth = () => {
 
   const signIn = async (email: string, password: string) => {
     const { error } = await signInWithEmail({ email, password });
-    return { data: null, error: buildError(error) };
+
+    // Si hay error, devolverlo inmediatamente
+    if (error) {
+      return { data: null, error: buildError(error) };
+    }
+
+    // Verificar si el email está confirmado después del inicio de sesión
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const emailConfirmed = isEmailConfirmed(user);
+
+    if (!emailConfirmed) {
+      // Cerrar la sesión si el email no está confirmado
+      await supabaseSignOut();
+      return {
+        data: null,
+        error: buildError(
+          'Debes confirmar tu correo electrónico antes de poder iniciar sesión. Revisa tu bandeja de entrada.'
+        ),
+      };
+    }
+
+    return { data: null, error: null };
   };
 
   const signOut = async () => {
@@ -59,10 +93,31 @@ export const useAuth = () => {
   };
 
   const resetPassword = async (email: string) => {
-    const redirectTo = typeof window !== 'undefined'
-      ? `${window.location.origin}/auth/reset-password`
-      : undefined;
-    const { error } = await sendResetPasswordEmail({ email, redirectTo });
+    const { error } = await sendResetPasswordEmail({ email });
+    return { data: null, error: buildError(error) };
+  };
+
+  const signInWithGoogleOAuth = async (redirectTo?: string) => {
+    const { error } = await signInWithGoogle({ redirectTo });
+    return { data: null, error: buildError(error) };
+  };
+
+  const resendEmailConfirmation = async (email: string) => {
+    const { error } = await resendConfirmationEmail(email);
+    return { data: null, error: buildError(error) };
+  };
+
+  const checkEmailConfirmation = (user: User | null): boolean => {
+    return isEmailConfirmed(user);
+  };
+
+  const updateUserProfile = async (email?: string, password?: string) => {
+    const { error } = await updateProfile({ email, password });
+    return { data: null, error: buildError(error) };
+  };
+
+  const deleteUserAccount = async (password: string) => {
+    const { error } = await deleteAccount({ password });
     return { data: null, error: buildError(error) };
   };
 
@@ -72,5 +127,10 @@ export const useAuth = () => {
     signIn,
     signOut,
     resetPassword,
+    signInWithGoogle: signInWithGoogleOAuth,
+    resendEmailConfirmation,
+    checkEmailConfirmation,
+    updateProfile: updateUserProfile,
+    deleteAccount: deleteUserAccount,
   };
 };

@@ -1,4 +1,6 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
+
+import { toast } from '@/components/ui/sonner';
 
 // Declarar la función global para que esté disponible en la consola
 declare global {
@@ -20,16 +22,18 @@ export const useConsoleClear = () => {
           sessionStorage.clear();
         }
 
-        console.log('✅ Todos los datos de localStorage han sido eliminados');
-        console.log('🔄 La aplicación se recargará para aplicar los cambios...');
+        toast.success('Datos locales eliminados', {
+          description: 'La aplicación se recargará para aplicar los cambios.',
+        });
 
         // Recargar la página para que se apliquen los cambios
-        setTimeout(() => {
+        globalThis.setTimeout(() => {
           window.location.reload();
         }, 1000);
-
       } catch (error) {
-        console.error('❌ Error al limpiar los datos:', error);
+        toast.error('Error al limpiar los datos', {
+          description: error instanceof Error ? error.message : String(error),
+        });
       }
     };
 
@@ -37,7 +41,12 @@ export const useConsoleClear = () => {
     window.ClearAllData = clearAllData;
 
     // Mensaje de ayuda en la consola
-    console.log('💡 Consejo: Escribe ClearAllData() en la consola para borrar todos los datos de localStorage');
+    if (import.meta.env.DEV) {
+      toast('Consejo de depuración', {
+        description:
+          'Ejecuta ClearAllData() en la consola para borrar todos los datos de localStorage.',
+      });
+    }
 
     // Cleanup: remover la función global cuando se desmonte el componente
     return () => {
