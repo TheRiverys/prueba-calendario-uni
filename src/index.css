@@ -318,3 +318,52 @@ body {
     @apply text-foreground text-sm font-medium whitespace-nowrap;
   }
 }
+
+/* Personalización de Driver.js para adaptarse al tema */
+@layer components {
+  .driver-popover {
+    @apply bg-card text-card-foreground border-border rounded-lg shadow-lg;
+  }
+
+  .driver-popover-title {
+    @apply text-foreground text-lg font-bold;
+  }
+
+  .driver-popover-description {
+    @apply text-muted-foreground text-sm leading-relaxed;
+  }
+
+  .driver-popover-progress-text {
+    @apply text-muted-foreground text-xs;
+  }
+
+  .driver-popover-footer {
+    @apply border-border/50;
+  }
+
+  .driver-popover-next-btn,
+  .driver-popover-prev-btn,
+  .driver-popover-close-btn {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded-md transition-colors;
+  }
+
+  .driver-popover-prev-btn {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+
+  .driver-popover-close-btn {
+    @apply bg-transparent text-muted-foreground hover:text-foreground;
+  }
+
+  :is(.dark *) .driver-popover {
+    @apply bg-card text-card-foreground border-border;
+  }
+
+  :is(.dark *) .driver-popover-title {
+    @apply text-foreground;
+  }
+
+  :is(.dark *) .driver-popover-description {
+    @apply text-muted-foreground;
+  }
+}

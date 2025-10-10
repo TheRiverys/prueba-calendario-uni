@@ -47,7 +47,7 @@ const statsConfig = [
 
 export const StatsOverview: React.FC<StatsOverviewProps> = ({ stats }) => {
   return (
-    <section className='app-shell mt-6'>
+    <section className='stats-overview app-shell mt-6'>
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4'>
         {statsConfig.map(({ key, label, icon: Icon, accent, bgColor, borderColor }) => (
           <div

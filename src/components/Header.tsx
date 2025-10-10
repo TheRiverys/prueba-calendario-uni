@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Calendar, ChevronDown, LogOut, Moon, Settings, Sun, User } from 'lucide-react';
+import { Calendar, ChevronDown, HelpCircle, LogOut, Moon, Settings, Sun, User } from 'lucide-react';
 import { type JSX, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { toast } from '@/components/ui/sonner';
@@ -126,6 +126,16 @@ const Header = (): JSX.Element => {
           <Button
             variant='ghost'
             size='icon'
+            onClick={() => setCurrentPage('help')}
+            className='help-button hover:bg-muted/80 h-9 w-9 transition-colors'
+            title='Ayuda y documentación'
+          >
+            <HelpCircle className='h-4 w-4' />
+          </Button>
+
+          <Button
+            variant='ghost'
+            size='icon'
             onClick={toggleTheme}
             className='hover:bg-muted/80 h-9 w-9 transition-colors'
             title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
@@ -142,7 +152,7 @@ const Header = (): JSX.Element => {
               variant='ghost'
               size='icon'
               onClick={openConfigModal}
-              className='hover:bg-muted/80 h-9 w-9 transition-colors'
+              className='header-settings-button hover:bg-muted/80 h-9 w-9 transition-colors'
               title='Configuración'
             >
               <Settings className='h-4 w-4' />
