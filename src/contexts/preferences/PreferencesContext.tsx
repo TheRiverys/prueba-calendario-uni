@@ -10,7 +10,7 @@ import {
 } from 'react';
 
 type ViewMode = 'list' | 'calendar' | 'gantt';
-type Page = 'dashboard' | 'profile';
+type Page = 'dashboard' | 'profile' | 'help';
 type SortOption = 'algorithm' | 'subject' | 'date';
 type ThemeMode = 'light' | 'dark';
 

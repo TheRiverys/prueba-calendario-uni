@@ -3,6 +3,7 @@ import React from 'react';
 import { ConfigModal } from './components/ConfigModal';
 import { Controls } from './components/Controls';
 import { Header } from './components/Header';
+import { HelpPage } from './components/help/HelpPage';
 import { Modal } from './components/Modal';
 import { Profile } from './components/Profile';
 import { StatsOverview } from './components/StatsOverview';
@@ -15,6 +16,7 @@ import { usePreferencesContext } from './contexts/preferences/PreferencesContext
 import { useScheduleContext } from './contexts/schedule/ScheduleContext';
 import { useSemesterContext } from './contexts/semester/SemesterContext';
 import { AuthDialog } from './features/auth/components/AuthDialog';
+import { useAppTour } from './hooks/useAppTour';
 import { useConsoleClear } from './hooks/useConsoleClear';
 import { pickColorForSubject } from './utils/colors';
 
@@ -26,6 +28,7 @@ const priorities: Array<{ value: 'low' | 'normal' | 'high'; label: string; color
 
 const AppContent: React.FC = () => {
   useConsoleClear();
+  useAppTour();
 
   const { activeView, currentPage } = usePreferencesContext();
   const { semesterStart, setSemesterStart } = useSemesterContext();
@@ -76,6 +79,8 @@ const AppContent: React.FC = () => {
 
       {currentPage === 'profile' ? (
         <Profile />
+      ) : currentPage === 'help' ? (
+        <HelpPage />
       ) : (
         <>
           <div className='app-shell mt-6'>
