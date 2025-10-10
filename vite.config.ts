@@ -39,14 +39,14 @@ export default defineConfig({
           if (id.includes('date-fns')) return 'date-fns';
           if (id.includes('exceljs')) return 'exceljs';
           if (id.includes('@supabase')) return 'supabase';
-          
+
           // AI SDK (incluye zod y otras dependencias)
           if (id.includes('@ai-sdk') || id.includes('/node_modules/ai/')) return 'ai-sdk';
 
           // Solo @radix-ui (sin otras bibliotecas mezcladas)
           if (id.includes('@radix-ui')) return 'radix';
-          
-          // Todo lo demás (incluyendo lucide-react, sonner, clsx, etc.) 
+
+          // Todo lo demás (incluyendo lucide-react, sonner, clsx, etc.)
           // va al bundle principal para evitar problemas de inicialización
           return undefined;
         },
