@@ -352,7 +352,7 @@ body {
   }
 
   .driver-popover-close-btn {
-    @apply bg-transparent text-muted-foreground hover:text-foreground;
+    @apply text-muted-foreground hover:text-foreground bg-transparent;
   }
 
   :is(.dark *) .driver-popover {
