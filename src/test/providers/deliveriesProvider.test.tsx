@@ -44,7 +44,6 @@ vi.mock('@/hooks/useModal', () => ({
       subject: '',
       name: '',
       date: '',
-      studyStart: '',
       priority: 'normal' as const,
     },
     openModal: vi.fn(),
@@ -59,7 +58,6 @@ const defaultDelivery: Delivery = {
   subject: 'Matematica',
   name: 'Entrega 1',
   date: '2025-01-15',
-  studyStart: '2025-01-10',
   color: 'bg-chart-1',
   completed: false,
   priority: 'normal',
@@ -75,6 +73,8 @@ const createWrapper = (props: {
       user={props.user}
       semesterStart={props.semesterStart}
       semesterStartVersion={props.semesterStartVersion}
+      updateNewDateStart={vi.fn()}
+      clearNewDateStart={vi.fn()}
     >
       {children}
     </DeliveriesProvider>
@@ -150,7 +150,6 @@ describe('DeliveriesProvider', () => {
       date: '2025-02-01',
       priority: 'high' as const,
       color: 'bg-chart-3',
-      studyStart: '2025-01-20',
     };
 
     // Act
@@ -183,7 +182,6 @@ describe('DeliveriesProvider', () => {
       date: '2025-02-15',
       priority: 'normal' as const,
       color: 'bg-chart-4',
-      studyStart: '2025-02-01',
     };
 
     // Act

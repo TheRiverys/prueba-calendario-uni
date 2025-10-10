@@ -4,15 +4,19 @@ export interface Delivery {
   subject: string;
   name: string;
   date: string;
-  studyStart?: string;
   color: string;
   completed: boolean;
   priority: 'low' | 'normal' | 'high';
+  // Campos para tracking completo
+  startDate?: string; // Fecha inicio asignada por algoritmo
+  endDate?: string; // Fecha final asignada por algoritmo
+  completedAt?: string; // Cuándo se completó
+  completedManually?: boolean; // Si fue manual (true) o automático (false)
 }
 
-export interface StudySchedule extends Delivery {
-  startDate: Date;
-  endDate: Date;
+export interface StudySchedule extends Omit<Delivery, 'startDate' | 'endDate'> {
+  startDate: Date; // En StudySchedule son Date, en Delivery son string
+  endDate: Date; // En StudySchedule son Date, en Delivery son string
   studyDays: number;
   warning: boolean;
   minimumRequired: number;
@@ -28,7 +32,6 @@ export interface FormData {
   subject: string;
   name: string;
   date: string;
-  studyStart: string;
   priority: 'low' | 'normal' | 'high';
 }
 
@@ -82,7 +85,11 @@ export interface DeliveryRow {
   priority: 'low' | 'normal' | 'high';
   color: string | null;
   completed: boolean;
-  study_start: string | null;
+  // Campos para tracking completo
+  start_date: string | null;
+  end_date: string | null;
+  completed_at: string | null;
+  completed_manually: boolean | null;
   created_at: string;
   updated_at: string;
 }

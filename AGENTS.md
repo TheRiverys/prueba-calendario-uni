@@ -78,7 +78,7 @@
 - **Arquitectura recomendada**:
   ```css
   /* src/index.css */
-  @import "tailwindcss";
+  @import 'tailwindcss';
   @layer base, components, utilities;
   ```
 - **Tokens personalizados** en cada feature:
@@ -86,7 +86,7 @@
   /* Documentar colores, espaciado y tipografía específicos */
   @layer components {
     .custom-card {
-      @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm;
+      @apply rounded-lg bg-white shadow-sm dark:bg-gray-800;
     }
   }
   ```
@@ -97,6 +97,7 @@
 ### Development Workflow
 
 1. **Antes de desarrollar**:
+
    ```bash
    npm run lint  # Verificar estado actual
    npm run lint:fix  # Corregir problemas automáticos
@@ -108,6 +109,7 @@
    - Preview de cambios con `npm run dev`
 
 3. **Antes de commit**:
+
    ```bash
    npm run lint        # Verificar todos los problemas
    npm run lint:fix    # Corregir lo posible automáticamente

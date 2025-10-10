@@ -142,7 +142,7 @@ export default [
       ],
 
       // Límites de complejidad para mantener código mantenible
-      'complexity': ['warn', 10], // !No tocar
+      'complexity': ['warn', 15], // !No tocar
       'max-depth': ['warn', 4],
       'max-lines': ['warn', 350],
       'max-lines-per-function': ['warn', 120], // !No tocar

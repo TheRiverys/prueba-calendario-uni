@@ -80,7 +80,6 @@ export const Modal: React.FC<ModalProps> = ({
               value={formData.date}
               onChange={event => onInputChange('date', event.target.value)}
               required
-              min={formData.studyStart}
             />
           </div>
 

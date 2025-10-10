@@ -26,6 +26,9 @@ interface DeliveriesContextValue {
   updateDelivery: (_id: Delivery['id'], _updates: Partial<Delivery>) => void;
   deleteDelivery: (_id: Delivery['id']) => void;
   toggleCompleted: (_id: Delivery['id']) => void;
+  updateScheduleDates: (
+    _updates: Array<{ id: string; startDate: string; endDate: string }>
+  ) => Promise<void>;
   modalOpen: boolean;
   editingDelivery: Delivery | null;
   formData: FormData;
@@ -42,6 +45,8 @@ interface DeliveriesProviderProps {
   readonly user: User | null;
   readonly semesterStart: string;
   readonly semesterStartVersion: number;
+  readonly updateNewDateStart: (_value: string | null) => Promise<void>;
+  readonly clearNewDateStart: () => Promise<void>;
 }
 
 export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({
@@ -49,6 +54,8 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({
   user,
   semesterStart,
   semesterStartVersion,
+  updateNewDateStart,
+  clearNewDateStart,
 }) => {
   const isAuthenticated = Boolean(user);
 
@@ -59,7 +66,7 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({
     updateDelivery: updateLocalDelivery,
     deleteDelivery: deleteLocalDelivery,
     toggleCompleted: toggleLocalCompleted,
-  } = useLocalDeliveries();
+  } = useLocalDeliveries(new Date(semesterStart));
 
   const {
     deliveries: remoteDeliveries,
@@ -68,7 +75,8 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({
     updateDelivery: updateRemoteDelivery,
     deleteDelivery: deleteRemoteDelivery,
     toggleCompleted: toggleRemoteCompleted,
-  } = useSupabaseDeliveries(user);
+    updateScheduleDates: updateRemoteScheduleDates,
+  } = useSupabaseDeliveries(user, new Date(semesterStart), updateNewDateStart, clearNewDateStart);
 
   const deliveries = useMemo(() => {
     return isAuthenticated ? remoteDeliveries : localDeliveries;
@@ -76,7 +84,7 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({
 
   const [deliveriesVersion, setDeliveriesVersion] = useState(0);
 
-  const modal = useModal(semesterStart);
+  const modal = useModal();
 
   const incrementVersion = useCallback(() => {
     setDeliveriesVersion(previous => previous + 1);
@@ -192,6 +200,16 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({
     [isAuthenticated, toggleRemoteCompleted, toggleLocalCompleted, incrementVersion]
   );
 
+  const updateScheduleDates = useCallback(
+    async (updates: Array<{ id: string; startDate: string; endDate: string }>) => {
+      if (isAuthenticated) {
+        await updateRemoteScheduleDates(updates);
+      }
+      // Si no está autenticado, no hacer nada (para fase 3 se implementará carga de datos locales)
+    },
+    [isAuthenticated, updateRemoteScheduleDates]
+  );
+
   const subjects = useMemo(() => {
     return [...new Set(deliveries.map(delivery => delivery.subject))];
   }, [deliveries]);
@@ -206,6 +224,7 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({
       updateDelivery,
       deleteDelivery,
       toggleCompleted,
+      updateScheduleDates,
       modalOpen: modal.modalOpen,
       editingDelivery: modal.editingDelivery,
       formData: modal.formData,
@@ -223,6 +242,7 @@ export const DeliveriesProvider: FC<DeliveriesProviderProps> = ({
       updateDelivery,
       deleteDelivery,
       toggleCompleted,
+      updateScheduleDates,
       modal.modalOpen,
       modal.editingDelivery,
       modal.formData,

@@ -11,27 +11,28 @@ export const calculateProgress = (item: StudySchedule, now: Date = new Date()): 
     return 100;
   }
 
-  const dueDate = parseISO(item.date);
-  if (Number.isNaN(dueDate.getTime())) {
+  // Usar endDate (fecha final del período asignado) en lugar de date (fecha de entrega)
+  const endDate = item.endDate || parseISO(item.date);
+  if (Number.isNaN(endDate.getTime())) {
     return 0;
   }
 
-  if (now >= dueDate) {
-    return 0;
+  if (now >= endDate) {
+    return 100; // Si ya pasó la fecha final, considerar como 100% si no está completada
   }
 
   if (now < item.startDate) {
     return 0;
   }
 
-  const totalTimeSpan = differenceInCalendarDays(dueDate, item.startDate);
+  const totalTimeSpan = differenceInCalendarDays(endDate, item.startDate);
   const elapsedTime = differenceInCalendarDays(now, item.startDate);
 
   if (totalTimeSpan <= 0) {
     return now >= item.startDate ? 100 : 0;
   }
 
-  return clamp((elapsedTime / totalTimeSpan) * 100, 0, 100);
+  return clamp((elapsedTime / totalTimeSpan) * 100, 0, 99); // Máximo 99% hasta que se complete
 };
 
 export const resolveProgressColor = (progressValue: number, completed: boolean): string => {

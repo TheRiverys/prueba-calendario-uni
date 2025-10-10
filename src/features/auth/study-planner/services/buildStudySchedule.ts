@@ -3,7 +3,7 @@ import { addDays, differenceInCalendarDays } from 'date-fns';
 import type { ConfigSettings, Delivery, StudySchedule } from '@/types';
 import { DEFAULT_CONFIG } from '@/utils/config';
 
-import { toIso, toNormalizedDate } from '../utils/dateUtils';
+import { toNormalizedDate } from '../utils/dateUtils';
 import { getPriorityValue } from '../utils/priorityUtils';
 
 import { computeSequentialDurations } from './computeSequentialDurations';
@@ -105,7 +105,6 @@ const buildCompletedDeliverySchedule = (
   minDays: number
 ): StudySchedule => ({
   ...delivery,
-  studyStart: toIso(dueDate),
   startDate: dueDate,
   endDate: dueDate,
   studyDays: 0,
@@ -130,7 +129,6 @@ const buildPendingFallbackSchedule = (
 
   return {
     ...delivery,
-    studyStart: toIso(start),
     startDate: start,
     endDate: end,
     studyDays,
@@ -146,6 +144,7 @@ export const buildStudySchedule = ({
   deliveries,
   semesterStartIso,
   config,
+  newDateStartIso,
 }: StudyScheduleBuilderParams): StudySchedule[] => {
   if (!Array.isArray(deliveries) || deliveries.length === 0) {
     return [];
@@ -156,26 +155,35 @@ export const buildStudySchedule = ({
     return [];
   }
 
+  // Calcula la fecha efectiva de inicio para los cálculos.
+  // Si se proporciona newDateStartIso, úsala; de lo contrario, usa semesterStart.
+  const effectiveStartDate = newDateStartIso
+    ? toNormalizedDate(newDateStartIso) || semesterStart
+    : semesterStart;
+
   const minDays = Math.max(1, Math.round(config?.baseStudyDays ?? DEFAULT_BASE_STUDY_DAYS));
 
-  const plannedEligible = buildPlannedDeliveries(deliveries, semesterStart, minDays).sort(
+  // PASO 2: Usa la fecha efectiva aquí
+  const plannedEligible = buildPlannedDeliveries(deliveries, effectiveStartDate, minDays).sort(
     comparePlanned(config)
   );
 
+  // PASO 3: Y aquí
   const {
     durations,
     warnings: warningFlags,
     desiredExtras,
     achievedExtras,
-  } = computeSequentialDurations(plannedEligible, semesterStart, config);
+  } = computeSequentialDurations(plannedEligible, effectiveStartDate, config);
 
+  // PASO 4: Y también aquí
   const allocationById = mapAllocations(
     plannedEligible,
     durations,
     warningFlags,
     desiredExtras,
     achievedExtras,
-    semesterStart
+    effectiveStartDate
   );
 
   const schedule: StudySchedule[] = [];
@@ -194,14 +202,13 @@ export const buildStudySchedule = ({
     const allocation = allocationById.get(delivery.id);
     if (!allocation) {
       schedule.push(
-        buildPendingFallbackSchedule(delivery, dueDate, semesterStart, minDays, config)
+        buildPendingFallbackSchedule(delivery, dueDate, effectiveStartDate, minDays, config)
       );
       return;
     }
 
     schedule.push({
       ...delivery,
-      studyStart: toIso(allocation.start),
       startDate: allocation.start,
       endDate: allocation.end,
       studyDays: allocation.studyDays,
@@ -213,5 +220,8 @@ export const buildStudySchedule = ({
     });
   });
 
-  return schedule.sort((first, second) => first.startDate.getTime() - second.startDate.getTime());
+  return schedule.sort(
+    (first: StudySchedule, second: StudySchedule) =>
+      first.startDate.getTime() - second.startDate.getTime()
+  );
 };

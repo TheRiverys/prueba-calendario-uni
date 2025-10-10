@@ -16,11 +16,11 @@ interface AppProviderProps {
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   return (
-    <AuthProvider>
-      <PreferencesProvider>
+    <PreferencesProvider>
+      <AuthProvider>
         <AuthenticatedProviders>{children}</AuthenticatedProviders>
-      </PreferencesProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </PreferencesProvider>
   );
 };
 
@@ -40,13 +40,16 @@ const SemesterBoundaries: React.FC<{
   readonly children: ReactNode;
   readonly user: User | null;
 }> = ({ children, user }) => {
-  const { semesterStart, semesterStartVersion } = useSemesterContext();
+  const { semesterStart, semesterStartVersion, updateNewDateStart, clearNewDateStart } =
+    useSemesterContext();
 
   return (
     <DeliveriesProvider
       user={user}
       semesterStart={semesterStart}
       semesterStartVersion={semesterStartVersion}
+      updateNewDateStart={updateNewDateStart}
+      clearNewDateStart={clearNewDateStart}
     >
       <AiProvider>
         <ScheduleProvider>{children}</ScheduleProvider>

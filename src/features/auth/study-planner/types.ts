@@ -19,4 +19,5 @@ export interface StudyScheduleBuilderParams {
   deliveries: Delivery[];
   semesterStartIso: string;
   config?: ConfigSettings;
+  newDateStartIso?: string;
 }

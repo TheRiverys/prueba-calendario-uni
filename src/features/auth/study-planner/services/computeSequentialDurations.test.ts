@@ -26,7 +26,6 @@ describe('computeSequentialDurations', () => {
     subject: 'Subject',
     name: 'Task',
     date: '2025-01-05',
-    studyStart: undefined,
     color: '#000000',
     completed: false,
     priority: 'normal',

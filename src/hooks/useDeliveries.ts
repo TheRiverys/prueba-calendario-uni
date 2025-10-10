@@ -31,7 +31,7 @@ const sanitizeDelivery = (candidate: StoredDelivery): Delivery | null => {
   }
 
   const normalizedId = normalizeId(candidate.id);
-  const { subject, name, date, color, completed, priority, studyStart } = candidate;
+  const { subject, name, date, color, completed, priority } = candidate;
 
   if (
     !normalizedId ||
@@ -50,7 +50,6 @@ const sanitizeDelivery = (candidate: StoredDelivery): Delivery | null => {
     subject: subject.trim(),
     name: name.trim(),
     date: date,
-    studyStart: typeof studyStart === 'string' && studyStart.length > 0 ? studyStart : undefined,
     color: color,
     completed,
     priority,
@@ -100,7 +99,7 @@ const getNextId = (items: Delivery[]): string => {
   return `${LOCAL_ID_PREFIX}${highest + 1}`;
 };
 
-export const useDeliveries = () => {
+export const useDeliveries = (_semesterStart: Date) => {
   const [deliveries, setDeliveries] = useState<Delivery[]>(readStoredDeliveries);
 
   useEffect(() => {
@@ -126,6 +125,8 @@ export const useDeliveries = () => {
       };
       return [...prev, newDelivery];
     });
+
+    // El schedule se recalculará automáticamente en ScheduleContext
   };
 
   const addDeliveries = (items: DeliveryInput[]) => {
@@ -147,26 +148,38 @@ export const useDeliveries = () => {
       });
       return next;
     });
+
+    // El schedule se recalculará automáticamente en ScheduleContext
   };
 
   const updateDelivery = (id: string, updates: Partial<Delivery>) => {
     setDeliveries(prev =>
       prev.map(delivery => (delivery.id === id ? { ...delivery, ...updates } : delivery))
     );
+
+    // El schedule se recalculará automáticamente en ScheduleContext
   };
 
   const deleteDelivery = (id: string) => {
-    // Eliminar directamente sin confirmación adicional
     setDeliveries(prev => prev.filter(delivery => delivery.id !== id));
     toast.success('Entrega eliminada correctamente');
+
+    // El schedule se recalculará automáticamente en ScheduleContext
   };
 
   const toggleCompleted = (id: string) => {
-    setDeliveries(prev =>
-      prev.map(delivery =>
-        delivery.id === id ? { ...delivery, completed: !delivery.completed } : delivery
-      )
-    );
+    // Encuentra la tarea que se va a modificar
+    const deliveryToToggle = deliveries.find(d => d.id === id);
+    if (!deliveryToToggle) {
+      return;
+    }
+
+    // Actualizar el estado local
+    // El schedule se recalculará automáticamente en ScheduleContext
+    // cuando cambie el array de deliveries
+    setDeliveries(prev => prev.map(d => (d.id === id ? { ...d, completed: !d.completed } : d)));
+
+    toast.success(deliveryToToggle.completed ? 'Tarea marcada como pendiente' : 'Tarea completada');
   };
 
   return {

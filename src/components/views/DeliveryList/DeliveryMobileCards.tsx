@@ -85,7 +85,7 @@ const DeliveryProgress: React.FC<DeliveryProgressProps> = ({
   <div className='space-y-2'>
     <div className='bg-secondary relative h-2 w-full overflow-hidden rounded-full'>
       <div
-        className='h-full w-full flex-1 transition-all duration-300 ease-in-out'
+        className='h-full transition-all duration-500 ease-out'
         style={{ backgroundColor: progressColor, width: `${progressValue}%` }}
       />
     </div>
@@ -96,9 +96,9 @@ const DeliveryProgress: React.FC<DeliveryProgressProps> = ({
           ? 'Completada'
           : progressValue === 0
             ? 'Sin comenzar'
-            : progressValue === 100
-              ? 'Completada'
-              : `${Math.round(progressValue)}%`}
+            : progressValue >= 100
+              ? 'Lista para entregar'
+              : `${Math.round(progressValue)}% completado`}
       </span>
       {item.warning && (
         <Badge variant='outline' className='text-chart-3 border-chart-3'>

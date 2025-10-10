@@ -24,7 +24,6 @@ describe('buildStudySchedule', () => {
     subject: 'Subject',
     name: 'Task',
     date: '2025-01-05',
-    studyStart: undefined,
     color: '#000000',
     completed: false,
     priority: 'normal',
@@ -78,7 +77,6 @@ describe('buildStudySchedule', () => {
 
     const [first, second, third] = schedule;
     expect(first.id).toBe('high');
-    expect(first.studyStart).toBe('2025-01-01');
     expect(toIso(first.startDate)).toBe('2025-01-01');
     expect(toIso(first.endDate)).toBe('2025-01-05');
     expect(first.studyDays).toBe(5);
@@ -90,7 +88,6 @@ describe('buildStudySchedule', () => {
     expect(second.id).toBe('completed');
     expect(second.completed).toBe(true);
     expect(second.studyDays).toBe(0);
-    expect(second.studyStart).toBe('2025-01-02');
     expect(second.warning).toBe(false);
 
     expect(third.id).toBe('normal');

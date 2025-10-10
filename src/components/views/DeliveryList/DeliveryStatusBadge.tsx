@@ -19,7 +19,6 @@ interface DeliveryStatusBadgeProps {
 export const DeliveryStatusBadge: React.FC<DeliveryStatusBadgeProps> = ({ date, completed }) => {
   const today = new Date();
   const dueDate = parseISO(date);
-  const daysUntil = differenceInDays(dueDate, today);
 
   if (completed) {
     return (
@@ -30,7 +29,11 @@ export const DeliveryStatusBadge: React.FC<DeliveryStatusBadgeProps> = ({ date, 
     );
   }
 
-  if (isBefore(dueDate, today)) {
+  // Comparar solo fechas (sin horas) para determinar si está vencida
+  const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+
+  if (isBefore(dueDateOnly, todayDateOnly)) {
     return (
       <Badge variant='destructive' className='flex items-center'>
         <XCircle className='mr-1 h-3 w-3' />
@@ -39,6 +42,7 @@ export const DeliveryStatusBadge: React.FC<DeliveryStatusBadgeProps> = ({ date, 
     );
   }
 
+  const daysUntil = differenceInDays(dueDateOnly, todayDateOnly);
   const currentDayOfWeek = today.getDay();
   const daysUntilEndOfWeek = 6 - currentDayOfWeek;
 

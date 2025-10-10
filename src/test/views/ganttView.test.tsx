@@ -23,7 +23,6 @@ const buildSchedule = (overrides: Partial<StudySchedule> = {}): StudySchedule =>
   subject: 'Matemáticas',
   name: 'Parcial 1',
   date: '2025-01-25',
-  studyStart: '2025-01-20',
   color: 'bg-chart-1',
   completed: false,
   priority: 'normal',
