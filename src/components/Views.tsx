@@ -98,7 +98,10 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
                           setActiveView(value as 'list' | 'calendar' | 'gantt')
                         }
                       >
-                        <SelectTrigger className='view-selector w-[120px] sm:w-[140px] lg:w-[160px]'>
+                        <SelectTrigger
+                          id='view-selector'
+                          className='w-[120px] sm:w-[140px] lg:w-[160px]'
+                        >
                           <SelectValue placeholder='Vista' />
                         </SelectTrigger>
                         <SelectContent>
@@ -112,8 +115,9 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
 
                   <div className='flex items-center justify-end'>
                     <Button
+                      id='new-delivery-button'
                       onClick={() => openModal()}
-                      className='new-delivery-button flex items-center gap-2 whitespace-nowrap'
+                      className='flex items-center gap-2 whitespace-nowrap'
                     >
                       <Edit2 className='h-4 w-4' />
                       <span className='hidden sm:inline'>Nueva entrega</span>
@@ -149,7 +153,7 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
                           setActiveView(value as 'list' | 'calendar' | 'gantt')
                         }
                       >
-                        <SelectTrigger className='view-selector w-[120px] sm:w-[140px] lg:w-[160px]'>
+                        <SelectTrigger className='w-[120px] sm:w-[140px] lg:w-[160px]'>
                           <SelectValue placeholder='Vista' />
                         </SelectTrigger>
                         <SelectContent>
@@ -164,7 +168,7 @@ export const Views: React.FC<ViewsProps> = ({ activeView, schedule }) => {
                   <div className='flex items-center justify-end'>
                     <Button
                       onClick={() => openModal()}
-                      className='new-delivery-button flex items-center gap-2 whitespace-nowrap'
+                      className='flex items-center gap-2 whitespace-nowrap'
                     >
                       <Edit2 className='h-4 w-4' />
                       <span className='hidden sm:inline'>Nueva entrega</span>

@@ -36,6 +36,7 @@ export const DeliveryTable: React.FC<DeliveryTableProps> = ({
               <div className='flex items-center justify-end gap-2'>
                 Acciones
                 <Button
+                  id='new-delivery-button'
                   size='sm'
                   onClick={onAdd}
                   className='h-8 w-8 p-0'

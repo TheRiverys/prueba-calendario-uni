@@ -124,10 +124,11 @@ const Header = (): JSX.Element => {
 
         <div className='flex items-center gap-2'>
           <Button
+            id='help-button'
             variant='ghost'
             size='icon'
             onClick={() => setCurrentPage('help')}
-            className='help-button hover:bg-muted/80 h-9 w-9 transition-colors'
+            className='hover:bg-muted/80 h-9 w-9 transition-colors'
             title='Ayuda y documentación'
           >
             <HelpCircle className='h-4 w-4' />
@@ -149,10 +150,11 @@ const Header = (): JSX.Element => {
 
           {!user && (
             <Button
+              id='header-settings-button'
               variant='ghost'
               size='icon'
               onClick={openConfigModal}
-              className='header-settings-button hover:bg-muted/80 h-9 w-9 transition-colors'
+              className='hover:bg-muted/80 h-9 w-9 transition-colors'
               title='Configuración'
             >
               <Settings className='h-4 w-4' />

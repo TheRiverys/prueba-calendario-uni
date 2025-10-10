@@ -20,6 +20,12 @@ export const useAppTour = () => {
           prevBtnText: 'Anterior',
           doneBtnText: 'Entendido',
           progressText: '{{current}} de {{total}}',
+          // Aumentar el padding para mejor visualización
+          padding: 8,
+          // Permitir interacción con el elemento resaltado
+          allowClose: true,
+          // Evitar que el overlay bloquee clicks
+          overlayClickNext: false,
           onDestroyStarted: () => {
             // Marcar el tour como completado cuando se cierre
             localStorage.setItem(TOUR_COMPLETED_KEY, 'true');
@@ -27,84 +33,84 @@ export const useAppTour = () => {
           },
           steps: [
             {
-              element: 'body',
               popover: {
                 title: '¡Bienvenido al Calendario Universitario! 🎓',
                 description:
                   'Te voy a mostrar rápidamente las funcionalidades principales para que aproveches al máximo la aplicación. Este tour solo aparecerá una vez.',
-                side: 'center',
-                align: 'center',
               },
             },
             {
-              element: '.semester-start-control',
+              element: '#semester-start-control',
               popover: {
                 title: 'Fecha de inicio del semestre 📅',
                 description:
                   'Aquí configuras cuándo empieza tu semestre. Esto es importante para que el asistente de IA calcule correctamente tus horarios de estudio.',
                 side: 'bottom',
+                align: 'start',
               },
             },
             {
-              element: '.new-delivery-button',
+              element: '#new-delivery-button',
               popover: {
                 title: 'Añadir entregas ➕',
                 description:
                   'Haz clic aquí para añadir una nueva entrega (examen, trabajo, proyecto, etc.). Puedes añadir todas las que necesites.',
                 side: 'bottom',
+                align: 'end',
               },
             },
             {
-              element: '.view-selector',
+              element: '#view-selector',
               popover: {
                 title: 'Cambiar entre vistas 👁️',
                 description:
                   'Aquí puedes cambiar cómo visualizar tus entregas: en Lista, Calendario o Gantt. Cada vista tiene sus ventajas según lo que necesites.',
                 side: 'bottom',
+                align: 'end',
               },
             },
             {
-              element: '.stats-overview',
+              element: '#stats-overview',
               popover: {
                 title: 'Resumen de estadísticas 📊',
                 description:
                   'Aquí ves un resumen rápido: total de entregas, próximas, vencidas y las de esta semana. Te ayuda a mantener el control de un vistazo.',
                 side: 'top',
+                align: 'start',
               },
             },
             {
-              element: '.header-settings-button',
+              element: '#header-settings-button',
               popover: {
                 title: 'Configuración ⚙️',
                 description:
                   'Desde aquí puedes configurar el asistente de IA, importar entregas desde archivos Excel/CSV, exportar tu calendario, y personalizar la aplicación.',
                 side: 'bottom',
+                align: 'end',
               },
             },
             {
-              element: '.help-button',
+              element: '#help-button',
               popover: {
                 title: 'Ayuda y documentación 📖',
                 description:
                   'Si necesitas ayuda más detallada, aquí encontrarás la guía completa de usuario con toda la información paso a paso.',
                 side: 'bottom',
+                align: 'end',
               },
             },
             {
-              element: 'body',
               popover: {
                 title: '¡Listo para empezar! 🚀',
                 description:
                   'Ya conoces lo básico. Comienza añadiendo tus primeras entregas y explora las diferentes funcionalidades. ¡Éxito en tu semestre académico!',
-                side: 'center',
-                align: 'center',
               },
             },
           ],
         });
 
         driverObj.drive();
-      }, 1000);
+      }, 1500);
 
       return () => window.clearTimeout(timer);
     }
