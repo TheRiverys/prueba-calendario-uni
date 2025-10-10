@@ -13,6 +13,7 @@
     "test:coverage": "vitest run --config vitest.config.ts --coverage --reporter=verbose",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --fix",
+    "lint:pre-commit": "eslint . --fix --max-warnings 1000",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"
