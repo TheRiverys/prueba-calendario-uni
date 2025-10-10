@@ -24,25 +24,31 @@ export default defineConfig({
     open: true,
   },
   build: {
-    modulePreload: { polyfill: false },
+    modulePreload: { polyfill: true },
     cssCodeSplit: true,
     reportCompressedSize: true,
-    // chunkSizeWarningLimit: 1200, // opcional, si el warning te molesta
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return;
 
-          // Agrupamos librerías grandes para mejorar el rendimiento y caché
+          // React primero
           if (/react|react-dom/.test(id)) return 'react';
+
+          // Librerías grandes independientes
           if (id.includes('date-fns')) return 'date-fns';
-          if (id.includes('@radix-ui')) return 'radix';
-          if (id.includes('lucide-react')) return 'icons';
-          if (id.includes('@supabase')) return 'supabase';
           if (id.includes('exceljs')) return 'exceljs';
+          if (id.includes('@supabase')) return 'supabase';
+          
+          // AI SDK (incluye zod y otras dependencias)
           if (id.includes('@ai-sdk') || id.includes('/node_modules/ai/')) return 'ai-sdk';
 
-          return 'vendor';
+          // Solo @radix-ui (sin otras bibliotecas mezcladas)
+          if (id.includes('@radix-ui')) return 'radix';
+          
+          // Todo lo demás (incluyendo lucide-react, sonner, clsx, etc.) 
+          // va al bundle principal para evitar problemas de inicialización
+          return undefined;
         },
       },
     },
