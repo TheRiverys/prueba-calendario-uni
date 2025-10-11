@@ -14,7 +14,10 @@ export const Controls: React.FC<ControlsProps> = ({ semesterStart, onSemesterSta
     <section className='w-full'>
       {/* Contenido alineado a la izquierda */}
       <div className='flex justify-start'>
-        <div className='semester-start-control flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6'>
+        <div
+          id='semester-start-control'
+          className='flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6'
+        >
           <div className='text-muted-foreground flex items-center gap-3 text-sm'>
             <span className='text-xs font-medium tracking-wide uppercase'>Inicio del semestre</span>
             <Input

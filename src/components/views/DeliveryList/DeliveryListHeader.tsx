@@ -42,6 +42,7 @@ export const DeliveryListHeader: React.FC<DeliveryListHeaderProps> = ({
         <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4'>
           <div className='flex flex-wrap items-center gap-3 sm:gap-4'>
             <HeaderSelect
+              id='view-selector'
               label='Vista'
               value={activeView}
               options={[
@@ -87,6 +88,7 @@ export const DeliveryListHeader: React.FC<DeliveryListHeaderProps> = ({
 };
 
 interface HeaderSelectProps {
+  readonly id?: string;
   readonly label: string;
   readonly value: string;
   readonly options: Array<{ label: string; value: string }>;
@@ -95,6 +97,7 @@ interface HeaderSelectProps {
 }
 
 const HeaderSelect: React.FC<HeaderSelectProps> = ({
+  id,
   label,
   value,
   options,
@@ -107,7 +110,7 @@ const HeaderSelect: React.FC<HeaderSelectProps> = ({
         {label}
       </span>
       <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger className={triggerWidth}>
+        <SelectTrigger id={id} className={triggerWidth}>
           <SelectValue placeholder={label} />
         </SelectTrigger>
         <SelectContent>
