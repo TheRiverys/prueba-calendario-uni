@@ -12,6 +12,7 @@ import { StatsOverview } from './components/StatsOverview';
 import { FeedbackPanel } from './components/ui/FeedbackPanel';
 import { Toaster } from './components/ui/sonner';
 import { Views } from './components/Views';
+import { WikiPage } from './components/WikiPage';
 import { AppProvider } from './contexts/AppContext';
 import { useDeliveriesContext } from './contexts/deliveries/DeliveriesContext';
 import { GdprProvider } from './contexts/gdpr/GdprContext';
@@ -92,6 +93,8 @@ const AppContent: React.FC = () => {
         <HelpPage />
       ) : currentPage === 'privacy-policy' ? (
         <PrivacyPolicy />
+      ) : currentPage === 'wiki' ? (
+        <WikiPage />
       ) : (
         <>
           <div className='app-shell mt-6'>

@@ -10,7 +10,7 @@ import {
 } from 'react';
 
 type ViewMode = 'list' | 'calendar' | 'gantt';
-type Page = 'dashboard' | 'profile' | 'help' | 'privacy-policy';
+type Page = 'dashboard' | 'profile' | 'help' | 'privacy-policy' | 'wiki';
 type SortOption = 'algorithm' | 'subject' | 'date';
 type ThemeMode = 'light' | 'dark';
 
@@ -54,6 +54,9 @@ export const PreferencesProvider: FC<PreferencesProviderProps> = ({ children }) 
           break;
         case 'help':
           setCurrentPage('help');
+          break;
+        case 'wiki':
+          setCurrentPage('wiki');
           break;
         case 'dashboard':
         default:

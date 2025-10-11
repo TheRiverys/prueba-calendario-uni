@@ -358,10 +358,10 @@ export const PrivacyPolicy: React.FC = () => {
               <p className='text-sm text-gray-900 dark:text-white'>
                 <strong>Correo electrónico:</strong>{' '}
                 <a
-                  href='mailto:privacy@tu-dominio.com'
+                  href='mailto:info@corebsm.es'
                   className='text-blue-600 hover:underline dark:text-blue-400'
                 >
-                  privacy@tu-dominio.com
+                  info@corebsm.es
                 </a>
               </p>
               <p className='mt-2 text-xs text-gray-500 dark:text-gray-400'>

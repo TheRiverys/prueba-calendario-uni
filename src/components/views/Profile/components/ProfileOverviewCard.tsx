@@ -18,7 +18,7 @@ const ProfileOverviewCard: FC<ProfileOverviewCardProps> = ({ summary }) => {
           <UserAvatar user={summary.user} size='lg' className='bg-primary/10 text-primary' />
           <div className='flex flex-col'>
             <span className='text-base font-semibold'>{email}</span>
-            <span className='text-muted-foreground text-xs'>Cuenta sincronizada con Supabase</span>
+            <span className='text-muted-foreground text-xs'>Sincronizada con la base de datos</span>
           </div>
         </CardTitle>
       </CardHeader>

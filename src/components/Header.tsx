@@ -1,6 +1,16 @@
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Calendar, ChevronDown, HelpCircle, LogOut, Moon, Settings, Sun, User } from 'lucide-react';
+import {
+  BookOpen,
+  Calendar,
+  ChevronDown,
+  HelpCircle,
+  LogOut,
+  Moon,
+  Settings,
+  Sun,
+  User,
+} from 'lucide-react';
 import { type JSX, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { toast } from '@/components/ui/sonner';
@@ -134,6 +144,17 @@ const Header = (): JSX.Element => {
 
         <div className='flex items-center gap-2'>
           <Button
+            id='wiki-button'
+            variant='ghost'
+            size='icon'
+            onClick={() => setCurrentPage('wiki')}
+            className='hover:bg-muted/80 h-9 w-9 transition-colors'
+            title='Documentación y recursos'
+          >
+            <BookOpen className='h-4 w-4' />
+          </Button>
+
+          <Button
             id='help-button'
             variant='ghost'
             size='icon'
@@ -210,6 +231,17 @@ const Header = (): JSX.Element => {
                     >
                       <User className='h-4 w-4' />
                       <span>Perfil</span>
+                    </button>
+                    <button
+                      className='hover:bg-accent hover:text-accent-foreground flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm'
+                      onClick={() => {
+                        setCurrentPage('wiki');
+                        setDropdownOpen(false);
+                      }}
+                      role='menuitem'
+                    >
+                      <BookOpen className='h-4 w-4' />
+                      <span>Documentación</span>
                     </button>
                     <button
                       className='hover:bg-accent hover:text-accent-foreground flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm'
