@@ -8,7 +8,6 @@ export const useAppTour = () => {
   useEffect(() => {
     // Verificar si el tour ya fue completado
     const tourCompleted = localStorage.getItem(TOUR_COMPLETED_KEY);
-
     // Solo mostrar el tour si no se ha completado antes
     if (!tourCompleted) {
       // Pequeño delay para asegurar que el DOM esté completamente cargado
@@ -20,12 +19,13 @@ export const useAppTour = () => {
           prevBtnText: 'Anterior',
           doneBtnText: 'Entendido',
           progressText: '{{current}} de {{total}}',
-          // Aumentar el padding para mejor visualización
-          padding: 8,
           // Permitir interacción con el elemento resaltado
           allowClose: true,
+          animate: true,
+          smoothScroll: true,
+          stagePadding: 20,
+          popoverOffset: 20,
           // Evitar que el overlay bloquee clicks
-          overlayClickNext: false,
           onDestroyStarted: () => {
             // Marcar el tour como completado cuando se cierre
             localStorage.setItem(TOUR_COMPLETED_KEY, 'true');
@@ -55,8 +55,8 @@ export const useAppTour = () => {
                 title: 'Añadir entregas ➕',
                 description:
                   'Haz clic aquí para añadir una nueva entrega (examen, trabajo, proyecto, etc.). Puedes añadir todas las que necesites.',
-                side: 'bottom',
-                align: 'end',
+                side: 'top',
+                align: 'center',
               },
             },
             {
