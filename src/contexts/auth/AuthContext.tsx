@@ -11,7 +11,11 @@ import {
 import { toast } from '@/components/ui/sonner';
 import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
 import { useAuth } from '@/hooks/useAuth';
-import { clearLocalUserData } from '@/utils/storage';
+import {
+  clearLocalUserData,
+  getOrCreateAnalyticsUserId,
+  associateAnonymousAnalyticsWithUser,
+} from '@/utils/storage';
 
 import type { User } from '@supabase/supabase-js';
 
@@ -69,6 +73,18 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       if (error) {
         return error.message;
       }
+
+      // Si el registro fue exitoso (sin errores), marcar para asociación futura
+      if (!error) {
+        try {
+          const anonymousUserId = getOrCreateAnalyticsUserId();
+          // Guardar el ID anónimo para asociarlo cuando el usuario confirme su email
+          localStorage.setItem('pending_analytics_association', anonymousUserId);
+        } catch {
+          // No bloquear el registro por errores de analíticas
+        }
+      }
+
       setAuthModalOpen(false);
       return null;
     },
@@ -111,7 +127,24 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const checkEmailConfirmation = useCallback(
     (user: User | null) => {
-      return auth.checkEmailConfirmation(user);
+      const isConfirmed = auth.checkEmailConfirmation(user);
+
+      // Si el usuario confirmó su email y tenemos un ID pendiente de asociación
+      if (isConfirmed && user?.id && typeof window !== 'undefined') {
+        const pendingId = localStorage.getItem('pending_analytics_association');
+        if (pendingId) {
+          // Asociar las analíticas anónimas con el usuario registrado
+          associateAnonymousAnalyticsWithUser(pendingId, user.id)
+            .then(() => {
+              localStorage.removeItem('pending_analytics_association');
+            })
+            .catch(() => {
+              // Silenciar errores de asociación de analíticas
+            });
+        }
+      }
+
+      return isConfirmed;
     },
     [auth]
   );

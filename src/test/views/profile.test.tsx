@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Profile } from '@/components/Profile';
 import { useAuthContext } from '@/contexts/auth/AuthContext';
+import { GdprProvider } from '@/contexts/gdpr/GdprContext';
 import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
 
 import type { User } from '@supabase/supabase-js';
@@ -118,7 +119,11 @@ const configurePreferencesContext = () => {
 };
 
 const renderProfile = () => {
-  render(<Profile />);
+  render(
+    <GdprProvider>
+      <Profile />
+    </GdprProvider>
+  );
 };
 
 describe('Profile', () => {

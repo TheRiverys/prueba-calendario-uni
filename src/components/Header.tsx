@@ -95,11 +95,21 @@ const Header = (): JSX.Element => {
     );
   };
 
+  const handleNavigateToDashboard = useCallback(() => {
+    setCurrentPage('dashboard');
+  }, [setCurrentPage]);
+
   return (
     <header className='border-border/70 bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 w-full border-b backdrop-blur'>
       <div className='app-shell flex h-16 items-center justify-between'>
         <div className='flex items-center gap-3'>
-          <div className='group flex cursor-pointer items-center gap-3'>
+          <div
+            className='group flex cursor-pointer items-center gap-3'
+            onClick={handleNavigateToDashboard}
+            role='button'
+            tabIndex={0}
+            aria-label='Ir a la página principal'
+          >
             <div className='relative'>
               <div className='border-primary/40 flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border transition-transform duration-300 group-hover:scale-105'>
                 {renderLogoContent()}

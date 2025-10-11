@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { ConfigModal } from './components/ConfigModal';
 import { Controls } from './components/Controls';
+import { CookieConsentBanner } from './components/gdpr/CookieConsentBanner';
+import { PrivacyPolicy } from './components/gdpr/PrivacyPolicy';
 import { Header } from './components/Header';
 import { HelpPage } from './components/help/HelpPage';
 import { Modal } from './components/Modal';
@@ -12,6 +14,7 @@ import { Toaster } from './components/ui/sonner';
 import { Views } from './components/Views';
 import { AppProvider } from './contexts/AppContext';
 import { useDeliveriesContext } from './contexts/deliveries/DeliveriesContext';
+import { GdprProvider } from './contexts/gdpr/GdprContext';
 import { usePreferencesContext } from './contexts/preferences/PreferencesContext';
 import { useScheduleContext } from './contexts/schedule/ScheduleContext';
 import { useSemesterContext } from './contexts/semester/SemesterContext';
@@ -19,6 +22,7 @@ import { AuthDialog } from './features/auth/components/AuthDialog';
 import { useAppTour } from './hooks/useAppTour';
 import { useConsoleClear } from './hooks/useConsoleClear';
 import { pickColorForSubject } from './utils/colors';
+import { trackUserAccess } from './utils/storage';
 
 const priorities: Array<{ value: 'low' | 'normal' | 'high'; label: string; color: string }> = [
   { value: 'low', label: 'Baja', color: 'bg-muted' },
@@ -29,6 +33,11 @@ const priorities: Array<{ value: 'low' | 'normal' | 'high'; label: string; color
 const AppContent: React.FC = () => {
   useConsoleClear();
   useAppTour();
+
+  // Registrar acceso de usuario único en analíticas al montar la aplicación
+  useEffect(() => {
+    trackUserAccess();
+  }, []);
 
   const { activeView, currentPage } = usePreferencesContext();
   const { semesterStart, setSemesterStart } = useSemesterContext();
@@ -81,6 +90,8 @@ const AppContent: React.FC = () => {
         <Profile />
       ) : currentPage === 'help' ? (
         <HelpPage />
+      ) : currentPage === 'privacy-policy' ? (
+        <PrivacyPolicy />
       ) : (
         <>
           <div className='app-shell mt-6'>
@@ -109,16 +120,19 @@ const AppContent: React.FC = () => {
       <ConfigModal />
       <AuthDialog />
       <FeedbackPanel />
+      <CookieConsentBanner />
     </div>
   );
 };
 
 const App: React.FC = () => {
   return (
-    <AppProvider>
-      <AppContent />
-      <Toaster />
-    </AppProvider>
+    <GdprProvider>
+      <AppProvider>
+        <AppContent />
+        <Toaster />
+      </AppProvider>
+    </GdprProvider>
   );
 };
 

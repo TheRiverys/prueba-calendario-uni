@@ -1,6 +1,8 @@
 import { useAuthContext } from '@/contexts/auth/AuthContext';
 import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext';
+import { gdprDataService } from '@/services/gdprDataService';
 
+import { PrivacySettings } from './gdpr/PrivacySettings';
 import { AccountDeletionSection } from './views/Profile/components/AccountDeletionSection';
 import { DeleteAccountModal } from './views/Profile/components/DeleteAccountModal';
 import { ProfileFeedback } from './views/Profile/components/ProfileFeedback';
@@ -73,6 +75,24 @@ const Profile = (): JSX.Element => {
             onDelete={requestAccountDeletion}
           />
         </div>
+      </div>
+
+      <div className='mt-8'>
+        <h2 className='mb-4 text-2xl font-bold text-gray-900 dark:text-white'>
+          Configuración de Privacidad (GDPR)
+        </h2>
+        <PrivacySettings
+          onExportData={async () => {
+            if (user?.id) {
+              await gdprDataService.downloadUserData(user.id);
+            }
+          }}
+          onDeleteData={async () => {
+            if (user?.id) {
+              await gdprDataService.deleteUserData(user.id);
+            }
+          }}
+        />
       </div>
 
       <ProfileFeedback status={status} />

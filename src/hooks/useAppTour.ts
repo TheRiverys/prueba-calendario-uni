@@ -6,11 +6,17 @@ const TOUR_COMPLETED_KEY = 'app-tour-completed';
 
 export const useAppTour = () => {
   useEffect(() => {
-    // Verificar si el tour ya fue completado
     const tourCompleted = localStorage.getItem(TOUR_COMPLETED_KEY);
-    // Solo mostrar el tour si no se ha completado antes
-    if (!tourCompleted) {
-      // Pequeño delay para asegurar que el DOM esté completamente cargado
+    if (tourCompleted) {
+      return;
+    }
+
+    const hasConsent = (): boolean => {
+      const value = `; ${document.cookie}`;
+      return value.includes('; cookie_consent=');
+    };
+
+    const startTour = () => {
       const timer = window.setTimeout(() => {
         const driverObj = driver({
           showProgress: true,
@@ -19,15 +25,12 @@ export const useAppTour = () => {
           prevBtnText: 'Anterior',
           doneBtnText: 'Entendido',
           progressText: '{{current}} de {{total}}',
-          // Permitir interacción con el elemento resaltado
           allowClose: true,
           animate: true,
           smoothScroll: true,
           stagePadding: 20,
           popoverOffset: 20,
-          // Evitar que el overlay bloquee clicks
           onDestroyStarted: () => {
-            // Marcar el tour como completado cuando se cierre
             localStorage.setItem(TOUR_COMPLETED_KEY, 'true');
             driverObj.destroy();
           },
@@ -108,12 +111,26 @@ export const useAppTour = () => {
             },
           ],
         });
-
         driverObj.drive();
       }, 1500);
-
       return () => window.clearTimeout(timer);
+    };
+
+    if (hasConsent()) {
+      return startTour();
     }
+
+    const onConsent = () => {
+      if (hasConsent()) {
+        startTour();
+        window.removeEventListener('consentChanged', onConsent);
+      }
+    };
+    window.addEventListener('consentChanged', onConsent);
+
+    return () => {
+      window.removeEventListener('consentChanged', onConsent);
+    };
   }, []);
 
   // Función para resetear el tour (útil para testing o soporte)

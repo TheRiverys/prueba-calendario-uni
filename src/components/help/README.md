@@ -22,41 +22,52 @@ help/
 ## 🎯 Componentes Principales
 
 ### `HelpPage.tsx`
+
 Componente principal que:
+
 - Gestiona el estado de secciones expandidas/colapsadas
 - Controla la navegación y scroll suave
 - Renderiza el layout con índice lateral fijo y contenido principal
 
 ### `TableOfContents.tsx`
+
 Índice de navegación lateral que:
+
 - Muestra la estructura jerárquica de secciones
 - Resalta la sección activa
 - Permite navegación rápida con scroll suave
 
 ### `SectionRenderer.tsx`
+
 Renderizador recursivo que:
+
 - Muestra secciones y subsecciones
 - Gestiona el estado de colapso/expansión
 - Mantiene la jerarquía visual
 
 ### `types.ts`
+
 Definiciones de tipos TypeScript:
+
 - `Section`: Interfaz para secciones de contenido
 - Incluye soporte para subsecciones anidadas
 
 ## 📝 Secciones de Contenido
 
 ### `IntroSection.tsx`
+
 - ¿Qué es el Calendario Universitario?
 - Inicio Rápido
 
 ### `MainFeaturesSection.tsx`
+
 - Gestión de Entregas
 - Vistas Disponibles
 - Configuración del Semestre
 - Gestión de Perfil
 
 ### `AIFeaturesSection.tsx`
+
 - Asistente de IA
 - Cómo obtener clave API de OpenAI
 - Configuración en la aplicación
@@ -65,6 +76,7 @@ Definiciones de tipos TypeScript:
 - Estadísticas generales
 
 ### `TipsAndAdvancedSection.tsx`
+
 - Consejos prácticos (organización y gestión del tiempo)
 - Características avanzadas (importación, sincronización, diseño responsivo)
 - Solución de problemas generales
@@ -126,4 +138,3 @@ export const allSections = [
 - Usar clases semánticas de Tailwind (`text-foreground`, `text-muted-foreground`)
 - Incluir `leading-relaxed` en párrafos para mejor legibilidad
 - Usar cajas con `bg-muted/30` para destacar información importante
-

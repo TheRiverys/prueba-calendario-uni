@@ -10,7 +10,7 @@ import {
 } from 'react';
 
 type ViewMode = 'list' | 'calendar' | 'gantt';
-type Page = 'dashboard' | 'profile' | 'help';
+type Page = 'dashboard' | 'profile' | 'help' | 'privacy-policy';
 type SortOption = 'algorithm' | 'subject' | 'date';
 type ThemeMode = 'light' | 'dark';
 
@@ -39,6 +39,39 @@ export const PreferencesProvider: FC<PreferencesProviderProps> = ({ children }) 
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
   const [sortBy, setSortBy] = useState<SortOption>('algorithm');
   const [theme, setTheme] = useState<ThemeMode>('light');
+
+  // Manejar rutas hash para navegación directa por URL
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.substring(2); // Remover el '#/'
+
+      switch (hash) {
+        case 'privacy-policy':
+          setCurrentPage('privacy-policy');
+          break;
+        case 'profile':
+          setCurrentPage('profile');
+          break;
+        case 'help':
+          setCurrentPage('help');
+          break;
+        case 'dashboard':
+        default:
+          setCurrentPage('dashboard');
+          break;
+      }
+    };
+
+    // Ejecutar al montar para manejar carga directa con hash
+    handleHashChange();
+
+    // Escuchar cambios en el hash
+    window.addEventListener('hashchange', handleHashChange);
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
