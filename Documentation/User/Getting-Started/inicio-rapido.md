@@ -38,6 +38,7 @@ Al abrir la aplicación por primera vez, verás:
 La aplicación ofrece **3 formas diferentes** de visualizar tus entregas:
 
 #### 📋 Vista Lista
+
 - **Ideal para**: Gestión detallada y filtros específicos
 - **Características**:
   - Tabla completa con todas las entregas
@@ -46,6 +47,7 @@ La aplicación ofrece **3 formas diferentes** de visualizar tus entregas:
   - Acciones rápidas (editar, eliminar, marcar completado)
 
 #### 📅 Vista Calendario
+
 - **Ideal para**: Visión mensual rápida
 - **Características**:
   - Calendario mensual completo
@@ -54,6 +56,7 @@ La aplicación ofrece **3 formas diferentes** de visualizar tus entregas:
   - Colores diferenciados por asignatura
 
 #### 📊 Vista Gantt
+
 - **Ideal para**: Planificación de proyectos largos
 - **Características**:
   - Diagrama de Gantt profesional
@@ -64,12 +67,14 @@ La aplicación ofrece **3 formas diferentes** de visualizar tus entregas:
 ### 4. Gestionar Entregas
 
 #### Acciones Disponibles:
+
 - ✅ **Marcar como completado**: Click en el checkbox o botón correspondiente
 - ✏️ **Editar entrega**: Click en el ícono de edición
 - 🗑️ **Eliminar entrega**: Click en el ícono de papelera
 - 🎨 **Cambiar colores**: Automático por asignatura, pero personalizable
 
 #### Estados de las Entregas:
+
 - **Pendiente**: Aún no completada (color normal)
 - **Completada**: Terminada (color verde claro)
 - **Vencida**: Fecha pasada y no completada (color rojo)
@@ -77,6 +82,7 @@ La aplicación ofrece **3 formas diferentes** de visualizar tus entregas:
 ### 5. Usar Estadísticas
 
 El panel superior muestra métricas importantes:
+
 - **Total de entregas**: Cantidad total registrada
 - **Próximas**: Entregas con deadline futuro
 - **Vencidas**: Entregas que ya pasaron la fecha límite
@@ -85,16 +91,19 @@ El panel superior muestra métricas importantes:
 ## 🔧 Consejos para Empezar
 
 ### Organización por Asignaturas:
+
 - Usa **nombres consistentes** para las asignaturas (ej: siempre "Matemáticas II")
 - Cada asignatura tendrá un **color único automático**
 - Puedes agrupar entregas relacionadas fácilmente
 
 ### Gestión de Prioridades:
+
 - **Alta**: Entregas críticas, exámenes finales
 - **Normal**: Trabajos regulares, prácticas
 - **Baja**: Lecturas opcionales, tareas menores
 
 ### Planificación Inteligente:
+
 - El algoritmo interno puede **sugerir horarios de estudio**
 - Considera usar la **vista Gantt** para proyectos largos
 - Marca entregas como completadas **inmediatamente** para mantener estadísticas precisas

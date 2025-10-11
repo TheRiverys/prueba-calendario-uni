@@ -7,6 +7,7 @@ Esta guía detallada explica cómo contribuir al proyecto Academic Suite, desde 
 ### Principios Rectores
 
 **Valores fundamentales**:
+
 - 🎓 **Enfoque estudiantil**: Siempre priorizar la experiencia del estudiante
 - 🔒 **Privacidad primero**: Protección estricta de datos personales
 - ♿ **Accesibilidad universal**: Diseño inclusivo para todos los usuarios
@@ -14,6 +15,7 @@ Esta guía detallada explica cómo contribuir al proyecto Academic Suite, desde 
 - 📚 **Documentación excelente**: Código y funcionalidades bien documentados
 
 **Compromisos de calidad**:
+
 - ✅ **Código revisado**: Todas las contribuciones requieren revisión
 - 🧪 **Tests incluidos**: Nueva funcionalidad debe incluir tests
 - 📋 **Cumple estándares**: ESLint, Prettier y convenciones del proyecto
@@ -24,6 +26,7 @@ Esta guía detallada explica cómo contribuir al proyecto Academic Suite, desde 
 ### 1. Configuración del Entorno
 
 #### Requisitos Previos
+
 ```bash
 # Node.js 18+ (LTS recomendado)
 node --version  # Debe mostrar 18.x.x o superior
@@ -39,6 +42,7 @@ git --version   # Cualquier versión reciente
 ```
 
 #### Fork y Clone
+
 ```bash
 # Fork el repositorio en GitHub primero
 
@@ -71,6 +75,7 @@ npm run lint
 ### Arquitectura General
 
 **Estructura recomendada**:
+
 ```
 src/
 ├── components/          # Componentes React organizados
@@ -87,12 +92,13 @@ src/
 ### Convenciones de Código
 
 #### Nombres y Estilos
+
 ```typescript
 // ✅ Componentes: PascalCase
-const CalendarView: React.FC<Props> = () => {}
+const CalendarView: React.FC<Props> = () => {};
 
 // ✅ Funciones/Hooks: camelCase
-const useDeliveries = () => {}
+const useDeliveries = () => {};
 
 // ✅ Constantes: SCREAMING_SNAKE_CASE
 const API_BASE_URL = 'https://api.example.com';
@@ -101,6 +107,7 @@ const API_BASE_URL = 'https://api.example.com';
 ```
 
 #### Imports Ordenados
+
 ```typescript
 // 1. React y librerías externas
 import React from 'react';
@@ -125,34 +132,42 @@ import { helperFunction } from '../utils/helpers';
 3. **Crear issue detallado** con plantilla específica
 
 **Plantilla recomendada**:
+
 ```markdown
 ## Descripción del Bug
+
 [Descripción clara y concisa]
 
 ## Pasos para Reproducir
+
 1. Paso 1
 2. Paso 2
 3. Paso 3
 
 ## Comportamiento Esperado
+
 [Qué debería pasar]
 
 ## Comportamiento Actual
+
 [Qué pasa realmente]
 
 ## Información del Entorno
+
 - Sistema Operativo:
 - Navegador:
 - Versión de la aplicación:
 - Otros detalles relevantes
 
 ## Capturas de Pantalla
+
 [Adjuntar imágenes si aplica]
 ```
 
 ### ✨ Sugerir Mejoras
 
 **Proceso estructurado**:
+
 1. **Definir problema claramente**
 2. **Proponer solución específica**
 3. **Considerar impacto en usuarios**
@@ -163,11 +178,13 @@ import { helperFunction } from '../utils/helpers';
 **Proceso completo**:
 
 #### 1. Planificación
+
 - **Crear issue** describiendo la funcionalidad
 - **Discutir enfoque** con mantenedores
 - **Definir alcance** (MVP vs versión completa)
 
 #### 2. Desarrollo
+
 ```bash
 # Crear rama específica
 git checkout -b feature/nueva-funcionalidad
@@ -183,12 +200,14 @@ npm run lint
 ```
 
 #### 3. Testing
+
 - **Tests unitarios** para funciones puras
 - **Tests de componentes** para UI
 - **Tests de integración** para flujos completos
 - **Tests manuales** para validar UX
 
 #### 4. Documentación
+
 - **Comentarios en código** claros y útiles
 - **Documentación de usuario** si aplica nueva funcionalidad
 - **Ejemplos de uso** cuando corresponda
@@ -198,6 +217,7 @@ npm run lint
 ### Ramas y Commits
 
 **Estrategia de ramas**:
+
 ```bash
 # Ramas principales
 main           # Código estable
@@ -210,6 +230,7 @@ hotfix/problema-critico         # Correcciones urgentes
 ```
 
 **Commits convencionales**:
+
 ```bash
 # Formato requerido
 tipo(scope): descripción corta
@@ -224,6 +245,7 @@ test(utils): añadir tests para función de colores
 ### Proceso de Pull Request
 
 #### 1. Preparación
+
 ```bash
 # Asegurar rama actualizada
 git fetch upstream
@@ -241,6 +263,7 @@ git push origin feature/tu-funcionalidad
 #### 2. Crear Pull Request
 
 **Información requerida**:
+
 - ✅ **Título claro** y descriptivo
 - ✅ **Descripción detallada** del problema y solución
 - ✅ **Referencia al issue** relacionado (#123)
@@ -248,24 +271,30 @@ git push origin feature/tu-funcionalidad
 - ✅ **Tests incluidos** o explicación de por qué no aplican
 
 **Plantilla recomendada**:
+
 ```markdown
 ## Descripción
+
 [Problema que resuelve y solución implementada]
 
 ## Cambios Realizados
+
 - Cambio 1: descripción específica
 - Cambio 2: descripción específica
 - Cambio 3: descripción específica
 
 ## Tests Añadidos
+
 - [ ] Test unitario para nueva función
 - [ ] Test de integración para flujo completo
 - [ ] Test manual realizado exitosamente
 
 ## Capturas de Pantalla
+
 [Antes/Después si aplica]
 
 ## Issues Relacionados
+
 Closes #123
 Relacionado con #456
 ```
@@ -273,6 +302,7 @@ Relacionado con #456
 #### 3. Revisión y Aprobación
 
 **Proceso de revisión**:
+
 1. **Revisión automática** (GitHub Actions)
 2. **Revisión por pares** (mantenedores del proyecto)
 3. **Comentarios y sugerencias** para mejoras
@@ -283,6 +313,7 @@ Relacionado con #456
 ### Tipos de Tests
 
 #### Unit Tests
+
 ```typescript
 // Ejemplo: src/utils/__tests__/colors.test.ts
 describe('pickColorForSubject', () => {
@@ -296,6 +327,7 @@ describe('pickColorForSubject', () => {
 ```
 
 #### Component Tests
+
 ```typescript
 // Ejemplo: src/components/__tests__/Button.test.tsx
 describe('Button Component', () => {
@@ -307,6 +339,7 @@ describe('Button Component', () => {
 ```
 
 #### Integration Tests
+
 ```typescript
 // Ejemplo: src/__tests__/views/CalendarView.test.tsx
 describe('Calendar View Integration', () => {
@@ -338,7 +371,8 @@ npm run test CalendarView
 ### Documentación de Código
 
 **Comentarios efectivos**:
-```typescript
+
+````typescript
 /**
  * Calcula el color óptimo para una asignatura considerando colores existentes.
  *
@@ -358,11 +392,12 @@ export const pickColorForSubject = (
 ): string => {
   // Implementación...
 };
-```
+````
 
 ### Documentación de Usuario
 
 **Para nuevas funcionalidades**:
+
 1. **Crear guía específica** en `/Documentation/User/`
 2. **Actualizar guía de inicio rápido** si aplica
 3. **Añadir ejemplos prácticos** en `/Documentation/Examples/`
@@ -373,12 +408,14 @@ export const pickColorForSubject = (
 ### Consideraciones Especiales
 
 **Para funcionalidades nuevas**:
+
 - 🔐 **Revisión de seguridad** obligatoria
 - 📋 **Impacto en privacidad** evaluado
 - 🧪 **Tests de seguridad** incluidos
 - 📚 **Documentación de permisos** clara
 
 **Ejemplos críticos**:
+
 - ✅ **Autenticación**: Siempre revisar implementación de auth
 - ✅ **Almacenamiento**: Verificar políticas RLS en Supabase
 - ✅ **Datos sensibles**: Encriptación adecuada
@@ -396,6 +433,7 @@ export const pickColorForSubject = (
 ### Mantenimiento Continuo
 
 **Responsabilidades del contribuidor**:
+
 - 🔍 **Monitorear issues** relacionados con tu contribución
 - 🐛 **Corregir bugs** reportados en tu código
 - 📚 **Mantener documentación** actualizada

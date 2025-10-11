@@ -7,10 +7,12 @@ Esta guía proporciona soluciones detalladas para los problemas más frecuentes 
 ### Error: "Cannot resolve module"
 
 **Síntomas**:
+
 - Importaciones fallidas durante instalación
 - Mensajes como `Cannot resolve module 'react'` o módulos similares
 
 **Causas comunes**:
+
 1. **Dependencias corruptas**
 2. **Versión de Node.js incompatible**
 3. **Cache de npm dañado**
@@ -18,6 +20,7 @@ Esta guía proporciona soluciones detalladas para los problemas más frecuentes 
 **Soluciones**:
 
 #### Solución 1: Limpiar cache y reinstalar
+
 ```bash
 # Limpiar todos los caches
 npm cache clean --force
@@ -28,6 +31,7 @@ npm install
 ```
 
 #### Solución 2: Verificar versión de Node.js
+
 ```bash
 # Verificar versión actual
 node --version
@@ -39,6 +43,7 @@ nvm use 18
 ```
 
 #### Solución 3: Verificar integridad de archivos
+
 ```bash
 # Verificar que package.json no tiene errores de sintaxis
 cat package.json | jq .
@@ -49,12 +54,14 @@ cat package.json | jq .
 ### Error: "Port already in use"
 
 **Síntomas**:
+
 - `Error: listen EADDRINUSE: address already in use :::3000`
 - Servidor de desarrollo no inicia
 
 **Soluciones**:
 
 #### Solución 1: Encontrar y matar proceso
+
 ```bash
 # Encontrar proceso usando el puerto (Linux/macOS)
 lsof -ti:3000
@@ -67,6 +74,7 @@ PORT=3001 npm run dev
 ```
 
 #### Solución 2: Reiniciar servicios (Windows)
+
 ```bash
 # Abrir administrador de tareas
 # Buscar procesos de Node.js y terminarlos
@@ -76,10 +84,12 @@ PORT=3001 npm run dev
 ### Error: "Supabase connection failed"
 
 **Síntomas**:
+
 - Aplicación no puede conectar con la base de datos
 - Errores de autenticación o consultas fallidas
 
 **Causas comunes**:
+
 1. **Variables de entorno incorrectas**
 2. **Proyecto Supabase mal configurado**
 3. **Políticas RLS demasiado restrictivas**
@@ -87,6 +97,7 @@ PORT=3001 npm run dev
 **Soluciones**:
 
 #### Solución 1: Verificar variables de entorno
+
 ```bash
 # Verificar archivo .env
 cat .env
@@ -102,6 +113,7 @@ curl -H "apikey: $VITE_SUPABASE_ANON_KEY" "$VITE_SUPABASE_URL/rest/v1/"
 #### Solución 2: Configurar políticas RLS correctamente
 
 **En Supabase Dashboard → SQL Editor**:
+
 ```sql
 -- Ver políticas actuales
 SELECT * FROM pg_policies WHERE tablename = 'deliveries';
@@ -119,10 +131,12 @@ CREATE POLICY "Users can access own deliveries" ON deliveries
 ### Entregas no se guardan correctamente
 
 **Síntomas**:
+
 - Datos se pierden al recargar la página
 - Operaciones CRUD fallan silenciosamente
 
 **Causas comunes**:
+
 1. **Usuario no autenticado**
 2. **Políticas RLS bloqueando operaciones**
 3. **Errores de red o timeout**
@@ -130,12 +144,14 @@ CREATE POLICY "Users can access own deliveries" ON deliveries
 **Soluciones paso a paso**:
 
 1. **Verificar autenticación**:
+
    ```typescript
    // En consola del navegador
    console.log('Usuario autenticado:', !!currentUser);
    ```
 
 2. **Verificar políticas RLS**:
+
    ```sql
    -- En Supabase Dashboard
    SELECT * FROM deliveries WHERE user_id = auth.uid();
@@ -149,11 +165,13 @@ CREATE POLICY "Users can access own deliveries" ON deliveries
 ### Problemas de rendimiento
 
 **Síntomas**:
+
 - Aplicación lenta o congelada
 - Carga excesiva del procesador
 - Memoria consumiéndose constantemente
 
 **Causas comunes**:
+
 1. **Re-renders excesivos**
 2. **Memory leaks en componentes**
 3. **Consultas ineficientes a Supabase**
@@ -161,6 +179,7 @@ CREATE POLICY "Users can access own deliveries" ON deliveries
 **Soluciones**:
 
 #### Profiling de React
+
 ```typescript
 // En desarrollo, usar React DevTools Profiler
 // 1. Instalar React DevTools
@@ -169,6 +188,7 @@ CREATE POLICY "Users can access own deliveries" ON deliveries
 ```
 
 #### Optimización de consultas
+
 ```typescript
 // Antes (posiblemente ineficiente)
 const { data } = await supabase.from('deliveries').select('*');
@@ -184,11 +204,13 @@ const { data } = await supabase
 ### Problemas de colores automáticos
 
 **Síntomas**:
+
 - Colores no se asignan correctamente por asignatura
 - Múltiples asignaturas tienen el mismo color
 - Colores poco accesibles o difíciles de distinguir
 
 **Causas comunes**:
+
 1. **Algoritmo de colores con conflictos**
 2. **Datos corruptos en localStorage**
 3. **Límite de colores alcanzado**
@@ -196,6 +218,7 @@ const { data } = await supabase
 **Soluciones**:
 
 #### Resetear colores manualmente
+
 ```typescript
 // En consola del navegador
 localStorage.removeItem('subjectColors');
@@ -203,6 +226,7 @@ location.reload();
 ```
 
 #### Verificar algoritmo de colores
+
 ```typescript
 // El algoritmo está en src/utils/colors.ts
 // Verificar función pickColorForSubject
@@ -211,6 +235,7 @@ console.log(pickColorForSubject('Nueva Asignatura', []));
 ```
 
 #### Consejos de uso
+
 - Usa **nombres consistentes** para asignaturas (ej: siempre "Matemáticas II")
 - El algoritmo selecciona colores automáticamente al crear la primera entrega
 - Más de **20 colores únicos** disponibles en la paleta
@@ -220,10 +245,12 @@ console.log(pickColorForSubject('Nueva Asignatura', []));
 ### Configuración del algoritmo no se aplica
 
 **Síntomas**:
+
 - Cambios en configuración no afectan el comportamiento
 - Valores por defecto se mantienen a pesar de cambios
 
 **Causas comunes**:
+
 1. **Cache de configuración no limpiado**
 2. **Usuario no autenticado (configuración por usuario)**
 3. **Errores de validación silenciosos**
@@ -231,6 +258,7 @@ console.log(pickColorForSubject('Nueva Asignatura', []));
 **Soluciones**:
 
 1. **Verificar configuración activa**:
+
    ```typescript
    // En consola del navegador
    import { useConfig } from '@/contexts/config/ConfigContext';
@@ -248,11 +276,13 @@ console.log(pickColorForSubject('Nueva Asignatura', []));
 ### Problemas con temas oscuros
 
 **Síntomas**:
+
 - Tema oscuro no se aplica correctamente
 - Algunos componentes quedan con tema claro
 - Problemas de contraste o legibilidad
 
 **Causas comunes**:
+
 1. **Configuración CSS incorrecta**
 2. **Componentes sin soporte para tema oscuro**
 3. **Sistema operativo con configuración especial**
@@ -260,6 +290,7 @@ console.log(pickColorForSubject('Nueva Asignatura', []));
 **Soluciones**:
 
 1. **Verificar configuración de tema**:
+
    ```css
    /* En src/index.css */
    :root {
@@ -282,10 +313,12 @@ console.log(pickColorForSubject('Nueva Asignatura', []));
 ### Build falla en producción
 
 **Síntomas**:
+
 - `npm run build` termina con errores
 - Aplicación funciona en desarrollo pero no en producción
 
 **Causas comunes**:
+
 1. **Variables de entorno no configuradas**
 2. **Dependencias de desarrollo incluidas en producción**
 3. **Configuración de Vite incorrecta**
@@ -293,6 +326,7 @@ console.log(pickColorForSubject('Nueva Asignatura', []));
 **Soluciones**:
 
 #### Verificar variables de entorno
+
 ```bash
 # Crear .env.production con variables reales
 echo "VITE_SUPABASE_URL=https://tu-proyecto.supabase.co" > .env.production
@@ -300,25 +334,28 @@ echo "VITE_SUPABASE_ANON_KEY=tu-clave-real" >> .env.production
 ```
 
 #### Verificar configuración de Vite
+
 ```typescript
 // vite.config.ts debe excluir dependencias de desarrollo
 export default defineConfig({
   build: {
     rollupOptions: {
       external: ['vite', 'vitest'], // Excluir herramientas de desarrollo
-    }
-  }
+    },
+  },
 });
 ```
 
 ### Problemas de autenticación en producción
 
 **Síntomas**:
+
 - Usuarios no pueden iniciar sesión
 - Sesiones se pierden frecuentemente
 - Errores de CORS o políticas de seguridad
 
 **Causas comunes**:
+
 1. **Configuración de dominio incorrecta en Supabase**
 2. **HTTPS no configurado correctamente**
 3. **Políticas de seguridad del navegador**
@@ -331,6 +368,7 @@ export default defineConfig({
    - Configurar redirect URLs
 
 2. **Verificar configuración HTTPS**:
+
    ```bash
    # Probar conexión segura
    curl -I https://tu-dominio.com
@@ -343,11 +381,13 @@ export default defineConfig({
 ### Datos se pierden o no sincronizan
 
 **Síntomas**:
+
 - Entregas aparecen y desaparecen
 - Datos diferentes entre sesiones
 - Sincronización lenta o fallida
 
 **Causas comunes**:
+
 1. **Problemas de conexión a Supabase**
 2. **localStorage corrupto o lleno**
 3. **Race conditions en operaciones concurrentes**
@@ -355,18 +395,23 @@ export default defineConfig({
 **Soluciones**:
 
 #### Diagnosticar problemas de sincronización
+
 ```typescript
 // En consola del navegador
 // Verificar estado de conexión
 console.log('Online:', navigator.onLine);
 
 // Verificar datos en localStorage
-console.log('Datos locales:', JSON.parse(localStorage.getItem('deliveries') || '[]'));
+console.log(
+  'Datos locales:',
+  JSON.parse(localStorage.getItem('deliveries') || '[]')
+);
 
 // Verificar datos remotos (si tienes acceso a Supabase)
 ```
 
 #### Limpiar datos corruptos
+
 ```typescript
 // Backup de datos actuales
 const backup = localStorage.getItem('deliveries');
@@ -382,11 +427,13 @@ location.reload();
 ### Problemas de importación de archivos
 
 **Síntomas**:
+
 - Archivos Excel/CSV no se importan correctamente
 - Datos mal formateados o campos vacíos
 - Errores de validación durante importación
 
 **Causas comunes**:
+
 1. **Formato de archivo incompatible**
 2. **Datos mal estructurados**
 3. **Límite de tamaño excedido**
@@ -394,6 +441,7 @@ location.reload();
 **Soluciones**:
 
 1. **Verificar formato esperado**:
+
    ```typescript
    // El formato esperado está documentado en src/utils/importers.ts
    // Columnas requeridas: subject, name, dueDate
@@ -401,6 +449,7 @@ location.reload();
    ```
 
 2. **Validar archivo antes de importar**:
+
    ```typescript
    // Usar el validador incluido
    import { validateImportFile } from '@/utils/importers';
@@ -414,16 +463,19 @@ location.reload();
 ### Herramientas de Debugging
 
 #### React DevTools
+
 - **Profiler**: Identificar re-renders excesivos
 - **Components**: Inspeccionar estado de componentes
 - **Profiler**: Medir performance de renders
 
 #### Network Tab (DevTools)
+
 - **XHR/Fetch**: Ver todas las peticiones a Supabase
 - **Response**: Ver datos reales recibidos
 - **Timing**: Identificar cuellos de botella de red
 
 #### Console Logging Estratégico
+
 ```typescript
 // Logging estructurado para debugging
 const debugLog = (context: string, data: any) => {
@@ -439,11 +491,13 @@ useEffect(() => {
 ### Logs de Supabase
 
 **Ver logs en tiempo real**:
+
 1. **Supabase Dashboard** → Project Settings → Database
 2. **Logs** → Seleccionar tabla específica
 3. **Filtrar por operaciones** (INSERT, UPDATE, DELETE)
 
 **Queries útiles para debugging**:
+
 ```sql
 -- Ver todas las entregas de un usuario
 SELECT * FROM deliveries WHERE user_id = 'user-id-aqui' ORDER BY created_at DESC;
@@ -481,16 +535,19 @@ SELECT * FROM postgres_log WHERE error_severity = 'ERROR' ORDER BY log_time DESC
 ### Problemas que requieren intervención:
 
 #### Nivel Bajo (Usuario puede resolver):
+
 - Problemas de instalación básicos
 - Configuración inicial
 - Errores de uso común
 
 #### Nivel Medio (Desarrollador puede resolver):
+
 - Bugs funcionales menores
 - Problemas de performance
 - Errores de datos específicos
 
 #### Nivel Alto (Requiere desarrollador senior):
+
 - Problemas arquitectónicos
 - Bugs críticos de seguridad
 - Problemas de infraestructura

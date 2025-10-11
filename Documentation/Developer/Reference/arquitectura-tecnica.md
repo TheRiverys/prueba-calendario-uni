@@ -33,17 +33,20 @@ Esta sección documenta la arquitectura técnica completa de Academic Suite, inc
 ## 🛠️ Tecnologías Principales
 
 ### Frontend Framework
+
 - **React 19.2.0**: Framework principal con hooks modernos
 - **TypeScript 5.9.3**: Tipado estático completo
 - **Vite 7.1.9**: Build tool y servidor de desarrollo
 
 ### Estilos y UI
+
 - **Tailwind CSS 4.1.14**: Framework de utilidades CSS
 - **Radix UI**: Componentes accesibles y headless
   - @radix-ui/react-dialog, @radix-ui/react-select, etc.
 - **Lucide React 0.545.0**: Iconografía consistente
 
 ### Backend y Base de Datos
+
 - **Supabase 2.74.0**: Backend como servicio
   - PostgreSQL como base de datos
   - Autenticación integrada
@@ -51,10 +54,12 @@ Esta sección documenta la arquitectura técnica completa de Academic Suite, inc
   - Real-time subscriptions
 
 ### Inteligencia Artificial
+
 - **OpenAI API**: Integración para funcionalidades avanzadas
 - **AI SDK**: Librería oficial para integración con OpenAI
 
 ### Desarrollo y Testing
+
 - **Vitest 3.2.4**: Framework de testing moderno
 - **ESLint 9.37.0**: Linting con reglas estrictas
 - **Prettier 3.6.2**: Formateo automático de código
@@ -96,33 +101,37 @@ src/features/auth/
 ### Jerarquía de Componentes
 
 #### Nivel 1: Layout Components
+
 ```typescript
 // Componentes que definen la estructura general
-- App.tsx                // Componente raíz de la aplicación
-- Header.tsx             // Cabecera con navegación y acciones
-- Views.tsx              // Coordinador de las diferentes vistas
+-App.tsx - // Componente raíz de la aplicación
+  Header.tsx - // Cabecera con navegación y acciones
+  Views.tsx; // Coordinador de las diferentes vistas
 ```
 
 #### Nivel 2: View Components
+
 ```typescript
 // Vistas especializadas para diferentes representaciones
-- CalendarView.tsx       // Vista de calendario mensual
-- GanttView.tsx          // Diagrama de Gantt
-- DeliveryList.tsx       // Lista tabular de entregas
+-CalendarView.tsx - // Vista de calendario mensual
+  GanttView.tsx - // Diagrama de Gantt
+  DeliveryList.tsx; // Lista tabular de entregas
 ```
 
 #### Nivel 3: UI Components
+
 ```typescript
 // Componentes reutilizables de bajo nivel
-- Button.tsx             // Botón básico con variantes
-- Input.tsx              // Campo de texto
-- Select.tsx             // Selector desplegable
-- Modal.tsx              // Ventana modal
+-Button.tsx - // Botón básico con variantes
+  Input.tsx - // Campo de texto
+  Select.tsx - // Selector desplegable
+  Modal.tsx; // Ventana modal
 ```
 
 ### Sistema de Diseño
 
 **Basado en Tailwind CSS 4**:
+
 - **Design Tokens**: Colores, espaciado, tipografía definidos
 - **Responsive First**: Diseño móvil primero
 - **Dark Mode**: Soporte automático según sistema
@@ -153,10 +162,11 @@ src/features/auth/
 ### Contextos Especializados
 
 #### DeliveriesContext
+
 ```typescript
 interface DeliveriesContextType {
-  deliveries: Delivery[];           // Lista completa de entregas
-  subjects: string[];               // Asignaturas únicas
+  deliveries: Delivery[]; // Lista completa de entregas
+  subjects: string[]; // Asignaturas únicas
   addDelivery: (delivery: Omit<Delivery, 'id'>) => void;
   updateDelivery: (id: string, updates: Partial<Delivery>) => void;
   deleteDelivery: (id: string) => void;
@@ -165,11 +175,12 @@ interface DeliveriesContextType {
 ```
 
 #### ScheduleContext
+
 ```typescript
 interface ScheduleContextType {
-  studySchedule: StudySchedule[];   // Planificación calculada
-  calculateSchedule: () => void;    // Ejecutar algoritmo
-  stats: StudyStats;                // Estadísticas calculadas
+  studySchedule: StudySchedule[]; // Planificación calculada
+  calculateSchedule: () => void; // Ejecutar algoritmo
+  stats: StudyStats; // Estadísticas calculadas
 }
 ```
 
@@ -178,12 +189,14 @@ interface ScheduleContextType {
 ### Estrategia de Persistencia
 
 #### Supabase (Datos Remotos)
+
 - **Autenticación**: Gestión de usuarios y sesiones
 - **Base de datos**: PostgreSQL con políticas RLS
 - **Storage**: Archivos y backups
 - **Real-time**: Sincronización automática
 
 #### Local Storage (Datos Locales)
+
 - **Preferencias**: Configuración del usuario
 - **Cache**: Datos frecuentemente accedidos
 - **Offline**: Funcionalidad básica sin conexión
@@ -191,6 +204,7 @@ interface ScheduleContextType {
 ### Políticas de Seguridad (RLS)
 
 **Tablas principales**:
+
 - `deliveries`: Solo el usuario propietario puede acceder
 - `user_configs`: Configuración personal por usuario
 - `semester_starts`: Información académica privada
@@ -241,6 +255,7 @@ src/services/
    - Ajustes según modo seleccionado
 
 **Modos disponibles**:
+
 - **Normal**: Distribución equilibrada
 - **Estricto**: Sin solapamientos, corte preciso
 - **Ventana deslizante**: Asignación dinámica
@@ -250,11 +265,13 @@ src/services/
 ### Implementación GDPR
 
 **Componentes específicos**:
+
 - `CookieConsentBanner`: Banner de consentimiento inicial
 - `PrivacySettings`: Panel de control de privacidad
 - `GdprRightsCard`: Información sobre derechos del usuario
 
 **Características técnicas**:
+
 - **Consentimiento granular**: Por tipo de cookie y funcionalidad
 - **Derecho al olvido**: Eliminación completa de datos
 - **Portabilidad**: Exportación de datos personales
@@ -292,12 +309,14 @@ src/
 ### Estrategia de Build
 
 **Comandos de producción**:
+
 ```bash
 npm run build          # Build optimizado para producción
 npm run preview        # Vista previa local de producción
 ```
 
 **Optimizaciones aplicadas**:
+
 - ✅ Tree shaking automático
 - ✅ Code splitting por rutas
 - ✅ Minificación y compresión
@@ -306,6 +325,7 @@ npm run preview        # Vista previa local de producción
 ### Configuración de Producción
 
 **Variables de entorno críticas**:
+
 - `VITE_SUPABASE_URL`: URL del proyecto Supabase
 - `VITE_SUPABASE_ANON_KEY`: Clave pública de acceso
 - `VITE_OPENAI_API_KEY`: API key para funcionalidades IA (opcional)
@@ -315,16 +335,19 @@ npm run preview        # Vista previa local de producción
 ### Técnicas Implementadas
 
 #### Renderizado
+
 - **Lazy Loading**: Carga diferida de componentes pesados
 - **Suspense**: Indicadores de carga elegantes
 - **Memoización**: Componentes optimizados con React.memo
 
 #### Estado
+
 - **Context Selectors**: Subscripciones granulares a cambios
 - **Local State**: Estado aislado donde es apropiado
 - **Immutable Updates**: Actualizaciones predecibles
 
 #### Bundle
+
 - **Code Splitting**: Separación automática por rutas
 - **Dynamic Imports**: Carga bajo demanda
 - **Tree Shaking**: Eliminación de código no utilizado
@@ -336,6 +359,7 @@ npm run preview        # Vista previa local de producción
 **Archivo**: `eslint.config.js`
 
 **Reglas estrictas habilitadas**:
+
 - `no-console`, `no-debugger`: Prohibición absoluta
 - `react-hooks/exhaustive-deps`: Verificación estricta de dependencias
 - Límites de complejidad y longitud de funciones
@@ -345,6 +369,7 @@ npm run preview        # Vista previa local de producción
 **Archivo**: `.prettierrc`
 
 **Formato estricto**:
+
 - Comillas simples obligatorias
 - Punto y coma obligatorio
 - Indentación de 2 espacios
@@ -353,6 +378,7 @@ npm run preview        # Vista previa local de producción
 ### Husky y Pre-commit Hooks
 
 **Configuración automática**:
+
 - Pre-commit: ESLint + Prettier
 - Pre-push: Tests + build verification
 - Mensajes de commit validados
@@ -369,12 +395,14 @@ npm run preview        # Vista previa local de producción
 ### Convenciones de Código
 
 #### Nombres
+
 - **Componentes**: PascalCase (`CalendarView`)
 - **Funciones/Hooks**: camelCase (`useDeliveries`)
 - **Constantes**: SCREAMING_SNAKE_CASE (`API_BASE_URL`)
 - **Archivos**: kebab-case (`calendar-view.tsx`)
 
 #### Imports
+
 - **Orden específico**: React → Librerías → Relativos
 - **Agrupación lógica**: Separados por líneas en blanco
 - **Paths absolutos**: Uso de `@/` para paths desde src/

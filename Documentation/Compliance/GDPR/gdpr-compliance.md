@@ -10,7 +10,9 @@
 ## 🎯 Funcionalidades GDPR Implementadas
 
 ### Gestión de Cookies
+
 **Implementación básica**:
+
 - ✅ **Banner de consentimiento** para cookies no esenciales
 - ✅ **Gestión granular** de categorías de cookies (esenciales, analíticas, funcionales)
 - ✅ **Consentimiento revocable** en cualquier momento desde configuración de privacidad
@@ -19,6 +21,7 @@
 ### Derechos del Usuario Implementados
 
 **Funcionalidades disponibles**:
+
 - ✅ **Exportación de datos** en formato JSON estructurado (derecho de acceso)
 - ✅ **Eliminación completa** de cuenta y datos asociados (derecho al olvido)
 - ✅ **Gestión de preferencias** de privacidad y cookies
@@ -27,13 +30,16 @@
 ## 📋 Datos Tratados y Finalidades
 
 ### Datos Personales Recopilados
+
 **Según implementación actual**:
+
 - 📧 **Correo electrónico** (para autenticación y comunicación)
 - 📚 **Datos académicos** (asignaturas, entregas, fechas límite)
 - ⚙️ **Configuración personal** (preferencias de interfaz y algoritmo)
 - 🍪 **Consentimientos de cookies** (esenciales, analíticas, funcionales)
 
 ### Finalidades del Tratamiento
+
 - **Gestión académica**: Organización y seguimiento de entregas
 - **Personalización**: Adaptación de la interfaz al usuario
 - **Mejora del servicio**: Análisis anónimo de uso para mejoras
@@ -41,6 +47,7 @@
 ## 🔒 Medidas de Seguridad Básicas
 
 ### Seguridad Técnica Implementada
+
 - 🔐 **Autenticación segura** mediante Supabase Auth
 - 🔒 **Comunicaciones HTTPS** obligatorias
 - 🛡️ **Validación de datos** en formularios
@@ -49,10 +56,12 @@
 ## 📞 Información de Contacto
 
 **Para consultas sobre privacidad**:
+
 - 💬 **Sistema de feedback** integrado en la aplicación
 - 📧 **Contacto general**: Pendiente definición de dirección específica
 
 **Autoridad de Control**:
+
 - 🇪🇸 Agencia Española de Protección de Datos (AEPD)
 - 🇪🇺 Autoridad Europea de Protección de Datos (EDPB)
 

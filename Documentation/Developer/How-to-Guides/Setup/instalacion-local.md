@@ -5,6 +5,7 @@ Esta guía completa te ayudará a configurar el entorno de desarrollo para Acade
 ## 📋 Requisitos Previos
 
 ### Hardware Mínimo Recomendado
+
 - **Procesador**: 2 núcleos o superior
 - **Memoria RAM**: 4 GB mínimo, 8 GB recomendado
 - **Espacio en disco**: 2 GB disponible
@@ -13,6 +14,7 @@ Esta guía completa te ayudará a configurar el entorno de desarrollo para Acade
 ### Software Requerido
 
 #### Node.js
+
 - **Versión**: 18.x o superior (LTS recomendado)
 - **Instalación**: [nodejs.org](https://nodejs.org/)
 
@@ -23,6 +25,7 @@ npm --version
 ```
 
 #### Git
+
 - **Versión**: 2.30.0 o superior
 - **Instalación**: [git-scm.com](https://git-scm.com/)
 
@@ -32,6 +35,7 @@ git --version
 ```
 
 #### Editor de Código Recomendado
+
 - **Visual Studio Code** con extensiones:
   - ES7+ React/Redux/React-Native snippets
   - Prettier - Code formatter
@@ -63,6 +67,7 @@ npm list --depth=0
 ```
 
 **Dependencias clave instaladas**:
+
 - **React 19.2.0**: Framework principal
 - **TypeScript 5.9.3**: Tipado estático
 - **Vite 7.1.9**: Servidor de desarrollo y bundler
@@ -92,6 +97,7 @@ VITE_OPENAI_API_KEY=tu_openai_api_key  # Opcional para funciones IA
    - Copia las credenciales (URL y anon key)
 
 2. **Configurar base de datos**:
+
    ```sql
    -- Ejecutar en el SQL Editor de Supabase
    -- Los esquemas están disponibles en /database-schema.sql y /supabase-schema.sql
@@ -141,6 +147,7 @@ npm run format
 ### Acceso a la Aplicación
 
 1. **Iniciar servidor de desarrollo**:
+
    ```bash
    npm run dev
    ```
@@ -158,6 +165,7 @@ npm run format
 ## 🐛 Solución de Problemas Comunes
 
 ### Error: "Cannot resolve module"
+
 ```bash
 # Limpiar cache de npm y reinstalar
 rm -rf node_modules package-lock.json
@@ -165,6 +173,7 @@ npm install
 ```
 
 ### Error: "Port already in use"
+
 ```bash
 # Encontrar proceso usando el puerto
 lsof -ti:3000
@@ -177,6 +186,7 @@ PORT=3001 npm run dev
 ```
 
 ### Error: "Supabase connection failed"
+
 ```bash
 # Verificar variables de entorno
 cat .env
@@ -186,6 +196,7 @@ cat .env
 ```
 
 ### Error: "Build failed"
+
 ```bash
 # Limpiar cache de Vite
 rm -rf dist .vite node_modules/.vite
@@ -199,6 +210,7 @@ npm run build
 ### TypeScript
 
 El proyecto utiliza configuración estricta de TypeScript:
+
 - **Archivo**: `tsconfig.json`
 - **Características**:
   - Stric mode habilitado
@@ -208,6 +220,7 @@ El proyecto utiliza configuración estricta de TypeScript:
 ### ESLint y Prettier
 
 **Configuración automática**:
+
 ```bash
 # Pre-commit hooks configurados con Husky
 # Se ejecutan automáticamente antes de cada commit
@@ -218,6 +231,7 @@ npm run format    # Formatea código
 ```
 
 **Reglas principales**:
+
 - ✅ Comillas simples obligatorias
 - ✅ Punto y coma obligatorio
 - ✅ Indentación de 2 espacios
@@ -226,6 +240,7 @@ npm run format    # Formatea código
 ### Tailwind CSS 4
 
 **Configuración moderna**:
+
 - Archivo: `tailwind.config.js` (si existe)
 - CSS principal: `src/index.css`
 - Soporte para temas oscuros integrado
@@ -246,6 +261,7 @@ npm run test:watch
 ```
 
 **Tecnologías utilizadas**:
+
 - **Vitest**: Framework de testing moderno
 - **React Testing Library**: Utilidades para testing de componentes React
 - **jsdom**: Entorno DOM para pruebas
@@ -271,6 +287,7 @@ npm run build
 ### Despliegue Recomendado
 
 **Opciones recomendadas**:
+
 - **Vercel**: Despliegue automático desde Git
 - **Netlify**: Integración con GitHub/GitLab
 - **GitHub Pages**: Opción gratuita para proyectos open source
@@ -278,6 +295,7 @@ npm run build
 ## 🔒 Seguridad y Privacidad
 
 ### Variables de Entorno Sensibles
+
 ```bash
 # NUNCA commitear estas variables
 .env.local        # Variables locales
@@ -286,6 +304,7 @@ dist/            # Build de producción
 ```
 
 ### Configuración de CORS
+
 - Configurar apropiadamente en Supabase
 - Revisar políticas de seguridad del hosting
 

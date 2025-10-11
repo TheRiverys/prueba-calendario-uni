@@ -9,6 +9,7 @@ El algoritmo actual se basa en una arquitectura de **tres fases principales** im
 ## 🏗️ Arquitectura Técnica Detallada
 
 ### Estructura de Archivos
+
 ```
 src/features/auth/study-planner/
 ├── services/
@@ -35,58 +36,75 @@ El algoritmo sigue una secuencia estricta de **4 etapas principales**:
 ### Variables Principales (Implementación Actual)
 
 #### Parámetros de Configuración (src/utils/config.ts)
+
 ```typescript
 interface ConfigSettings {
-  baseStudyDays: number;           // Valor por defecto: 4 días
-  minStudyTime: number;            // Valor por defecto: 2 horas
-  priorityVariations: {            // Sistema de prioridades actual
-    high: number;                  // Valor por defecto: 1
-    normal: number;                // Valor por defecto: 0
-    low: number;                   // Valor por defecto: -1
+  baseStudyDays: number; // Valor por defecto: 4 días
+  minStudyTime: number; // Valor por defecto: 2 horas
+  priorityVariations: {
+    // Sistema de prioridades actual
+    high: number; // Valor por defecto: 1
+    normal: number; // Valor por defecto: 0
+    low: number; // Valor por defecto: -1
   };
-  allocationWindowDays: number;    // Ventana de asignación: 30 días
+  allocationWindowDays: number; // Ventana de asignación: 30 días
 }
 ```
 
 #### Fórmula de Cálculo de Prioridad (src/features/auth/study-planner/utils/priorityUtils.ts)
+
 ```typescript
-const getPriorityValue = (priority: Priority, config?: ConfigSettings): number => {
+const getPriorityValue = (
+  priority: Priority,
+  config?: ConfigSettings
+): number => {
   const variations = config?.priorityVariations ?? DEFAULT_PRIORITY_VARIATIONS;
-  return variations[priority];  // Retorna valores numéricos directamente
+  return variations[priority]; // Retorna valores numéricos directamente
 };
 ```
 
 ### Algoritmo de Asignación Inicial
 
 #### Paso 1: Preparación de Datos (buildStudySchedule:164-169)
-```typescript
-const minDays = Math.max(1, Math.round(config?.baseStudyDays ?? DEFAULT_BASE_STUDY_DAYS));
 
-const plannedEligible = buildPlannedDeliveries(deliveries, effectiveStartDate, minDays).sort(
-  comparePlanned(config)
+```typescript
+const minDays = Math.max(
+  1,
+  Math.round(config?.baseStudyDays ?? DEFAULT_BASE_STUDY_DAYS)
 );
+
+const plannedEligible = buildPlannedDeliveries(
+  deliveries,
+  effectiveStartDate,
+  minDays
+).sort(comparePlanned(config));
 ```
 
 **Función de comparación estable** (líneas 25-38):
+
 ```typescript
-const comparePlanned = (config: ConfigSettings | undefined) =>
+const comparePlanned =
+  (config: ConfigSettings | undefined) =>
   (a: PlannedDelivery, b: PlannedDelivery): number => {
     const dueDiff = a.dueDate.getTime() - b.dueDate.getTime();
     if (dueDiff !== 0) {
-      return dueDiff;  // Primero por fecha de entrega
+      return dueDiff; // Primero por fecha de entrega
     }
     const priorityA = getPriorityValue(a.delivery.priority, config);
     const priorityB = getPriorityValue(b.delivery.priority, config);
     if (priorityB !== priorityA) {
-      return priorityB - priorityA;  // Luego por prioridad (mayor primero)
+      return priorityB - priorityA; // Luego por prioridad (mayor primero)
     }
-    return a.delivery.id.localeCompare(b.delivery.id);  // Finalmente por ID
+    return a.delivery.id.localeCompare(b.delivery.id); // Finalmente por ID
   };
 ```
 
 #### Paso 2: Cálculo de Capacidades (computeSequentialDurations:27)
+
 ```typescript
-const capacity = planned.map(plan => countInclusive(semesterStart, plan.dueDate));
+const capacity = planned.map(plan =>
+  countInclusive(semesterStart, plan.dueDate)
+);
 
 const countInclusive = (start: Date, end: Date): number =>
   Math.max(1, differenceInCalendarDays(end, start) + 1);
@@ -95,6 +113,7 @@ const countInclusive = (start: Date, end: Date): number =>
 ### Algoritmo de Optimización Principal
 
 #### Suma de Prefijos (líneas 29-35)
+
 ```typescript
 const prefixSumAt = (idx: number): number => {
   let sum = 0;
@@ -106,6 +125,7 @@ const prefixSumAt = (idx: number): number => {
 ```
 
 #### Función de Crecimiento (líneas 37-44)
+
 ```typescript
 const canGrow = (candidateIdx: number, prefixEnd: number): boolean => {
   for (let index = candidateIdx; index <= prefixEnd; index += 1) {
@@ -118,15 +138,21 @@ const canGrow = (candidateIdx: number, prefixEnd: number): boolean => {
 ```
 
 #### Algoritmo de Asignación de Extras (líneas 46-109)
+
 ```typescript
-const allocateExtra = (groupStart: number, groupEnd: number, amount: number) => {
+const allocateExtra = (
+  groupStart: number,
+  groupEnd: number,
+  amount: number
+) => {
   const windowDays = allocationConfig?.allocationWindowDays ?? 30;
   const groupDueDate = planned[groupEnd].dueDate;
 
   let remaining = amount;
   while (remaining > 0) {
     // Selección ponderada por prioridad y distancia temporal
-    const candidates: Array<{ idx: number; weight: number; achieved: number }> = [];
+    const candidates: Array<{ idx: number; weight: number; achieved: number }> =
+      [];
 
     for (let iterator = groupStart; iterator < planned.length; iterator += 1) {
       const task = planned[iterator];
@@ -153,16 +179,20 @@ const allocateExtra = (groupStart: number, groupEnd: number, amount: number) => 
     // Ordenación por prioridad, logros alcanzados y fecha
     candidates.sort((first, second) => {
       if (second.weight !== first.weight) {
-        return second.weight - first.weight;  // Mayor prioridad primero
+        return second.weight - first.weight; // Mayor prioridad primero
       }
       if (first.achieved !== second.achieved) {
-        return first.achieved - second.achieved;  // Menos logrados primero
+        return first.achieved - second.achieved; // Menos logrados primero
       }
-      const dueDiff = planned[first.idx].dueDate.getTime() - planned[second.idx].dueDate.getTime();
+      const dueDiff =
+        planned[first.idx].dueDate.getTime() -
+        planned[second.idx].dueDate.getTime();
       if (dueDiff !== 0) {
-        return dueDiff;  // Más próximas primero
+        return dueDiff; // Más próximas primero
       }
-      return planned[first.idx].delivery.id.localeCompare(planned[second.idx].delivery.id);
+      return planned[first.idx].delivery.id.localeCompare(
+        planned[second.idx].delivery.id
+      );
     });
 
     const chosen = candidates[0].idx;
@@ -178,13 +208,18 @@ const allocateExtra = (groupStart: number, groupEnd: number, amount: number) => 
 ```
 
 #### Algoritmo de Recorte de Extras (líneas 111-151)
+
 ```typescript
 const trimExtras = (prefixEnd: number, deficit: number): number => {
   let remaining = deficit;
   while (remaining < 0) {
-    const candidates: Array<{ idx: number; weight: number; achieved: number }> = [];
+    const candidates: Array<{ idx: number; weight: number; achieved: number }> =
+      [];
     for (let iterator = 0; iterator <= prefixEnd; iterator += 1) {
-      if (achievedExtras[iterator] > 0 && durations[iterator] > planned[iterator].minDays) {
+      if (
+        achievedExtras[iterator] > 0 &&
+        durations[iterator] > planned[iterator].minDays
+      ) {
         candidates.push({
           idx: iterator,
           weight: desiredExtras[iterator],
@@ -200,16 +235,20 @@ const trimExtras = (prefixEnd: number, deficit: number): number => {
     // Ordenación inversa: menor prioridad primero para recortar
     candidates.sort((first, second) => {
       if (first.weight !== second.weight) {
-        return first.weight - second.weight;  // Menor prioridad primero
+        return first.weight - second.weight; // Menor prioridad primero
       }
       if (second.achieved !== first.achieved) {
-        return second.achieved - first.achieved;  // Más logrados primero
+        return second.achieved - first.achieved; // Más logrados primero
       }
-      const dueDiff = planned[second.idx].dueDate.getTime() - planned[first.idx].dueDate.getTime();
+      const dueDiff =
+        planned[second.idx].dueDate.getTime() -
+        planned[first.idx].dueDate.getTime();
       if (dueDiff !== 0) {
         return dueDiff;
       }
-      return planned[first.idx].delivery.id.localeCompare(planned[second.idx].delivery.id);
+      return planned[first.idx].delivery.id.localeCompare(
+        planned[second.idx].delivery.id
+      );
     });
 
     const chosen = candidates[0].idx;
@@ -231,7 +270,10 @@ while (groupStart < n) {
   const groupDue = planned[groupStart].dueDate.getTime();
 
   // Agrupar tareas con mismo deadline
-  while (groupEnd + 1 < n && planned[groupEnd + 1].dueDate.getTime() === groupDue) {
+  while (
+    groupEnd + 1 < n &&
+    planned[groupEnd + 1].dueDate.getTime() === groupDue
+  ) {
     groupEnd += 1;
   }
 
@@ -287,30 +329,39 @@ El algoritmo resuelve el **problema de optimización de tiempo de estudio** cons
 ### Limitaciones Técnicas Identificadas
 
 #### 1. Problema de Agrupación por Deadline
+
 ```typescript
 // Líneas 233-236: Solo agrupa tareas con deadline exactamente igual
-while (groupEnd + 1 < n && planned[groupEnd + 1].dueDate.getTime() === groupDue) {
+while (
+  groupEnd + 1 < n &&
+  planned[groupEnd + 1].dueDate.getTime() === groupDue
+) {
   groupEnd += 1;
 }
 ```
+
 **Limitación**: No considera tareas que podrían beneficiarse de agrupación por proximidad temporal, solo igualdad exacta de timestamps.
 
 #### 2. Ventana de Asignación Fija
+
 ```typescript
 // Línea 123: Ventana fija de 30 días
 const windowDays = allocationConfig?.allocationWindowDays ?? 30;
 ```
+
 **Limitación**: No adapta dinámicamente la ventana según la distribución temporal de las tareas.
 
 #### 3. Sistema de Prioridades Relativo
+
 ```typescript
 // Líneas 47-50: Valores relativos, no absolutos
 const DEFAULT_PRIORITY_VARIATIONS = {
-  high: 1,    // +1 día adicional
-  normal: 0,  // Sin días adicionales
-  low: -1     // -1 día (puede llegar a mínimo)
+  high: 1, // +1 día adicional
+  normal: 0, // Sin días adicionales
+  low: -1, // -1 día (puede llegar a mínimo)
 };
 ```
+
 **Limitación**: Las prioridades bajas pueden llegar al mínimo absoluto, haciendo el sistema menos granular.
 
 ## 🔬 Comparación con Especificación "Algoritmo Correcto"
@@ -318,6 +369,7 @@ const DEFAULT_PRIORITY_VARIATIONS = {
 ### Diferencias Críticas Identificadas
 
 #### 1. **Anclaje del Deadline** ✅ IMPLEMENTADO CORRECTAMENTE
+
 ```typescript
 // Líneas 76-82: El deadline es inmutable
 const effectiveEnd = (() => {
@@ -328,39 +380,53 @@ const effectiveEnd = (() => {
   return new Date(candidate);
 })();
 ```
+
 **Estado**: ✅ Cumple con la especificación - el `endDate` nunca supera el deadline.
 
 #### 2. **Mínimo Garantizado** ✅ IMPLEMENTADO CORRECTAMENTE
+
 ```typescript
 // Líneas 187-188: Siempre respeta minDays
-if (achievedExtras[iterator] > 0 && durations[iterator] > planned[iterator].minDays) {
+if (
+  achievedExtras[iterator] > 0 &&
+  durations[iterator] > planned[iterator].minDays
+) {
   // Solo recorta si tiene días adicionales y está por encima del mínimo
 }
 ```
+
 **Estado**: ✅ Cumple con la especificación - nunca baja del mínimo establecido.
 
 #### 3. **Procesamiento por Grupos** ⚠️ PARCIALMENTE IMPLEMENTADO
+
 ```typescript
 // Líneas 233-236: Solo agrupa por deadline exacto
-while (groupEnd + 1 < n && planned[groupEnd + 1].dueDate.getTime() === groupDue) {
+while (
+  groupEnd + 1 < n &&
+  planned[groupEnd + 1].dueDate.getTime() === groupDue
+) {
   groupEnd += 1;
 }
 ```
+
 **Estado**: ⚠️ Parcial - solo agrupa tareas con deadline idéntico, no por proximidad como sugiere la especificación.
 
 #### 4. **Modo Secuencial Estricto** ❌ NO IMPLEMENTADO
+
 La especificación requiere un modo que evite solapamientos recortando solo días adicionales, pero el algoritmo actual no tiene esta funcionalidad.
 
 #### 5. **Reparto Ponderado por Prioridad** ✅ IMPLEMENTADO CORRECTAMENTE
+
 ```typescript
 // Líneas 154-166: Ordenación correcta por prioridad
 candidates.sort((first, second) => {
   if (second.weight !== first.weight) {
-    return second.weight - first.weight;  // Mayor prioridad primero
+    return second.weight - first.weight; // Mayor prioridad primero
   }
   // ... resto de criterios de desempate
 });
 ```
+
 **Estado**: ✅ Cumple con la especificación - reparte holgura priorizando tareas de mayor valor.
 
 ## 🔢 Fundamentos Matemáticos
@@ -368,27 +434,31 @@ candidates.sort((first, second) => {
 ### Variables Principales
 
 #### Parámetros de Entrada
+
 ```typescript
 interface AlgorithmInput {
-  deliveries: Delivery[];           // Entregas a planificar
-  baseStudyDays: number;            // Días base por entrega (ej: 3)
-  priorityVariations: {             // Variaciones por prioridad
-    high: number;                   // Multiplicador para alta (ej: 1.5)
-    normal: number;                 // Multiplicador para normal (ej: 1.0)
-    low: number;                    // Multiplicador para baja (ej: 0.7)
+  deliveries: Delivery[]; // Entregas a planificar
+  baseStudyDays: number; // Días base por entrega (ej: 3)
+  priorityVariations: {
+    // Variaciones por prioridad
+    high: number; // Multiplicador para alta (ej: 1.5)
+    normal: number; // Multiplicador para normal (ej: 1.0)
+    low: number; // Multiplicador para baja (ej: 0.7)
   };
-  allocationWindowDays?: number;    // Ventana de asignación (ej: 30)
+  allocationWindowDays?: number; // Ventana de asignación (ej: 30)
 }
 ```
 
 #### Función Objetivo
 
 **Minimizar**:
+
 ```
 f(x) = Σ(wasted_days) + Σ(overlapping_penalties)
 ```
 
 **Sujeto a**:
+
 ```
 deadline_constraint: finish_date ≤ deadline
 capacity_constraint: daily_study_hours ≤ max_daily_hours
@@ -413,16 +483,17 @@ priority_constraint: high_priority_items ≥ normal_priority_items ≥ low_prior
 
 ```typescript
 // Filtrar entregas válidas
-const validDeliveries = deliveries.filter(d =>
-  d.date && new Date(d.date) > new Date() && !d.completed
+const validDeliveries = deliveries.filter(
+  d => d.date && new Date(d.date) > new Date() && !d.completed
 );
 
 // Calcular días disponibles hasta cada deadline
 const deliveriesWithDays = validDeliveries.map(delivery => ({
   ...delivery,
   daysUntilDeadline: Math.ceil(
-    (new Date(delivery.date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-  )
+    (new Date(delivery.date).getTime() - new Date().getTime()) /
+      (1000 * 60 * 60 * 24)
+  ),
 }));
 ```
 
@@ -437,11 +508,13 @@ const deliveriesWithDays = validDeliveries.map(delivery => ({
 #### Cálculo de Días Base
 
 **Fórmula básica**:
+
 ```
 días_asignados = base_study_days × priority_multiplier
 ```
 
 **Ejemplo práctico**:
+
 ```typescript
 const baseAssignment = (delivery: Delivery, config: ConfigSettings) => {
   const priorityMultiplier = config.priorityVariations[delivery.priority];
@@ -454,6 +527,7 @@ const baseAssignment = (delivery: Delivery, config: ConfigSettings) => {
 **Estrategias de distribución**:
 
 1. **Distribución uniforme**:
+
    ```
    Día 1: 33% del tiempo
    Día 2: 33% del tiempo
@@ -474,9 +548,12 @@ const baseAssignment = (delivery: Delivery, config: ConfigSettings) => {
 **Para entregas con ventana de asignación limitada**:
 
 ```typescript
-const slidingWindowAllocation = (deliveries: Delivery[], windowDays: number) => {
-  const sortedDeliveries = [...deliveries].sort((a, b) =>
-    new Date(a.date).getTime() - new Date(b.date).getTime()
+const slidingWindowAllocation = (
+  deliveries: Delivery[],
+  windowDays: number
+) => {
+  const sortedDeliveries = [...deliveries].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
   for (let i = 0; i < sortedDeliveries.length; i++) {
@@ -485,8 +562,10 @@ const slidingWindowAllocation = (deliveries: Delivery[], windowDays: number) => 
     windowStart.setDate(windowStart.getDate() - windowDays);
 
     // Redistribuir tiempo dentro de la ventana
-    const windowDeliveries = sortedDeliveries.filter(d =>
-      new Date(d.date) >= windowStart && new Date(d.date) <= new Date(current.date)
+    const windowDeliveries = sortedDeliveries.filter(
+      d =>
+        new Date(d.date) >= windowStart &&
+        new Date(d.date) <= new Date(current.date)
     );
 
     redistributeWindowTime(windowDeliveries);
@@ -497,9 +576,13 @@ const slidingWindowAllocation = (deliveries: Delivery[], windowDays: number) => 
 #### Prevención de Solapamientos
 
 **Detección de conflictos**:
+
 ```typescript
 const detectOverlaps = (schedule: StudySchedule[]) => {
-  const overlaps: Array<{delivery1: StudySchedule, delivery2: StudySchedule}> = [];
+  const overlaps: Array<{
+    delivery1: StudySchedule;
+    delivery2: StudySchedule;
+  }> = [];
 
   for (let i = 0; i < schedule.length; i++) {
     for (let j = i + 1; j < schedule.length; j++) {
@@ -507,7 +590,7 @@ const detectOverlaps = (schedule: StudySchedule[]) => {
       const d2 = schedule[j];
 
       if (datesOverlap(d1.startDate, d1.endDate, d2.startDate, d2.endDate)) {
-        overlaps.push({delivery1: d1, delivery2: d2});
+        overlaps.push({ delivery1: d1, delivery2: d2 });
       }
     }
   }
@@ -521,6 +604,7 @@ const detectOverlaps = (schedule: StudySchedule[]) => {
 ### Modo Normal
 
 **Características**:
+
 - ✅ Permite solapamientos menores
 - ✅ Distribución equilibrada de carga
 - ✅ Más tiempo para entregas importantes
@@ -531,6 +615,7 @@ const detectOverlaps = (schedule: StudySchedule[]) => {
 ### Modo Estricto
 
 **Características**:
+
 - ✅ Sin solapamientos temporales
 - ✅ Carga perfectamente distribuida
 - ✅ Respeta límites cognitivos diarios
@@ -541,6 +626,7 @@ const detectOverlaps = (schedule: StudySchedule[]) => {
 ### Modo Ventana Deslizante
 
 **Características**:
+
 - ✅ Asignación dinámica según proximidad
 - ✅ Enfoque en entregas inmediatas
 - ✅ Adaptable a cambios de último momento
@@ -553,34 +639,38 @@ const detectOverlaps = (schedule: StudySchedule[]) => {
 ### Métricas Calculadas
 
 #### Estadísticas Básicas
+
 ```typescript
 interface StudyStats {
-  total: number;           // Total de entregas
-  upcoming: number;        // Próximas 7 días
-  overdue: number;         // Vencidas
-  thisWeek: number;        // Esta semana
+  total: number; // Total de entregas
+  upcoming: number; // Próximas 7 días
+  overdue: number; // Vencidas
+  thisWeek: number; // Esta semana
 }
 ```
 
 #### Métricas Avanzadas
+
 ```typescript
 interface DetailedStats {
-  averageStudyDays: number;        // Días promedio asignados
-  maxDailyLoad: number;            // Máxima carga diaria
-  minDailyLoad: number;            // Mínima carga diaria
-  standardDeviation: number;       // Variabilidad de carga
-  efficiencyScore: number;         // Eficiencia general (0-100)
+  averageStudyDays: number; // Días promedio asignados
+  maxDailyLoad: number; // Máxima carga diaria
+  minDailyLoad: number; // Mínima carga diaria
+  standardDeviation: number; // Variabilidad de carga
+  efficiencyScore: number; // Eficiencia general (0-100)
 }
 ```
 
 ### Cálculo de Eficiencia
 
 **Fórmula de eficiencia**:
+
 ```
 eficiencia = (tiempo_utilizado / tiempo_disponible) × 100
 ```
 
 **Factores considerados**:
+
 - 📅 Distribución temporal adecuada
 - 🎯 Respeto a prioridades asignadas
 - ⚖️ Balance de carga cognitiva
@@ -591,30 +681,33 @@ eficiencia = (tiempo_utilizado / tiempo_disponible) × 100
 ### Parámetros Configurables
 
 #### Días Base de Estudio
+
 ```typescript
 // Tiempo mínimo recomendado por entrega
 const BASE_STUDY_DAYS = {
-  MIN: 1,           // Mínimo absoluto
-  DEFAULT: 3,       // Valor por defecto
-  MAX: 14           // Máximo recomendado
+  MIN: 1, // Mínimo absoluto
+  DEFAULT: 3, // Valor por defecto
+  MAX: 14, // Máximo recomendado
 };
 ```
 
 #### Variaciones por Prioridad
+
 ```typescript
 const PRIORITY_VARIATIONS = {
-  LOW: 0.7,         // 70% del tiempo base
-  NORMAL: 1.0,      // 100% del tiempo base
-  HIGH: 1.5         // 150% del tiempo base
+  LOW: 0.7, // 70% del tiempo base
+  NORMAL: 1.0, // 100% del tiempo base
+  HIGH: 1.5, // 150% del tiempo base
 };
 ```
 
 #### Límites Cognitivos
+
 ```typescript
 const COGNITIVE_LIMITS = {
-  MAX_DAILY_HOURS: 8,      // Máximo recomendado por día
-  MAX_WEEKLY_HOURS: 40,    // Máximo por semana
-  MIN_BREAK_HOURS: 0.5     // Descanso mínimo entre sesiones
+  MAX_DAILY_HOURS: 8, // Máximo recomendado por día
+  MAX_WEEKLY_HOURS: 40, // Máximo por semana
+  MIN_BREAK_HOURS: 0.5, // Descanso mínimo entre sesiones
 };
 ```
 
@@ -623,11 +716,13 @@ const COGNITIVE_LIMITS = {
 ### Caso 1: Estudiante con Exámenes Finales
 
 **Entrada**:
+
 - 3 exámenes finales (prioridad alta) en 2 semanas
 - 2 trabajos regulares (prioridad normal)
 - 1 lectura opcional (prioridad baja)
 
 **Funcionamiento del algoritmo**:
+
 - **Ordena por fecha y prioridad**: Exámenes primero por fecha, luego trabajos, finalmente lecturas
 - **Calcula ventanas disponibles**: Desde inicio del semestre hasta cada deadline
 - **Asigna días base + variaciones**: Alta prioridad = más días, baja prioridad = menos días
@@ -637,11 +732,13 @@ const COGNITIVE_LIMITS = {
 ### Caso 2: Proyecto Largo con Entregas Intermedias
 
 **Entrada**:
+
 - Proyecto final (prioridad alta) - deadline en 6 semanas
 - 3 entregas parciales (prioridad normal) - semanales
 - 2 prácticas semanales (prioridad baja)
 
 **Resultado esperado**:
+
 - **Proyecto final**: Distribución uniforme de 8-10 días
 - **Entregas parciales**: 2-3 días cada una
 - **Prácticas**: 1 día cada una, en paralelo con otras tareas
@@ -651,6 +748,7 @@ const COGNITIVE_LIMITS = {
 ### Estrategia de Testing
 
 #### Tests Unitarios
+
 ```typescript
 describe('Study Algorithm', () => {
   test('should assign more days to high priority items', () => {
@@ -659,12 +757,15 @@ describe('Study Algorithm', () => {
 
     const schedule = calculateSchedule([highPriority, lowPriority]);
 
-    expect(schedule[0].allocatedDays).toBeGreaterThan(schedule[1].allocatedDays);
+    expect(schedule[0].allocatedDays).toBeGreaterThan(
+      schedule[1].allocatedDays
+    );
   });
 });
 ```
 
 #### Tests de Integración
+
 - Validación completa de flujo de cálculo
 - Verificación de constraints temporales
 - Tests de performance con datasets grandes
@@ -674,16 +775,19 @@ describe('Study Algorithm', () => {
 ### Optimizaciones Potenciales
 
 #### Machine Learning
+
 - **Aprendizaje de hábitos**: Adaptar algoritmo según comportamiento histórico
 - **Predicción de rendimiento**: Ajustar según métricas personales
 - **Optimización genética**: Evolución automática de parámetros
 
 #### Nuevas Características
+
 - **Dependencias entre tareas**: Considerar prerequisitos
 - **Tiempo de contexto**: Switching cost entre asignaturas
 - **Fatiga cognitiva**: Modelo de atención decreciente
 
 #### Integraciones Externas
+
 - **Calendarios externos**: Importar eventos de Google Calendar
 - **Herramientas de productividad**: Integración con Notion, Todoist
 - **Métricas biomédicas**: Ritmo cardíaco, calidad de sueño

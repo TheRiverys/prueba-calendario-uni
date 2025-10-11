@@ -9,6 +9,7 @@ Esta sección responde las preguntas más comunes que reciben los usuarios de Ac
 Es una aplicación web diseñada específicamente para estudiantes universitarios que necesitan gestionar múltiples entregas, exámenes y proyectos académicos de manera eficiente y visual.
 
 **Características principales**:
+
 - 📅 **Gestión visual de entregas** con tres vistas diferentes
 - 🎨 **Organización automática por asignaturas** con colores únicos
 - 🧠 **Algoritmo inteligente de estudio** que sugiere horarios óptimos
@@ -26,6 +27,7 @@ Sí, la aplicación es completamente gratuita y de código abierto. Puedes:
 ### ¿Dónde se almacenan mis datos?
 
 **Privacidad y seguridad**:
+
 - 🔐 **Datos locales primero**: Información almacenada en tu navegador
 - 🌐 **Sincronización opcional**: Puedes usar Supabase para respaldo en la nube
 - 🚫 **Sin rastreo externo**: Respeta tu privacidad completamente
@@ -36,10 +38,12 @@ Sí, la aplicación es completamente gratuita y de código abierto. Puedes:
 ### ¿Cómo instalo la aplicación?
 
 **Opción 1: Usar la versión web**
+
 - Simplemente abre la aplicación en tu navegador
 - No requiere instalación ni configuración
 
 **Opción 2: Instalar localmente**
+
 ```bash
 # Clonar repositorio
 git clone https://github.com/TheRiverys/prueba-calendario-uni.git
@@ -67,6 +71,7 @@ npm run dev
 3. **Guarda cambios** → Se aplicará automáticamente
 
 **Consejo**: Usa prioridades según importancia real:
+
 - 🚩 **Alta**: Exámenes finales, proyectos críticos
 - 🟡 **Normal**: Trabajos regulares, prácticas semanales
 - 🟢 **Baja**: Lecturas opcionales, tareas menores
@@ -74,6 +79,7 @@ npm run dev
 ### ¿Por qué mi entrega aparece en rojo?
 
 **Indicadores de estado**:
+
 - 🔴 **Rojo**: Entrega vencida (fecha pasada)
 - 🟡 **Amarillo**: Próxima (próximos 7 días)
 - 🟢 **Verde**: Pendiente (más de 7 días)
@@ -91,14 +97,17 @@ npm run dev
 ### ¿Cuál es la diferencia entre las 3 vistas?
 
 #### 📋 Vista Lista
+
 - **Mejor para**: Gestión detallada y filtros
 - **Características**: Tabla completa, filtros avanzados, acciones rápidas
 
 #### 📅 Vista Calendario
+
 - **Mejor para**: Visión mensual rápida
 - **Características**: Calendario visual, entregas por día, navegación fácil
 
 #### 📊 Vista Gantt
+
 - **Mejor para**: Planificación de proyectos largos
 - **Características**: Línea de tiempo, barras de duración, dependencias visuales
 
@@ -111,6 +120,7 @@ npm run dev
 ### ¿Por qué no veo el algoritmo de estudio?
 
 **Requisitos para usar el algoritmo**:
+
 1. ✅ **Tener entregas registradas** (mínimo 2-3 entregas)
 2. ⚙️ **Configuración habilitada** (en el menú de configuración)
 3. 🔑 **API key configurada** (opcional, para funciones avanzadas)
@@ -120,6 +130,7 @@ npm run dev
 ### ¿Cómo funcionan los colores automáticos?
 
 **Sistema inteligente**:
+
 1. **Primera entrega**: Se asigna color único automáticamente
 2. **Mismas asignaturas**: Conservan el mismo color siempre
 3. **Algoritmo de selección**: Elige colores accesibles y distintivos
@@ -136,6 +147,7 @@ npm run dev
 ### ¿Qué hacer si tengo muchas asignaturas?
 
 **Consejos de organización**:
+
 - 📚 **Nombres consistentes**: Siempre "Matemáticas II", nunca variar
 - 🎯 **Agrupar relacionadas**: Usa prefijos comunes cuando corresponda
 - 🧹 **Eliminar obsoletas**: Borra asignaturas que ya no uses
@@ -145,6 +157,7 @@ npm run dev
 ### ¿Dónde encuentro la configuración?
 
 **Acceso**:
+
 - **Ícono de engranaje** ⚙️ en la esquina superior derecha
 - **Configuración detallada** para opciones avanzadas
 - **Privacidad** para ajustes de datos personales
@@ -152,6 +165,7 @@ npm run dev
 ### ¿Qué configuraciones puedo cambiar?
 
 **Opciones disponibles**:
+
 - 🎨 **Tema**: Claro/oscuro automático
 - 📱 **Densidad**: Compacta o espaciada
 - ⚙️ **Algoritmo de estudio**: Parámetros de planificación
@@ -162,6 +176,7 @@ npm run dev
 ### ¿Mis datos están seguros?
 
 **Medidas de seguridad implementadas**:
+
 - 🔐 **Encriptación automática** de datos sensibles
 - 🌐 **Comunicación segura** (HTTPS obligatorio)
 - 📋 **Cumple estrictamente GDPR** con derechos implementados
@@ -170,6 +185,7 @@ npm run dev
 ### ¿Quién puede ver mis entregas?
 
 **Política de privacidad estricta**:
+
 - 🔒 **Solo tú**: Nadie más puede acceder a tus datos
 - 👀 **Transparencia total**: Puedes ver qué datos se almacenan
 - 🗑️ **Derecho al olvido**: Puedes eliminar todos tus datos
@@ -180,6 +196,7 @@ npm run dev
 ### ¿Qué hacer si algo no funciona?
 
 **Proceso de resolución**:
+
 1. **Verificar conexión** a internet
 2. **Recargar la página** (F5 o Ctrl+R)
 3. **Limpiar caché** del navegador si persiste
@@ -189,6 +206,7 @@ npm run dev
 ### ¿Cómo reporto un problema?
 
 **Opciones disponibles**:
+
 - 💬 **Panel de feedback**: Integrado en la aplicación
 - 🐛 **Reportar bug**: Describe detalladamente el problema
 - 📧 **Contacto directo**: Para problemas críticos
@@ -197,6 +215,7 @@ npm run dev
 ### ¿Hay soporte técnico?
 
 **Recursos de soporte**:
+
 - 📖 **Documentación completa** (esta guía)
 - 🎯 **Tour interactivo** integrado
 - ❓ **Ayuda contextual** en cada sección
@@ -207,6 +226,7 @@ npm run dev
 ### ¿Cómo sé si hay actualizaciones?
 
 **Notificaciones automáticas**:
+
 - 🔄 **Actualizaciones en segundo plano**
 - 📢 **Notificaciones en aplicación** para cambios importantes
 - 📋 **Registro de cambios** accesible desde la aplicación
@@ -214,6 +234,7 @@ npm run dev
 ### ¿Perderé mis datos al actualizar?
 
 **Política de actualización**:
+
 - ✅ **Datos preservados**: Tus entregas siempre se mantienen
 - 🔄 **Backups automáticos**: Seguridad adicional
 - 📋 **Migraciones controladas**: Cambios de estructura anunciados
@@ -223,6 +244,7 @@ npm run dev
 ### ¿Puedo importar entregas desde Excel?
 
 **Sí, completamente soportado**:
+
 - 📄 **Formatos aceptados**: .xlsx, .xls, .csv
 - ✅ **Validación automática**: Verifica datos antes de importar
 - 🔄 **Mapeo inteligente**: Reconoce columnas automáticamente
@@ -231,6 +253,7 @@ npm run dev
 ### ¿Cómo exporto mis datos?
 
 **Funcionalidad disponible**:
+
 - 📅 **iCal (.ics)**: Para integración con calendarios externos (Google Calendar, Outlook, etc.)
 - 🔄 **Incluye planificación**: Exporta entregas con fechas de estudio asignadas
 
@@ -239,6 +262,7 @@ npm run dev
 ### ¿Cómo optimizo mi uso?
 
 **Mejores prácticas**:
+
 1. **Añade entregas tempranamente** para mejor planificación
 2. **Usa prioridades consistentemente** según importancia real
 3. **Revisa estadísticas regularmente** para ajustar planificación
@@ -247,6 +271,7 @@ npm run dev
 ### ¿Puedo usar múltiples dispositivos?
 
 **Sincronización**:
+
 - 💾 **Datos locales**: Funciona offline en cada dispositivo
 - 🌐 **Sincronización opcional**: Puedes configurar respaldo en la nube
 - 📱 **Responsive**: Se adapta automáticamente a móviles y tablets
@@ -256,6 +281,7 @@ npm run dev
 ### ¿Qué es el algoritmo de estudio?
 
 **Sistema inteligente que**:
+
 - 🧮 **Calcula tiempo óptimo** para cada entrega
 - 📊 **Considera prioridades** (alta = más tiempo)
 - 📅 **Distribuye carga temporalmente** evitando sobrecargas
@@ -264,12 +290,14 @@ npm run dev
 ### ¿Cómo funciona la integración con IA?
 
 **Características disponibles**:
+
 - 🤖 **OpenAI integration** opcional para funcionalidades avanzadas
 - 📝 **Generación automática** de horarios de estudio detallados
 - 🔍 **Análisis de progreso** con sugerencias personalizadas
 - ⚙️ **Requiere configuración**: API key de OpenAI necesaria para usar estas funciones
 
 **Funcionalidades básicas sin IA**:
+
 - ✅ **Algoritmo matemático** integrado funciona completamente offline
 - ✅ **Planificación secuencial** evita conflictos automáticamente
 - ✅ **Ajustes manuales** siempre disponibles en configuración

@@ -9,6 +9,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 **Perfil**: María, 22 años, 4º año de Ingeniería Informática
 
 **Carga típica semanal**:
+
 - 3 asignaturas técnicas (Algoritmos, Bases de Datos, Redes)
 - 2 proyectos largos (desarrollo de software)
 - 1 examen parcial cada 2 semanas
@@ -17,36 +18,39 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 **Cómo usa la aplicación**:
 
 #### Organización Inicial
+
 ```typescript
 // Entregas registradas al inicio del semestre
 [
   {
-    subject: "Algoritmos Avanzados",
-    name: "Proyecto implementación árbol B+",
-    date: "2025-03-15",
-    priority: "high"
+    subject: 'Algoritmos Avanzados',
+    name: 'Proyecto implementación árbol B+',
+    date: '2025-03-15',
+    priority: 'high',
   },
   {
-    subject: "Bases de Datos",
-    name: "Diseño esquema biblioteca digital",
-    date: "2025-04-02",
-    priority: "high"
+    subject: 'Bases de Datos',
+    name: 'Diseño esquema biblioteca digital',
+    date: '2025-04-02',
+    priority: 'high',
   },
   {
-    subject: "Redes de Computadoras",
-    name: "Configuración red empresarial",
-    date: "2025-03-28",
-    priority: "normal"
-  }
-]
+    subject: 'Redes de Computadoras',
+    name: 'Configuración red empresarial',
+    date: '2025-03-28',
+    priority: 'normal',
+  },
+];
 ```
 
 #### Uso de la Vista Gantt
+
 - **Visualiza solapamientos** entre proyectos largos
 - **Planifica tiempo de desarrollo** para cada proyecto
 - **Ajusta deadlines intermedios** según progreso real
 
 #### Estadísticas que consulta
+
 - **Carga semanal**: Para no sobrecargarse
 - **Próximas entregas**: Planificación de estudio intensivo
 - **Tiempo dedicado**: Para evaluar eficiencia
@@ -56,6 +60,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 **Perfil**: Carlos, 24 años, 3º año de Medicina
 
 **Carga típica mensual**:
+
 - Rotaciones clínicas diarias (8 horas/día)
 - Seminarios teóricos semanales
 - Casos clínicos para resolver
@@ -65,11 +70,13 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 **Estrategia de uso**:
 
 #### Organización por prioridades médicas
+
 - **🚩 Alta**: Exámenes prácticos con pacientes reales
 - **🟡 Normal**: Casos clínicos y seminarios
 - **🟢 Baja**: Lecturas adicionales y investigación
 
 #### Uso del algoritmo de estudio
+
 ```typescript
 // Configuración específica para estudiante de medicina
 {
@@ -83,6 +90,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 ```
 
 #### Beneficios experimentados
+
 - **Mejor gestión del tiempo** entre rotaciones clínicas y estudio
 - **Reducción del estrés** por deadlines solapados
 - **Mejora en calificaciones** gracias a planificación estructurada
@@ -92,6 +100,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 **Perfil**: Ana, 28 años, Trabajo + Estudios de Administración
 
 **Situación particular**:
+
 - Trabajo de 30 horas semanales (lunes a viernes)
 - Clases presenciales (fines de semana)
 - Entregas semanales en múltiples asignaturas
@@ -100,6 +109,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 **Estrategia específica**:
 
 #### Configuración de algoritmo adaptada
+
 ```typescript
 {
   baseStudyDays: 1,           // Tiempo mínimo absoluto
@@ -113,11 +123,13 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 ```
 
 #### Uso intensivo de estadísticas
+
 - **Carga diaria máxima**: Nunca exceder 3 horas de estudio
 - **Vista calendario**: Planificación precisa de fines de semana
 - **Alertas tempranas**: Entregas próximas con antelación suficiente
 
 #### Resultados obtenidos
+
 - **Equilibrio trabajo-estudio** sostenible
 - **Mejora significativa en calificaciones**
 - **Reducción del estrés** por deadlines imposibles
@@ -205,6 +217,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 **Contexto**: Estudiante desarrollando TFG (Trabajo de Fin de Grado)
 
 **Entregas múltiples relacionadas**:
+
 1. **Propuesta inicial** (mes 1)
 2. **Revisión bibliográfica** (mes 2)
 3. **Implementación parcial** (mes 3)
@@ -212,6 +225,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 5. **Versión final completa** (mes 6)
 
 **Uso avanzado de la aplicación**:
+
 - **Vista Gantt** para visualizar timeline completo
 - **Colores diferenciados** por fases del proyecto
 - **Prioridades crecientes** conforme avanza el tiempo
@@ -222,12 +236,14 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 **Contexto**: Período de exámenes con múltiples asignaturas
 
 **Estrategia implementada**:
+
 1. **Registro temprano** de todas las fechas de examen
 2. **Configuración de alta prioridad** para todas las entregas
 3. **Uso del algoritmo estricto** para distribución precisa
 4. **Seguimiento diario** de progreso mediante estadísticas
 
 **Resultado típico**:
+
 - **Distribución equilibrada** de tiempo de estudio
 - **Prevención de sobrecargas** en días específicos
 - **Mejor rendimiento académico** gracias a planificación estructurada
@@ -237,6 +253,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 ### Antes vs Después de Usar la Aplicación
 
 #### Estudiante Tradicional (Sin aplicación)
+
 ```
 ❌ Organización caótica
 ❌ Deadlines olvidados
@@ -246,6 +263,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 ```
 
 #### Estudiante con Aplicación
+
 ```
 ✅ Organización sistemática
 ✅ Control total de deadlines
@@ -257,6 +275,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 ### Métricas de Mejora Típicas
 
 **Resultados promedio reportados**:
+
 - ⏰ **30% menos tiempo** perdido en organización
 - 📈 **15-25% mejora** en calificaciones promedio
 - 😌 **40% reducción** en niveles de estrés académico
@@ -267,6 +286,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 ### Para Estudiantes de Primer Año
 
 **Recomendaciones específicas**:
+
 1. **Empieza simple**: Una entrega por asignatura al principio
 2. **Usa colores consistentemente**: Mismo color para misma asignatura
 3. **Configura prioridades correctamente**: Alta para exámenes, normal para trabajos
@@ -275,6 +295,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 ### Para Estudiantes Avanzados
 
 **Técnicas avanzadas**:
+
 1. **Proyectos largos**: Divide en entregas parciales para mejor seguimiento
 2. **Vista Gantt**: Usa para planificación estratégica de semestre completo
 3. **Algoritmo personalizado**: Ajusta parámetros según tu ritmo de estudio
@@ -283,6 +304,7 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 ### Para Estudiantes Trabajadores
 
 **Estrategias específicas**:
+
 1. **Tiempo limitado**: Configura algoritmo con días base mínimos
 2. **Planificación semanal**: Usa ventana deslizante de 7 días
 3. **Fines de semana**: Concentra estudio intensivo en días libres
@@ -293,16 +315,19 @@ Esta sección presenta ejemplos reales de cómo diferentes tipos de estudiantes 
 ### Testimonios Reales
 
 #### "De aprobado justo a sobresaliente"
+
 > "Antes aprobaba por los pelos, ahora saco notables y sobresalientes. La aplicación me ayudó a distribuir mejor el tiempo y no dejar todo para última hora."
 >
 > — Estudiante de Derecho, 3º año
 
 #### "Equilibrio perfecto trabajo-estudio"
+
 > "Trabajo 35 horas semanales y estudio ingeniería. Sin esta aplicación sería imposible. Ahora tengo un equilibrio sostenible."
 >
 > — Estudiante trabajador, 4º año Ingeniería
 
 #### "De estrés constante a control total"
+
 > "Sufría mucho estrés por deadlines solapados. Ahora controlo completamente mi calendario académico y duermo tranquilo."
 >
 > — Estudiante de Medicina, 5º año
