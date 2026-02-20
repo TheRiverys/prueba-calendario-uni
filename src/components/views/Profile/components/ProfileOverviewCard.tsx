@@ -18,31 +18,12 @@ const ProfileOverviewCard: FC<ProfileOverviewCardProps> = ({ summary }) => {
           <UserAvatar user={summary.user} size='lg' className='bg-primary/10 text-primary' />
           <div className='flex flex-col'>
             <span className='text-base font-semibold'>{email}</span>
-            <span className='text-muted-foreground text-xs'>Sincronizada con la base de datos</span>
+            <span className='text-muted-foreground text-xs'>Cuenta personal</span>
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className='text-muted-foreground space-y-4 text-sm'>
-        <div className='flex items-center justify-between'>
-          <span>Estado</span>
-          <span className='flex items-center gap-2 font-medium text-emerald-600 dark:text-emerald-400'>
-            <span className='h-2 w-2 rounded-full bg-emerald-500' /> Activa
-          </span>
-        </div>
-        <div className='flex items-center justify-between'>
-          <span>Proveedor</span>
-          <span className={'font-medium ' + summary.providerColor}>{summary.providerName}</span>
-        </div>
-        <div className='flex items-center justify-between'>
-          <span>Email confirmado</span>
-          <span className='text-foreground font-medium'>
-            {summary.emailConfirmed ? 'Sí' : 'No'}
-          </span>
-        </div>
-        <div className='flex items-center justify-between'>
-          <span>Última actualización</span>
-          <span className='text-foreground font-medium'>Sesión actual</span>
-        </div>
+      <CardContent className='text-muted-foreground text-sm'>
+        <p>{summary.description}</p>
       </CardContent>
     </Card>
   );

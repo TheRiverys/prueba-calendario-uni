@@ -16,6 +16,7 @@
     "lint:pre-commit": "eslint . --fix --max-warnings 1000",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "create:csv-template": "node scripts/createCsvTemplate.mjs",
     "prepare": "husky"
   },
   "dependencies": {

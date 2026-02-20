@@ -23,11 +23,9 @@ const ProfileHeader: FC<ProfileHeaderProps> = ({ onBack }) => {
           Volver al dashboard
         </Button>
         <div className='space-y-1.5'>
-          <h1 className='text-foreground text-3xl font-semibold tracking-tight'>
-            Perfil de usuario
-          </h1>
+          <h1 className='text-foreground text-3xl font-semibold tracking-tight'>Tu cuenta</h1>
           <p className='text-muted-foreground max-w-2xl text-sm'>
-            Gestiona tus credenciales, tus preferencias y mantén segura tu cuenta.
+            Administra tus datos personales, tu privacidad y las acciones sensibles de la cuenta.
           </p>
         </div>
       </div>

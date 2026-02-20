@@ -22,8 +22,6 @@ export interface ProfileStatus {
 }
 
 export interface ProfileAccountSummary {
-  emailConfirmed: boolean;
-  providerColor: string;
-  providerName: string;
   user: User | null;
+  description: string;
 }

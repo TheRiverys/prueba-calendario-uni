@@ -1,7 +1,8 @@
-import { Calendar } from 'lucide-react';
+import { Calendar, Plus } from 'lucide-react';
 import React from 'react';
 
 import { AIControls } from '@/components/AIControls';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -20,6 +21,7 @@ interface DeliveryListHeaderProps {
   readonly onSubjectChange: (_subject: string) => void;
   readonly sortBy: DeliveryListSortOption;
   readonly onSortChange: (_option: DeliveryListSortOption) => void;
+  readonly onAdd: () => void;
 }
 
 export const DeliveryListHeader: React.FC<DeliveryListHeaderProps> = ({
@@ -30,6 +32,7 @@ export const DeliveryListHeader: React.FC<DeliveryListHeaderProps> = ({
   onSubjectChange,
   sortBy,
   onSortChange,
+  onAdd,
 }) => {
   return (
     <div className='border-border/60 flex flex-col gap-6 border-b pb-5 sm:gap-4'>
@@ -80,6 +83,15 @@ export const DeliveryListHeader: React.FC<DeliveryListHeaderProps> = ({
             <div className='flex items-center'>
               <AIControls />
             </div>
+
+            <Button
+              id='new-delivery-button'
+              onClick={onAdd}
+              className='flex items-center gap-2 whitespace-nowrap'
+            >
+              <Plus className='h-4 w-4' />
+              <span>Nueva entrega</span>
+            </Button>
           </div>
         </div>
       </div>

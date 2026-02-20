@@ -1,5 +1,6 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
+import { differenceInCalendarDays, format, parseISO } from 'date-fns';
 
 import { toast } from '@/components/ui/sonner';
 
@@ -157,11 +158,9 @@ export class AIService {
     const schedule: Array<{ date: string; hours: number; subject: string; task: string }> = [];
 
     studyPlan.forEach(plan => {
-      const startDate = new Date(plan.startDate);
-      const endDate = new Date(plan.endDate);
-      const totalDays = Math.ceil(
-        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-      );
+      const startDate = parseISO(plan.startDate);
+      const endDate = parseISO(plan.endDate);
+      const totalDays = Math.max(1, differenceInCalendarDays(endDate, startDate) + 1);
 
       // Distribuir las horas estimadas en los días disponibles
       const dailyHours = Math.min(plan.estimatedHours / totalDays, 6); // Máximo 6 horas por día
@@ -173,7 +172,7 @@ export class AIService {
         const hoursToday = Math.min(dailyHours, remainingHours);
 
         schedule.push({
-          date: currentDate.toISOString().split('T')[0],
+          date: format(currentDate, 'yyyy-MM-dd'),
           hours: Math.round(hoursToday * 10) / 10, // Redondear a 1 decimal
           subject: plan.subject,
           task: `Trabajar en: ${plan.name}`,

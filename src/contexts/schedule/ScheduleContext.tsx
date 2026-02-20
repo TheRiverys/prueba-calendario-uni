@@ -46,6 +46,64 @@ const hasValidPersistedDates = (delivery: Delivery): boolean => {
 };
 
 /**
+ * Detecta si las fechas persistidas difieren de las que produciría el algoritmo actual.
+ * Esto permite recalcular cuando cambian configuración, fecha de semestre o newDateStart.
+ */
+const hasScheduleMismatchWithPersistedDates = (
+  deliveries: Delivery[],
+  semesterStart: string,
+  config: Parameters<typeof buildStudySchedule>[0]['config'],
+  newDateStart: string | null
+): boolean => {
+  const computed = buildStudySchedule({
+    deliveries,
+    semesterStartIso: semesterStart,
+    config,
+    newDateStartIso: newDateStart ?? undefined,
+  });
+
+  if (computed.length === 0) {
+    return false;
+  }
+
+  const computedById = new Map(
+    computed.map(item => [
+      item.id,
+      {
+        startDate: format(item.startDate, 'yyyy-MM-dd'),
+        endDate: format(item.endDate, 'yyyy-MM-dd'),
+      },
+    ])
+  );
+
+  return deliveries.some(delivery => {
+    if (delivery.completed) {
+      return false;
+    }
+
+    if (!delivery.startDate || !delivery.endDate) {
+      return true;
+    }
+
+    const persistedStart = parseISO(delivery.startDate);
+    const persistedEnd = parseISO(delivery.endDate);
+    if (!isValid(persistedStart) || !isValid(persistedEnd)) {
+      return true;
+    }
+
+    const computedDates = computedById.get(delivery.id);
+    if (!computedDates) {
+      return true;
+    }
+
+    return (
+      computedDates.startDate !== format(persistedStart, 'yyyy-MM-dd') ||
+      computedDates.endDate !== format(persistedEnd, 'yyyy-MM-dd')
+    );
+  });
+};
+
+/**
  * Construye el schedule desde fechas persistidas en Supabase
  * Solo se usa cuando TODAS las entregas pendientes tienen fechas válidas
  */
@@ -120,9 +178,8 @@ export const ScheduleProvider: React.FC<ScheduleProviderProps> = ({ children }) 
       return true;
     }
 
-    // Si todas tienen fechas válidas, NO recalcular (usar datos persistidos)
-    return false;
-  }, [deliveries, semesterStart]);
+    return hasScheduleMismatchWithPersistedDates(deliveries, semesterStart, config, newDateStart);
+  }, [deliveries, semesterStart, config, newDateStart]);
 
   // Calcular el schedule base
   const baseSchedule = useMemo(() => {

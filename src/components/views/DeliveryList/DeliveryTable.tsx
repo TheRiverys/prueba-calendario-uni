@@ -1,6 +1,6 @@
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { AlertTriangle, Calendar, Check, Clock, Edit2, Plus, Trash2 } from 'lucide-react';
+import { AlertTriangle, Calendar, Check, Clock, Edit2, Trash2 } from 'lucide-react';
 import React from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -10,15 +10,15 @@ import type { StudySchedule } from '@/types';
 import { calculateProgress, describeDueDate, resolveProgressColor } from './deliveryListUtils';
 import { DeliveryStatusBadge } from './DeliveryStatusBadge';
 
-import type { DeliveryListActions } from './types';
-
-interface DeliveryTableProps extends DeliveryListActions {
+interface DeliveryTableProps {
   readonly schedule: StudySchedule[];
+  readonly onEdit: (_delivery: StudySchedule) => void;
+  readonly onDelete: (_id: StudySchedule['id']) => void;
+  readonly onToggleComplete: (_id: StudySchedule['id']) => void;
 }
 
 export const DeliveryTable: React.FC<DeliveryTableProps> = ({
   schedule,
-  onAdd,
   onEdit,
   onDelete,
   onToggleComplete,
@@ -32,20 +32,7 @@ export const DeliveryTable: React.FC<DeliveryTableProps> = ({
             <th className='px-5 py-3 text-left font-semibold'>Fecha límite</th>
             <th className='px-5 py-3 text-left font-semibold'>Periodo asignado</th>
             <th className='px-5 py-3 text-left font-semibold'>Progreso</th>
-            <th className='px-5 py-3 text-right font-semibold'>
-              <div className='flex items-center justify-end gap-2'>
-                Acciones
-                <Button
-                  id='new-delivery-button'
-                  size='sm'
-                  onClick={onAdd}
-                  className='h-8 w-8 p-0'
-                  title='Añadir nueva entrega'
-                >
-                  <Plus className='h-4 w-4' />
-                </Button>
-              </div>
-            </th>
+            <th className='px-5 py-3 text-right font-semibold'>Acciones</th>
           </tr>
         </thead>
         <tbody className='divide-border/70 divide-y'>

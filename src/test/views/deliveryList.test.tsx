@@ -90,7 +90,7 @@ describe('DeliveryList', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /Nueva entrega/i }));
+    fireEvent.click(screen.getAllByRole('button', { name: /Nueva entrega/i })[0]);
     expect(handlers.onAdd).toHaveBeenCalled();
   });
 
@@ -112,5 +112,23 @@ describe('DeliveryList', () => {
 
     const weeklyBadges = screen.getAllByText('Esta semana');
     expect(weeklyBadges.length).toBeGreaterThan(0);
+  });
+
+  it('permite crear una entrega desde la cabecera cuando hay elementos', () => {
+    const handlers = buildHandlers();
+
+    render(
+      <DeliveryList
+        schedule={[buildSchedule()]}
+        selectedSubject='all'
+        subjects={['Matemáticas']}
+        sortBy='algorithm'
+        activeView='list'
+        {...handlers}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Nueva entrega/i }));
+    expect(handlers.onAdd).toHaveBeenCalledTimes(1);
   });
 });

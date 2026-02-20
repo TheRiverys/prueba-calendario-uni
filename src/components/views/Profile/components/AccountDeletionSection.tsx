@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { OAuthProviderInfo } from '@/lib/oauthUtils';
 
 import type { ProfileFormField } from '../profileTypes';
 import type { FC } from 'react';
@@ -14,7 +13,6 @@ interface AccountDeletionSectionProps {
   readonly passwordVisible: boolean;
   readonly loading: boolean;
   readonly isOAuthAccount: boolean;
-  readonly oauthInfo: OAuthProviderInfo;
   readonly onFieldChange: (_field: ProfileFormField, _value: string) => void;
   readonly onTogglePassword: () => void;
   readonly onDelete: () => void;
@@ -25,14 +23,12 @@ const AccountDeletionSection: FC<AccountDeletionSectionProps> = ({
   passwordVisible,
   loading,
   isOAuthAccount,
-  oauthInfo,
   onFieldChange,
   onTogglePassword,
   onDelete,
 }) => {
   const disablePasswordInput = isOAuthAccount;
   const deleteButtonDisabled = loading || (!isOAuthAccount && !currentPassword.trim());
-  const providerName = oauthInfo.isGoogle ? 'Google' : 'OAuth';
 
   return (
     <Card className='border-destructive/40 bg-destructive/5 rounded-xl border shadow-sm backdrop-blur'>
@@ -72,7 +68,7 @@ const AccountDeletionSection: FC<AccountDeletionSectionProps> = ({
               onChange={event => onFieldChange('currentPassword', event.target.value)}
               placeholder={
                 isOAuthAccount
-                  ? 'No se requiere contraseña para usuarios ' + providerName
+                  ? 'No se requiere contraseña para cuentas con inicio de sesión externo'
                   : 'Ingresa tu contraseña para continuar'
               }
               disabled={disablePasswordInput}
@@ -91,9 +87,7 @@ const AccountDeletionSection: FC<AccountDeletionSectionProps> = ({
           </div>
           <p className='text-muted-foreground text-xs'>
             {isOAuthAccount
-              ? 'Como usuario de ' +
-                providerName +
-                ', confirmaremos esta acción con un paso adicional.'
+              ? 'Confirmaremos esta acción con un paso adicional.'
               : 'Confirma tu identidad introduciendo tu contraseña actual.'}
           </p>
         </div>

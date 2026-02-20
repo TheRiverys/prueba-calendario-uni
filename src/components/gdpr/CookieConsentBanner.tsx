@@ -5,7 +5,7 @@
  * - Solo se encarga de mostrar el banner y capturar la decisión del usuario
  */
 
-import { X, Cookie, Settings, ChevronDown, ChevronUp } from 'lucide-react';
+import { Cookie, Settings, ChevronDown, ChevronUp } from 'lucide-react';
 import React, { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -15,14 +15,8 @@ import { usePreferencesContext } from '@/contexts/preferences/PreferencesContext
 import { CookieCategory } from '@/services/cookieConsent';
 
 export const CookieConsentBanner: React.FC = () => {
-  const {
-    showConsentBanner,
-    acceptAll,
-    rejectAll,
-    setCustomConsent,
-    setShowConsentBanner,
-    getCookiesByCategory,
-  } = useGdpr();
+  const { showConsentBanner, acceptAll, rejectAll, setCustomConsent, getCookiesByCategory } =
+    useGdpr();
   const { setCurrentPage } = usePreferencesContext();
 
   const [showDetails, setShowDetails] = useState(false);
@@ -89,14 +83,6 @@ export const CookieConsentBanner: React.FC = () => {
     <div className='fixed inset-0 z-50 bg-black/50 backdrop-blur-sm'>
       <div className='fixed right-0 bottom-0 left-0 p-4 sm:right-auto sm:bottom-4 sm:left-4 sm:max-w-md'>
         <Card className='relative overflow-hidden border-2 bg-white p-6 shadow-2xl dark:bg-gray-900'>
-          <button
-            onClick={() => setShowConsentBanner(false)}
-            className='absolute top-4 right-4 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300'
-            aria-label='Cerrar sin decidir'
-          >
-            <X className='h-5 w-5' />
-          </button>
-
           <div className='mb-4 flex items-center gap-3'>
             <Cookie className='h-8 w-8 text-blue-600 dark:text-blue-400' />
             <h2 className='text-xl font-bold text-gray-900 dark:text-white'>Gestión de Cookies</h2>
@@ -202,20 +188,18 @@ export const CookieConsentBanner: React.FC = () => {
                   variant='outline'
                   className='flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800'
                 >
-                  Rechazar
+                  Rechazar no esenciales
                 </Button>
               </>
             )}
           </div>
 
           <p className='mt-3 text-center text-xs text-gray-500 dark:text-gray-400'>
-            Al continuar navegando sin seleccionar, no usaremos cookies no esenciales.
-            <br />
-            Lee nuestra{' '}
+            Puedes cambiar tu decisión en cualquier momento desde la sección de privacidad. Lee
+            nuestra{' '}
             <button
               onClick={() => {
                 setCurrentPage('privacy-policy');
-                setShowConsentBanner(false);
               }}
               className='text-blue-600 underline hover:text-blue-700 dark:text-blue-400'
             >

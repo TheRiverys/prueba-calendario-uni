@@ -55,10 +55,11 @@ export const GdprProvider: React.FC<{ readonly children: ReactNode }> = ({ child
   // Cargar estado inicial de consentimiento
   useEffect(() => {
     const currentConsent = cookieConsentService.getConsent();
-    setConsent(currentConsent);
+    const requiresRenewal = cookieConsentService.requiresConsentRenewal();
+    setConsent(requiresRenewal ? null : currentConsent);
 
-    // Mostrar banner solo si el usuario no ha respondido
-    if (!currentConsent) {
+    // Mostrar banner si no hay consentimiento válido o si requiere renovación de versión
+    if (!currentConsent || requiresRenewal) {
       setShowConsentBanner(true);
     }
   }, []);
@@ -113,8 +114,11 @@ export const GdprProvider: React.FC<{ readonly children: ReactNode }> = ({ child
   }, []);
 
   const hasUserResponded = useMemo(() => {
-    return cookieConsentService.hasUserRespondedToConsent();
-  }, []);
+    if (!consent) {
+      return false;
+    }
+    return consent.version === cookieConsentService.getPolicyVersion();
+  }, [consent]);
 
   const cookieRegistry = useMemo(() => {
     return cookieConsentService.getCookieRegistry();

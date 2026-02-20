@@ -205,6 +205,16 @@ describe('Profile', () => {
 
     // Assert
     expect(screen.getByText('Confirmar eliminación de cuenta')).toBeInTheDocument();
+    expect(screen.queryByText('Editar credenciales')).not.toBeInTheDocument();
+  });
+
+  it('no muestra campos informativos irrelevantes en el resumen de cuenta', () => {
+    renderProfile();
+
+    expect(screen.queryByText('Estado')).not.toBeInTheDocument();
+    expect(screen.queryByText('Email confirmado')).not.toBeInTheDocument();
+    expect(screen.queryByText('Última actualización')).not.toBeInTheDocument();
+    expect(screen.queryByText('Proveedor')).not.toBeInTheDocument();
   });
 
   it('ejecuta el flujo completo de eliminación de cuenta', async () => {

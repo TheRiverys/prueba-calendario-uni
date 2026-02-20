@@ -72,6 +72,10 @@ class CookieConsentService {
   private readonly CONSENT_COOKIE_NAME = 'cookie_consent';
   private readonly POLICY_VERSION = '1.0.0';
 
+  public getPolicyVersion(): string {
+    return this.POLICY_VERSION;
+  }
+
   /**
    * Obtiene el estado actual de consentimiento
    */
@@ -134,6 +138,10 @@ class CookieConsentService {
       return false;
     }
 
+    if (consent.version !== this.POLICY_VERSION) {
+      return false;
+    }
+
     return consent[category] === true;
   }
 
@@ -141,7 +149,13 @@ class CookieConsentService {
    * Verifica si el usuario ya ha dado o rechazado el consentimiento
    */
   public hasUserRespondedToConsent(): boolean {
-    return this.getConsent() !== null;
+    const consent = this.getConsent();
+    return consent !== null && consent.version === this.POLICY_VERSION;
+  }
+
+  public requiresConsentRenewal(): boolean {
+    const consent = this.getConsent();
+    return consent !== null && consent.version !== this.POLICY_VERSION;
   }
 
   /**

@@ -8,11 +8,7 @@ import {
 } from 'react';
 
 import { toast } from '@/components/ui/sonner';
-import {
-  getOAuthProviderInfo,
-  getProviderDisplayInfo,
-  type OAuthProviderInfo,
-} from '@/lib/oauthUtils';
+import { getOAuthProviderInfo, type OAuthProviderInfo } from '@/lib/oauthUtils';
 import { clearLocalUserData } from '@/utils/storage';
 
 import type {
@@ -341,22 +337,21 @@ export const useProfileManager = ({
   signOut,
   onNavigateDashboard,
 }: UseProfileManagerParams): UseProfileManagerResult => {
-  const providerInfo = useMemo(() => getProviderDisplayInfo(user), [user]);
   const oauthInfo = useMemo(() => getOAuthProviderInfo(user), [user]);
   const isOAuthAccount = oauthInfo.isGoogle || Boolean(oauthInfo.provider);
-  const emailConfirmed = useMemo(
-    () => Boolean(user?.email_confirmed_at ?? user?.confirmed_at),
-    [user]
-  );
+  const accountDescription = useMemo(() => {
+    if (isOAuthAccount) {
+      return 'Cuenta conectada con inicio de sesión externo. Tus datos están sincronizados.';
+    }
+    return 'Gestiona tu acceso y privacidad desde este panel.';
+  }, [isOAuthAccount]);
 
   const accountSummary = useMemo<ProfileAccountSummary>(
     () => ({
-      emailConfirmed,
-      providerColor: providerInfo.color,
-      providerName: providerInfo.name,
       user: user ?? null,
+      description: accountDescription,
     }),
-    [emailConfirmed, providerInfo.color, providerInfo.name, user]
+    [user, accountDescription]
   );
 
   const {

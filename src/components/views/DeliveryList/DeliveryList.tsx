@@ -33,6 +33,7 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
         onSubjectChange={onSubjectChange}
         sortBy={sortBy}
         onSortChange={onSortChange}
+        onAdd={onAdd}
       />
 
       <div className='pt-6'>
@@ -40,7 +41,6 @@ const DeliveryList: React.FC<DeliveryListProps> = ({
           <div className='space-y-6'>
             <DeliveryTable
               schedule={schedule}
-              onAdd={onAdd}
               onEdit={onEdit}
               onDelete={onDelete}
               onToggleComplete={onToggleComplete}

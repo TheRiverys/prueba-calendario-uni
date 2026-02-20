@@ -124,4 +124,35 @@ describe('CalendarView', () => {
     fireEvent.click(toggleButton);
     expect(handlers.onToggleComplete).toHaveBeenCalledWith('schedule-1');
   });
+
+  it('aplica el filtro por materia tambien a los bloques de estudio', () => {
+    const handlers = buildHandlers();
+    const schedule: StudySchedule[] = [
+      buildSchedule(),
+      buildSchedule({
+        id: 'schedule-2',
+        subject: 'Historia',
+        name: 'Ensayo final',
+        color: 'bg-chart-2',
+        date: '2025-02-02',
+        startDate: new Date('2025-01-28'),
+        endDate: new Date('2025-02-01'),
+      }),
+    ];
+
+    render(
+      <CalendarView
+        schedule={schedule}
+        selectedSubject='Historia'
+        subjects={['Matemáticas', 'Historia']}
+        onSubjectChange={handlers.onSubjectChange}
+        onEdit={handlers.onEdit}
+        onDelete={handlers.onDelete}
+        onToggleComplete={handlers.onToggleComplete}
+      />
+    );
+
+    expect(screen.queryByText('Matemáticas - Parcial 1')).not.toBeInTheDocument();
+    expect(screen.getAllByText('Historia - Ensayo final').length).toBeGreaterThan(0);
+  });
 });

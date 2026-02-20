@@ -67,8 +67,10 @@ export const populateCalendarDays = (
           (selectedSubject === 'all' || item.subject === selectedSubject)
       );
 
-      const studyPeriods = schedule.filter(item =>
-        isWithinInterval(day.date, { start: item.startDate, end: item.endDate })
+      const studyPeriods = schedule.filter(
+        item =>
+          isWithinInterval(day.date, { start: item.startDate, end: item.endDate }) &&
+          (selectedSubject === 'all' || item.subject === selectedSubject)
       );
 
       return {

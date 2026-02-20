@@ -1,13 +1,11 @@
 import { AlertTriangle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import type { OAuthProviderInfo } from '@/lib/oauthUtils';
 
 import type { FC } from 'react';
 
 interface DeleteAccountModalProps {
   readonly open: boolean;
-  readonly oauthInfo: OAuthProviderInfo;
   readonly loading: boolean;
   readonly onCancel: () => void;
   readonly onConfirm: () => void;
@@ -15,7 +13,6 @@ interface DeleteAccountModalProps {
 
 const DeleteAccountModal: FC<DeleteAccountModalProps> = ({
   open,
-  oauthInfo,
   loading,
   onCancel,
   onConfirm,
@@ -23,8 +20,6 @@ const DeleteAccountModal: FC<DeleteAccountModalProps> = ({
   if (!open) {
     return null;
   }
-
-  const providerName = oauthInfo.isGoogle ? 'Google' : 'OAuth';
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4'>
@@ -34,8 +29,8 @@ const DeleteAccountModal: FC<DeleteAccountModalProps> = ({
           <h3 className='text-foreground text-lg font-semibold'>Confirmar eliminación de cuenta</h3>
         </div>
         <p className='text-muted-foreground text-sm'>
-          Tu cuenta vinculada con {providerName} se eliminará permanentemente. Esta acción no se
-          puede deshacer y perderás todos tus datos almacenados.
+          Tu cuenta se eliminará permanentemente. Esta acción no se puede deshacer y perderás todos
+          tus datos almacenados.
         </p>
         <div className='border-destructive/20 bg-destructive/10 text-destructive/90 mt-4 rounded-lg border p-3 text-sm'>
           <p className='font-medium'>Se eliminará de forma definitiva:</p>
